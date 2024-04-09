@@ -1,0 +1,35 @@
+@startuml
+
+skin rose
+
+entity Account {
+  * id: uuid
+  --
+  * name: string
+  * surname: string
+  * email: string @unique
+  * hashedPassword: string
+}
+
+entity Post {
+  * id: uuid
+  --
+  * description: string
+  * wage: decimal
+  * location: string
+  * expectedHours: decimal
+}
+
+entity CV {
+  * id: uuid
+  --
+  * filename: string
+}
+
+Account ||--o{ Post : creates 
+
+Account }o--o{ Post : applies
+
+Account ||--o| CV : has
+
+@enduml

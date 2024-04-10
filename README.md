@@ -16,7 +16,7 @@ create .env file in backend folder according to .env.example
 
 cd backend
 
-docker-compose -f .\db-docker-compose.yaml up -d
+docker compose -f db-docker-compose.yaml up -d
 
 npx prisma migrate dev
 

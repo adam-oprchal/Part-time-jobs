@@ -5,10 +5,16 @@
 
 import express from 'express';
 import * as path from 'path';
+import postRouter from "./post/postRouter";
 
 const app = express();
 
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use('/api/post', postRouter);
 
 app.get('/api', (req, res) => {
   res.send({ message: 'Welcome to backend!' });

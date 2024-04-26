@@ -1,11 +1,11 @@
 import {accountRepository} from "./accountRepository";
 import {Request, Response} from "express";
-import { getUserByEmailSchema, getUserByIdSchema, registerUserRequestSchema } from "./accountSchema";
+import { getAccountByEmailSchema, getAccountByIdSchema, registerAccountRequestSchema } from "./accountSchema";
 import argon2 from "argon2"
 
 export const accountController = {
     register: async (request: Request, response: Response) => {
-        const validRequest = await registerUserRequestSchema.safeParseAsync(request);
+        const validRequest = await registerAccountRequestSchema.safeParseAsync(request);
         if (!validRequest.success) {
             response.status(400).send("invalid request")
             return
@@ -33,7 +33,7 @@ export const accountController = {
     },
 
     getById: async (request: Request, response: Response) => {
-        const validRequest = await getUserByIdSchema.safeParseAsync(request);
+        const validRequest = await getAccountByIdSchema.safeParseAsync(request);
         if (!validRequest.success) {
             response.status(400).send("invalid request")
             return
@@ -50,7 +50,7 @@ export const accountController = {
     },
 
     getByEmail: async (request: Request, response: Response) => {
-        const validRequest = await getUserByEmailSchema.safeParseAsync(request);
+        const validRequest = await getAccountByEmailSchema.safeParseAsync(request);
         if (!validRequest.success) {
             response.status(400).send("invalid request")
             return

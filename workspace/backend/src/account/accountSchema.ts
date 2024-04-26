@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const registerUserRequestSchema = z.object({
+export const registerAccountRequestSchema = z.object({
     body: z.object({
         firstName: z.string(),
         surname: z.string(),
@@ -10,13 +10,13 @@ export const registerUserRequestSchema = z.object({
     })
 })
 
-export const getUserByIdSchema = z.object({
+export const getAccountByIdSchema = z.object({
     params: z.object({
         id: z.string()
     })
 })
 
-export const getUserByEmailSchema = z.object({
+export const getAccountByEmailSchema = z.object({
     params: z.object({
         email: z.string().email()
     })

@@ -9,3 +9,15 @@ export const registerUserRequestSchema = z.object({
         passwordAgain: z.string()
     })
 })
+
+export const getUserByIdSchema = z.object({
+    params: z.object({
+        id: z.string()
+    })
+})
+
+export const getUserByEmailSchema = z.object({
+    params: z.object({
+        email: z.string().email()
+    })
+})

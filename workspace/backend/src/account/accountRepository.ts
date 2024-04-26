@@ -12,5 +12,25 @@ export const accountRepository = {
         } catch (error) {
             return Result.err(error as Error)
         }
+    },
+
+    async getById(id: string): DbResult<Account> {
+        try {
+            const result = await prisma.account.findUniqueOrThrow({where: {id}});
+
+            return Result.ok(result)
+        } catch (error) {
+            return Result.err(error as Error)
+        }
+    },
+
+    async getByEmail(email: string): DbResult<Account> {
+        try {
+            const result = await prisma.account.findUniqueOrThrow({where: {email}});
+
+            return Result.ok(result)
+        } catch (error) {
+            return Result.err(error as Error)
+        }
     }
 }

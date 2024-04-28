@@ -35,6 +35,41 @@ export const accountRepository = {
         }
     },
 
+    async getApplicantsOfPost(postId: string): DbResult<Account[]> {
+        try {
+            const post = await prisma.post.findUniqueOrThrow({
+                where: {id: postId},
+                include: {
+                    applicants: true
+                }
+            });
+            const result = post.applicants;
+
+            return Result.ok(result)
+        } catch (error) {
+            return Result.err(error as Error)
+        }
+    },
+
+    async getApplicantsOfAccountPosts(id: string): DbResult<Map<string, Account[]>> {
+        try {
+            const posts = await prisma.post.findMany({
+                where: {creatorId: id},
+                include: {
+                    applicants: true
+                }
+            });
+            const result = new Map<string, Account[]>();
+            posts.forEach((post) => {
+                result.set(post.id, post.applicants)
+            })
+
+            return Result.ok(result)
+        } catch (error) {
+            return Result.err(error as Error)
+        }
+    },
+
     async changePassword(id: string, password: string): DbResult<undefined> {
         try {
             const passwordHash = await argon2.hash(password);

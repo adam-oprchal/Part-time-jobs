@@ -21,3 +21,15 @@ export const getAccountByEmailSchema = z.object({
         email: z.string().email()
     })
 })
+
+export const getApplicantsOfPostSchema = z.object({
+    params: z.object({
+        postId: z.string()
+    })
+})
+
+export const getApplicantsOfAccountPostsSchema = z.object({
+    params: z.object({
+        id: z.string()
+    })
+})

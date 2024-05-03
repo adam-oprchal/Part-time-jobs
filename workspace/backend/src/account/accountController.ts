@@ -26,8 +26,7 @@ export const accountController = {
         });
 
         if (result.isOk) {
-            const { passwordHash, ...createdUser } = result.value
-            response.send(createdUser)
+            response.send(result.value)
         } else {
             response.status(400).send("database error")
         }
@@ -43,8 +42,7 @@ export const accountController = {
         const result = await accountRepository.getById(request.params.id);
 
         if (result.isOk) {
-            const { passwordHash, ...foundUser } = result.value
-            response.send(foundUser)
+            response.send(result.value)
         } else {
             response.status(400).send("database error")
         }
@@ -60,8 +58,7 @@ export const accountController = {
         const result = await accountRepository.getByEmail(request.params.email);
 
         if (result.isOk) {
-            const { passwordHash, ...foundUser } = result.value
-            response.send(foundUser)
+            response.send(result.value)
         } else {
             response.status(400).send("database error")
         }
@@ -77,8 +74,7 @@ export const accountController = {
         const result = await accountRepository.getApplicantsOfPost(request.params.postId);
 
         if (result.isOk) {
-            const foundUsers = result.value.map(({ passwordHash, ...foundUser}) => foundUser)
-            response.send(foundUsers)
+            response.send(result.value)
         } else {
             response.status(400).send("database error")
         }

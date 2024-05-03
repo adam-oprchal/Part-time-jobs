@@ -1,13 +1,19 @@
 import prisma  from "../db/client";
-import { Account } from "types"
+import { AccountWithCvWithoutPassword } from "types"
 import {Result} from "@badrap/result";
 import { AccountRegister, DbResult } from "../types";
 import argon2 from "argon2"
 
 export const accountRepository = {
-    async create(data: AccountRegister): DbResult<Account> {
+    async create(data: AccountRegister): DbResult<AccountWithCvWithoutPassword> {
         try {
-            const result = await prisma.account.create({data});
+            const result = await prisma.account.create({
+                data,
+                include: {
+                    cv: true
+                }
+            });
+            delete result.passwordHash
 
             return Result.ok(result)
         } catch (error) {
@@ -15,9 +21,15 @@ export const accountRepository = {
         }
     },
 
-    async getById(id: string): DbResult<Account> {
+    async getById(id: string): DbResult<AccountWithCvWithoutPassword> {
         try {
-            const result = await prisma.account.findUniqueOrThrow({where: {id}});
+            const result = await prisma.account.findUniqueOrThrow({
+                where: {id},
+                include: {
+                    cv: true
+                },
+            });
+            delete result.passwordHash
 
             return Result.ok(result)
         } catch (error) {
@@ -25,9 +37,15 @@ export const accountRepository = {
         }
     },
 
-    async getByEmail(email: string): DbResult<Account> {
+    async getByEmail(email: string): DbResult<AccountWithCvWithoutPassword> {
         try {
-            const result = await prisma.account.findUniqueOrThrow({where: {email}});
+            const result = await prisma.account.findUniqueOrThrow({
+                where: {email},
+                include: {
+                    cv: true
+                }
+            });
+            delete result.passwordHash
 
             return Result.ok(result)
         } catch (error) {
@@ -35,15 +53,20 @@ export const accountRepository = {
         }
     },
 
-    async getApplicantsOfPost(postId: string): DbResult<Account[]> {
+    async getApplicantsOfPost(postId: string): DbResult<AccountWithCvWithoutPassword[]> {
         try {
             const post = await prisma.post.findUniqueOrThrow({
                 where: {id: postId},
                 include: {
-                    applicants: true
+                    applicants: {
+                        include: {
+                            cv: true
+                        }
+                    }
                 }
             });
             const result = post.applicants;
+            result.forEach((applicant) => delete applicant.passwordHash)
 
             return Result.ok(result)
         } catch (error) {
@@ -51,16 +74,21 @@ export const accountRepository = {
         }
     },
 
-    async getApplicantsOfAccountPosts(id: string): DbResult<Map<string, Account[]>> {
+    async getApplicantsOfAccountPosts(id: string): DbResult<Map<string, AccountWithCvWithoutPassword[]>> {
         try {
             const posts = await prisma.post.findMany({
                 where: {creatorId: id},
                 include: {
-                    applicants: true
+                    applicants: {
+                        include: {
+                            cv: true
+                        }
+                    }
                 }
             });
-            const result = new Map<string, Account[]>();
+            const result = new Map<string, AccountWithCvWithoutPassword[]>();
             posts.forEach((post) => {
+                post.applicants.forEach((applicant) => delete applicant.passwordHash)
                 result.set(post.id, post.applicants)
             })
 

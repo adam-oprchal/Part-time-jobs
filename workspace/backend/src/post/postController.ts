@@ -1,9 +1,17 @@
 import {postRepository} from "./postRepository";
 import {Request, Response} from "express";
 import {Post} from "types";
+import z from 'zod';
+import {postSchema} from "./schema";
 
 export const postController = {
     createPost: async (request: Request, response: Response)=> {
+        const parseResult = await postSchema.safeParseAsync(request.body)
+        if (!parseResult.success) {
+            response.status(400).send(parseResult.error)
+            return;
+        }
+
         const result = await postRepository.createPost(request.body);
         response.send(result)
     },
@@ -14,6 +22,12 @@ export const postController = {
     },
 
     updatePost: async (request: Request, response: Response)=> {
+        const parseResult = await postSchema.safeParseAsync(request.body)
+        if (!parseResult.success) {
+            response.status(400).send(parseResult.error)
+            return;
+        }
+
         const result = await postRepository.updatePost(request.params.id, request.body);
         response.send(result)
     },

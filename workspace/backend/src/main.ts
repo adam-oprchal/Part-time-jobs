@@ -16,6 +16,11 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/v1/post', postRouter);
 
+app.use(function(err, req, res, next) {
+  console.error(err)
+  res.status(500);
+});
+
 app.get('/api', (req, res) => {
   res.send({ message: 'Welcome to backend!' });
 });

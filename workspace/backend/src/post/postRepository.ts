@@ -30,6 +30,7 @@ export const postRepository = {
         return prisma.post.findUnique({
             where: {
                 id: id,
+                deletedAt: null,
             }
         });
     },
@@ -38,17 +39,25 @@ export const postRepository = {
         return prisma.post.findMany({
             skip: page * pageSize,
             take: pageSize,
+            where: {
+                deletedAt: null,
+            }
         });
     },
 
     async getAmountOfPosts(): Promise<number> {
-        return prisma.post.count();
+        return prisma.post.count({
+            where: {
+                deletedAt: null,
+            }
+        });
     },
 
     async getPostsByCreator(creatorId: string): Promise<Post[]> {
         return prisma.post.findMany({
             where: {
                 creatorId: creatorId,
+                deletedAt: null,
             }
         });
     },
@@ -61,6 +70,7 @@ export const postRepository = {
                         id: applicantId,
                     }
                 },
+                deletedAt: null,
             }
         });
     },

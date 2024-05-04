@@ -1,5 +1,6 @@
 import {postRepository} from "./postRepository";
 import {Request, Response} from "express";
+import {Post} from "types";
 
 export const postController = {
     createPost: async (request: Request, response: Response)=> {
@@ -48,6 +49,11 @@ export const postController = {
 
     getPostsByApplicant: async (request: Request, response: Response)=> {
         const result = await postRepository.getPostsByApplicant(request.params.applicantId);
+        response.send(result)
+    },
+
+    applyForPost: async (request: Request, response: Response)=> {
+        const result = await postRepository.addApplicantToPost(request.params.postId, request.params.applicantId);
         response.send(result)
     },
 }

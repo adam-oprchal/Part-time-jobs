@@ -63,5 +63,20 @@ export const postRepository = {
                 },
             }
         });
+    },
+
+    async addApplicantToPost(postId: string, applicantId: string): Promise<Post> {
+        return prisma.post.update({
+            where: {
+                id: postId,
+            },
+            data: {
+                applicants: {
+                    connect: {
+                        id: applicantId,
+                    }
+                }
+            }
+        });
     }
 }

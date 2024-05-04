@@ -1,15 +1,53 @@
-import {Post} from "types";
 import {postRepository} from "./postRepository";
 import {Request, Response} from "express";
 
 export const postController = {
     createPost: async (request: Request, response: Response)=> {
+        const result = await postRepository.createPost(request.body);
+        response.send(result)
+    },
+
+    deletePost: async (request: Request, response: Response)=> {
+        const result = await postRepository.deletePost(request.params.id);
+        response.send(result)
+    },
+
+    updatePost: async (request: Request, response: Response)=> {
+        const result = await postRepository.updatePost(request.params.id, request.body);
+        response.send(result)
+    },
+
+    getPost: async (request: Request, response: Response)=> {
+        const result = await postRepository.getPost(request.params.id);
+        response.send(result)
+    },
+
+    getPostsPaginated: async (request: Request, response: Response)=> {
+        let page: number;
+        let pageSize: number;
         try {
-            const result = await postRepository.createPost(request.body);
-            response.send(result)
+            page = parseInt(request.query.page as string);
+            pageSize = parseInt(request.query.pageSize as string);
         } catch (error) {
-            console.error(error);
-            response.status(500);
+            response.status(400).send("Invalid query parameters");
+            return;
         }
-    }
+        const result = await postRepository.getPostsPaginated(page, pageSize);
+        response.send(result)
+    },
+
+    getAmountOfPosts: async (request: Request, response: Response)=> {
+        const result = await postRepository.getAmountOfPosts();
+        response.send(result)
+    },
+
+    getPostsByCreator: async (request: Request, response: Response)=> {
+        const result = await postRepository.getPostsByCreator(request.params.creatorId);
+        response.send(result)
+    },
+
+    getPostsByApplicant: async (request: Request, response: Response)=> {
+        const result = await postRepository.getPostsByApplicant(request.params.applicantId);
+        response.send(result)
+    },
 }

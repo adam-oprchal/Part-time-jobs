@@ -1,0 +1,44 @@
+.welcomePage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.welcomePage__box {
+  background-color: var(--color-dark-grey);
+  padding: 1rem;
+  border-radius: 1rem;
+  margin: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
+}
+
+.welcomePage__header {
+  font-size: 3rem;
+}
+
+.welcomePage__buttons {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  gap: 1rem;
+}
+
+@media screen and (min-width: 1000px) {
+  .welcomePage__header {
+    font-size: 10rem;
+  }
+
+  .welcomePage__box {
+    padding: 5rem;
+  }
+
+  .welcomePage__buttons {
+    flex-direction: row;
+    justify-content: space-around;
+  }
+}

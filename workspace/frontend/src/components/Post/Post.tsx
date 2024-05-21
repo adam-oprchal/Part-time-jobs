@@ -26,7 +26,7 @@ export const Post = ({
         <p>{hours} hr/week</p>
       </div>
       <div className="post__location">{location}</div>
-      <Button label="Apply" />
+      <Button label="Apply" className="post__button" />
     </div>
   );
 };

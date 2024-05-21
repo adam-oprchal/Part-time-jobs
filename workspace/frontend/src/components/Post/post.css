@@ -1,22 +1,55 @@
 .post {
   background-color: var(--color-light-grey);
-  padding: 2rem;
-  margin: 1rem;
+  padding: 1rem;
+  margin: 0.5rem;
   border-radius: 1rem;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 0.5fr 0.3fr;
+  grid-template-areas:
+    'description description'
+    'location numbers'
+    'button button';
   align-items: center;
   justify-items: center;
 }
 
 .post__description {
-  font-size: 1.2rem;
+  grid-area: description;
 }
 
 .post__location {
-  font-size: 3rem;
+  font-size: 1.5rem;
+  grid-area: location;
 }
 
 .post__numbers {
-  font-size: 2rem;
+  font-size: 1rem;
+  grid-area: numbers;
+}
+
+.post__button {
+  grid-area: button;
+}
+
+@media screen and (min-width: 1000px) {
+  .post {
+    padding: 2rem;
+    margin: 1rem;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr;
+    grid-template-areas: 'description location numbers button';
+  }
+
+  .post__description {
+    font-size: 1.2rem;
+  }
+
+  .post__location {
+    font-size: 3rem;
+  }
+
+  .post__numbers {
+    font-size: 2rem;
+  }
 }

@@ -1,5 +1,17 @@
 /* You can add global styles to this file, and also import other style files */
 :root {
+  font-size: 16px;
+  line-height: 1.5;
+  font-weight: 400;
+
   --color-green: #0f807a;
   --color-white: #fff;
+  --color-dark-grey: #383838;
+  --color-light-grey: #545454;
+
+  color: var(--color-white);
+}
+
+body {
+  margin: 0;
 }

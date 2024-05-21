@@ -1,5 +1,5 @@
 import './postsSection.css';
-import { Post } from '../post/Post';
+import { Post } from '../Post/Post';
 
 export const PostsSection = () => {
   return (

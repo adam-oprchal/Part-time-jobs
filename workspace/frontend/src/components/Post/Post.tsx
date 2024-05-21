@@ -1,5 +1,5 @@
 import './post.css';
-import { Button } from '../button/Button';
+import { Button } from '../Button/Button';
 
 interface PostProps {
   description: string;
@@ -20,8 +20,8 @@ export const Post = ({
 
   return (
     <div className={`post ${cName}`}>
-      <div className='post__description'>{description}</div>
-      <div className='post__numbers'>
+      <div className="post__description">{description}</div>
+      <div className="post__numbers">
         <p>${wage}/hr</p>
         <p>{hours} hr/week</p>
       </div>

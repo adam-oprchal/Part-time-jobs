@@ -1,5 +1,5 @@
 import './navbar.css';
-import { Button } from '../button/Button';
+import { Button } from '../Button/Button';
 
 export const Navbar = () => {
   return (

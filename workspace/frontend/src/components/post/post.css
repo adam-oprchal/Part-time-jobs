@@ -1,0 +1,22 @@
+.post {
+  background-color: var(--color-light-grey);
+  padding: 2rem;
+  margin: 1rem;
+  border-radius: 1rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  align-items: center;
+  justify-items: center;
+}
+
+.post__description {
+  font-size: 1.2rem;
+}
+
+.post__location {
+  font-size: 3rem;
+}
+
+.post__numbers {
+  font-size: 2rem;
+}

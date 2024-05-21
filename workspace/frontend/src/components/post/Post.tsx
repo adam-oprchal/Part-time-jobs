@@ -23,7 +23,7 @@ export const Post = ({
       <div className='post__description'>{description}</div>
       <div className='post__numbers'>
         <p>${wage}/hr</p>
-        <p>${hours}/week</p>
+        <p>{hours} hr/week</p>
       </div>
       <div className="post__location">{location}</div>
       <Button label="Apply" />

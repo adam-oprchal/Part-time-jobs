@@ -21,11 +21,13 @@
 .post__location {
   font-size: 1.5rem;
   grid-area: location;
+  font-weight: 700;
 }
 
 .post__numbers {
   font-size: 1rem;
   grid-area: numbers;
+  font-weight: 700;
 }
 
 .post__button {

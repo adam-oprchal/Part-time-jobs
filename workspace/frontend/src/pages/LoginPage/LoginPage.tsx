@@ -9,7 +9,7 @@ export const LoginPage = () => {
       <div className="loginPage__box">
         <h1 className="loginPage__header">Log in</h1>
 
-        <TextInput placeholder="username"></TextInput>
+        <TextInput placeholder="email"></TextInput>
         <TextInput placeholder="password"></TextInput>
 
         <Button label="Enter"></Button>

@@ -9,7 +9,6 @@
   background-color: var(--color-dark-grey);
   padding: 1rem;
   border-radius: 1rem;
-  margin: 3rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -39,6 +38,7 @@
 
   .welcomePage__buttons {
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: space-evenly;
+    width: 100%;
   }
 }

@@ -7,6 +7,8 @@ import { JobsPage } from '../pages/JobsPage/JobsPage';
 import { WelcomePage } from '../pages/WelcomePage/WelcomePage';
 import { LoginPage } from '../pages/LoginPage/LoginPage';
 import { RegisterPage } from '../pages/RegisterPage/RegisterPage';
+import { AccountPage } from '../pages/AccountPage/AccountPage';
+import { CreatePostPage } from '../pages/CreatePostPage/CreatePostPage';
 
 const router = createBrowserRouter([
   {
@@ -24,6 +26,14 @@ const router = createBrowserRouter([
   {
     path: '/register',
     Component: RegisterPage,
+  },
+  {
+    path: '/account',
+    Component: AccountPage,
+  },
+  {
+    path: '/create',
+    Component: CreatePostPage,
   },
   {
     path: '*',

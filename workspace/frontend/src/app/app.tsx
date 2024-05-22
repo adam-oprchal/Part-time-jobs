@@ -5,6 +5,8 @@ import {
 } from 'react-router-dom';
 import { JobsPage } from '../pages/JobsPage/JobsPage';
 import { WelcomePage } from '../pages/WelcomePage/WelcomePage';
+import { LoginPage } from '../pages/LoginPage/LoginPage';
+import { RegisterPage } from '../pages/RegisterPage/RegisterPage';
 
 const router = createBrowserRouter([
   {
@@ -14,6 +16,14 @@ const router = createBrowserRouter([
   {
     path: '/jobs',
     Component: JobsPage,
+  },
+  {
+    path: '/login',
+    Component: LoginPage,
+  },
+  {
+    path: '/register',
+    Component: RegisterPage,
   },
   {
     path: '*',

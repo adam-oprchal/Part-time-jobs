@@ -1,7 +1,7 @@
 import prisma  from "../db/client";
-import { AccountWithCvWithoutPassword } from "types"
+import { AccountWithCvWithoutPassword, Cv } from "types"
 import {Result} from "@badrap/result";
-import { AccountRegister, DbResult } from "../types";
+import { AccountRegister, CvUpdate, DbResult } from "../types";
 import argon2 from "argon2"
 
 export const accountRepository = {
@@ -118,6 +118,16 @@ export const accountRepository = {
             const result = await argon2.verify(account.passwordHash, password)
 
             return Result.ok(result)
+        } catch (error) {
+            return Result.err(error as Error)
+        }
+    },
+
+    async updateCv(data: CvUpdate): DbResult<Cv> {
+        try {
+            const cv = await prisma.cv.create({data})
+
+            return Result.ok(cv)
         } catch (error) {
             return Result.err(error as Error)
         }

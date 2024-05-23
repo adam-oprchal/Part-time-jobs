@@ -1,6 +1,6 @@
 import {accountRepository} from "./accountRepository";
 import {Request, Response} from "express";
-import { getAccountByEmailSchema, getAccountByIdSchema, getApplicantsOfAccountPostsSchema, getApplicantsOfPostSchema, registerAccountRequestSchema } from "./accountSchema";
+import { getAccountByEmailSchema, getAccountByIdSchema, getApplicantsOfAccountPostsSchema, getApplicantsOfPostSchema, registerAccountRequestSchema, uploadCvSchema } from "./accountSchema";
 import argon2 from "argon2"
 import { Account } from "types";
 
@@ -39,7 +39,7 @@ export const accountController = {
             return
         }
 
-        const result = await accountRepository.getById(request.params.id);
+        const result = await accountRepository.getById(validRequest.data.params.id);
 
         if (result.isOk) {
             response.send(result.value)
@@ -71,7 +71,7 @@ export const accountController = {
             return
         }
 
-        const result = await accountRepository.getApplicantsOfPost(request.params.postId);
+        const result = await accountRepository.getApplicantsOfPost(validRequest.data.params.postId);
 
         if (result.isOk) {
             response.send(result.value)
@@ -87,7 +87,7 @@ export const accountController = {
             return
         }
 
-        const result = await accountRepository.getApplicantsOfAccountPosts(request.params.postId);
+        const result = await accountRepository.getApplicantsOfAccountPosts(validRequest.data.params.id);
 
         if (result.isOk) {
             const foundUsers = new Map<string, Omit<Account, "passwordHash">[]>();
@@ -96,5 +96,23 @@ export const accountController = {
         } else {
             response.status(400).send("database error")
         }
-    }
+    },
+
+    uploadCv: async (request: Request, response: Response) => {
+        const validRequest = await uploadCvSchema.safeParseAsync(request);
+        if (!validRequest.success) {
+            response.status(400).send("invalid request")
+            return
+        }
+
+        const {fileName, accountId} = validRequest.data.body;
+
+        const result = await accountRepository.updateCv({fileName, accountId});
+
+        if (result.isOk) {
+            response.send(result.value)
+        } else {
+            response.status(400).send("database error")
+        }
+    },
 }

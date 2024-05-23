@@ -1,4 +1,4 @@
-import './textInput.css';
+import './text-input.css';
 
 interface TextInputProps {
   placeholder?: string;
@@ -10,7 +10,7 @@ export const TextInput = ({ placeholder, className }: TextInputProps) => {
 
   return (
     <input
-      className={`textInput ${cName}`}
+      className={`text-input ${cName}`}
       type="text"
       placeholder={placeholder}
     />

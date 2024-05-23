@@ -1,4 +1,4 @@
-import './textArea.css';
+import './text-area.css';
 
 interface TextAreaProps {
   placeholder?: string;
@@ -10,7 +10,7 @@ export const TextArea = ({ placeholder, className }: TextAreaProps) => {
 
   return (
     <textarea
-      className={`textArea ${cName}`}
+      className={`text-area ${cName}`}
       placeholder={placeholder}
     ></textarea>
   );

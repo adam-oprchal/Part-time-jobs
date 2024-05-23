@@ -1,4 +1,4 @@
-import './postsSection.css';
+import './posts-section.css';
 import { Post } from '../Post/Post';
 
 export const PostsSection = () => {

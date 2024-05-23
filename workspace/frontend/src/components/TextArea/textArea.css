@@ -1,0 +1,8 @@
+.textArea {
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  border: solid var(--color-light-grey);
+  font-size: 1.3rem;
+  height: 10rem;
+  width: 280px;
+}

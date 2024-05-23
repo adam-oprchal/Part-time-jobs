@@ -1,19 +1,16 @@
-import './registerPage.css';
+import './form-page.css';
 import { Button } from '../../components/Button/Button';
 import { Link } from 'react-router-dom';
 import { TextInput } from '../../components/TextInput/TextInput';
 
-export const RegisterPage = () => {
+export const LoginPage = () => {
   return (
-    <div className="registerPage">
-      <div className="registerPage__box">
-        <h1 className="registerPage__header">Register</h1>
+    <div className="form-page">
+      <div className="form-page__box">
+        <h1 className="form-page__header">Log in</h1>
 
-        <TextInput placeholder="name"></TextInput>
-        <TextInput placeholder="surname"></TextInput>
         <TextInput placeholder="email"></TextInput>
         <TextInput placeholder="password"></TextInput>
-        <TextInput placeholder="password again"></TextInput>
 
         <Button label="Enter"></Button>
 

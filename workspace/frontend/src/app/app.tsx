@@ -5,10 +5,10 @@ import {
 } from 'react-router-dom';
 import { JobsPage } from '../pages/JobsPage/JobsPage';
 import { WelcomePage } from '../pages/WelcomePage/WelcomePage';
-import { LoginPage } from '../pages/LoginPage/LoginPage';
-import { RegisterPage } from '../pages/RegisterPage/RegisterPage';
+import { LoginPage } from '../pages/FormPages/LoginPage';
+import { RegisterPage } from '../pages/FormPages/RegisterPage';
 import { AccountPage } from '../pages/AccountPage/AccountPage';
-import { CreatePostPage } from '../pages/CreatePostPage/CreatePostPage';
+import { CreatePostPage } from '../pages/FormPages/CreatePostPage';
 
 const router = createBrowserRouter([
   {

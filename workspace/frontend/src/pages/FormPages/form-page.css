@@ -1,11 +1,11 @@
-.loginPage {
+.form-page {
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
 }
 
-.loginPage__box {
+.form-page__box {
   background-color: var(--color-dark-grey);
   padding: 1rem;
   border-radius: 1rem;
@@ -16,6 +16,6 @@
   margin: 1rem;
 }
 
-.loginPage__header {
+.form-page__header {
   font-size: 4rem;
 }

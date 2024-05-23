@@ -3,4 +3,5 @@
   padding: 0.5rem;
   border: solid var(--color-light-grey);
   font-size: 1.3rem;
+  width: 90%;
 }

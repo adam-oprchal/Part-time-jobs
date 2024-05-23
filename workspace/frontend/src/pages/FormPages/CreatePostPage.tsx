@@ -8,7 +8,8 @@ export const CreatePostPage = () => {
   return (
     <div className="form-page">
       <div className="form-page__box">
-        <h1 className="form-page__header">Create offer</h1>
+        <h1 className="form-page__header">Create</h1>
+        <h1 className="form-page__header">offer</h1>
 
         <TextArea placeholder="description"></TextArea>
         <TextInput placeholder="$/hr"></TextInput>

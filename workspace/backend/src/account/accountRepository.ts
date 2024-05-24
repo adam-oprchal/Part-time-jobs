@@ -17,7 +17,7 @@ export const accountRepository = {
 
             return Result.ok(result)
         } catch (error) {
-            return Result.err(error as Error)
+            return Result.err(new Error(error.code))
         }
     },
 
@@ -33,7 +33,7 @@ export const accountRepository = {
 
             return Result.ok(result)
         } catch (error) {
-            return Result.err(error as Error)
+            return Result.err(new Error(error.code))
         }
     },
 
@@ -49,7 +49,7 @@ export const accountRepository = {
 
             return Result.ok(result)
         } catch (error) {
-            return Result.err(error as Error)
+            return Result.err(new Error(error.code))
         }
     },
 
@@ -70,7 +70,7 @@ export const accountRepository = {
 
             return Result.ok(result)
         } catch (error) {
-            return Result.err(error as Error)
+            return Result.err(new Error(error.code))
         }
     },
 
@@ -94,7 +94,7 @@ export const accountRepository = {
 
             return Result.ok(result)
         } catch (error) {
-            return Result.err(error as Error)
+            return Result.err(new Error(error.code))
         }
     },
 
@@ -108,7 +108,7 @@ export const accountRepository = {
 
             return Result.ok(undefined)
         } catch (error) {
-            return Result.err(error as Error)
+            return Result.err(new Error(error.code))
         }
     },
 
@@ -119,7 +119,7 @@ export const accountRepository = {
 
             return Result.ok(result)
         } catch (error) {
-            return Result.err(error as Error)
+            return Result.err(new Error(error.code))
         }
     },
 
@@ -129,7 +129,7 @@ export const accountRepository = {
 
             return Result.ok(cv)
         } catch (error) {
-            return Result.err(error as Error)
+            return Result.err(new Error(error.code))
         }
     }
 }

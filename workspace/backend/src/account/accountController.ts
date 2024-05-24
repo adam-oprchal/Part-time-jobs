@@ -3,6 +3,7 @@ import {Request, Response} from "express";
 import { getAccountByEmailSchema, getAccountByIdSchema, getApplicantsOfAccountPostsSchema, getApplicantsOfPostSchema, registerAccountRequestSchema, uploadCvSchema } from "./accountSchema";
 import argon2 from "argon2"
 import { Account } from "types";
+import handleDbErrors from "./error";
 
 export const accountController = {
     register: async (request: Request, response: Response) => {
@@ -26,9 +27,9 @@ export const accountController = {
         });
 
         if (result.isOk) {
-            response.send(result.value)
-        } else {
-            response.status(400).send("database error")
+            response.status(201).send(result.value)
+        } else if (result.isErr) {
+            handleDbErrors(result.error, response);
         }
     },
 
@@ -43,8 +44,8 @@ export const accountController = {
 
         if (result.isOk) {
             response.send(result.value)
-        } else {
-            response.status(400).send("database error")
+        } else if (result.isErr) {
+            handleDbErrors(result.error, response);
         }
     },
 
@@ -59,8 +60,8 @@ export const accountController = {
 
         if (result.isOk) {
             response.send(result.value)
-        } else {
-            response.status(400).send("database error")
+        } else if (result.isErr) {
+            handleDbErrors(result.error, response);
         }
     },
 
@@ -75,8 +76,8 @@ export const accountController = {
 
         if (result.isOk) {
             response.send(result.value)
-        } else {
-            response.status(400).send("database error")
+        } else if (result.isErr) {
+            handleDbErrors(result.error, response);
         }
     },
 
@@ -93,8 +94,8 @@ export const accountController = {
             const foundUsers = new Map<string, Omit<Account, "passwordHash">[]>();
             result.value.forEach((value, key) => foundUsers.set(key, value))
             response.send(foundUsers)
-        } else {
-            response.status(400).send("database error")
+        } else if (result.isErr) {
+            handleDbErrors(result.error, response);
         }
     },
 
@@ -110,9 +111,9 @@ export const accountController = {
         const result = await accountRepository.updateCv({fileName, accountId});
 
         if (result.isOk) {
-            response.send(result.value)
-        } else {
-            response.status(400).send("database error")
+            response.status(201).send(result.value)
+        } else if (result.isErr) {
+            handleDbErrors(result.error, response);
         }
     },
 }

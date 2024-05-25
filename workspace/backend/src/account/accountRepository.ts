@@ -24,7 +24,10 @@ export const accountRepository = {
     async getById(id: string): DbResult<AccountWithCvWithoutPassword> {
         try {
             const result = await prisma.account.findUniqueOrThrow({
-                where: {id},
+                where: {
+                    id,
+                    deletedAt: null
+                },
                 include: {
                     cv: true
                 },
@@ -40,7 +43,10 @@ export const accountRepository = {
     async getByEmail(email: string): DbResult<AccountWithCvWithoutPassword> {
         try {
             const result = await prisma.account.findUniqueOrThrow({
-                where: {email},
+                where: {
+                    email,
+                    deletedAt: null
+                },
                 include: {
                     cv: true
                 }
@@ -56,7 +62,10 @@ export const accountRepository = {
     async getApplicantsOfPost(postId: string): DbResult<AccountWithCvWithoutPassword[]> {
         try {
             const post = await prisma.post.findUniqueOrThrow({
-                where: {id: postId},
+                where: {
+                    id: postId,
+                    deletedAt: null
+                },
                 include: {
                     applicants: {
                         include: {
@@ -77,7 +86,10 @@ export const accountRepository = {
     async getApplicantsOfAccountPosts(id: string): DbResult<Map<string, AccountWithCvWithoutPassword[]>> {
         try {
             const posts = await prisma.post.findMany({
-                where: {creatorId: id},
+                where: {
+                    creatorId: id,
+                    deletedAt: null
+                },
                 include: {
                     applicants: {
                         include: {
@@ -118,6 +130,20 @@ export const accountRepository = {
             const result = await argon2.verify(account.passwordHash, password)
 
             return Result.ok(result)
+        } catch (error) {
+            return Result.err(new Error(error.code))
+        }
+    },
+
+    async delete(id: string): DbResult<undefined> {
+        try {
+            const result = await prisma.account.update({
+                where: {id},
+                data: {deletedAt: new Date()}
+            });
+            delete result.passwordHash
+
+            return Result.ok(undefined)
         } catch (error) {
             return Result.err(new Error(error.code))
         }

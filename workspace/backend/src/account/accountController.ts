@@ -1,6 +1,6 @@
 import {accountRepository} from "./accountRepository";
 import {Request, Response} from "express";
-import { getAccountByEmailSchema, getAccountByIdSchema, getApplicantsOfAccountPostsSchema, getApplicantsOfPostSchema, registerAccountRequestSchema, uploadCvSchema } from "./accountSchema";
+import { deleteAccountRequestSchema, getAccountByEmailSchema, getAccountByIdSchema, getApplicantsOfAccountPostsSchema, getApplicantsOfPostSchema, registerAccountRequestSchema, uploadCvSchema } from "./accountSchema";
 import argon2 from "argon2"
 import { Account } from "types";
 import handleDbErrors from "./error";
@@ -94,6 +94,22 @@ export const accountController = {
             const foundUsers = new Map<string, Omit<Account, "passwordHash">[]>();
             result.value.forEach((value, key) => foundUsers.set(key, value))
             response.send(foundUsers)
+        } else if (result.isErr) {
+            handleDbErrors(result.error, response);
+        }
+    },
+
+    delete: async (request: Request, response: Response) => {
+        const validRequest = await deleteAccountRequestSchema.safeParseAsync(request);
+        if (!validRequest.success) {
+            response.status(400).send("invalid request")
+            return
+        }
+
+        const result = await accountRepository.delete(validRequest.data.params.id);
+
+        if (result.isOk) {
+            response.status(204).send()
         } else if (result.isErr) {
             handleDbErrors(result.error, response);
         }

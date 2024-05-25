@@ -34,6 +34,12 @@ export const getApplicantsOfAccountPostsSchema = z.object({
     })
 })
 
+export const deleteAccountRequestSchema = z.object({
+    params: z.object({
+        id: z.string()
+    })
+})
+
 export const uploadCvSchema = z.object({
     body: z.object({
         fileName: z.string(),

@@ -127,7 +127,7 @@ export const accountController = {
         const result = await accountRepository.updateCv({fileName, accountId});
 
         if (result.isOk) {
-            response.status(201).send(result.value)
+            response.status(200).send(result.value)
         } else if (result.isErr) {
             handleDbErrors(result.error, response);
         }

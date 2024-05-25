@@ -13,4 +13,8 @@ export const accountsToCreate: Prisma.AccountCreateInput[] = Array.from({ length
     email: faker.internet.email(),
     passwordHash
 }));
+
+export const cvNames: string[] = Array.from({ length: 7 }, () => (
+    faker.string.alphanumeric({length: 8})
+));
   

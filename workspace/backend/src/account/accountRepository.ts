@@ -125,7 +125,11 @@ export const accountRepository = {
 
     async updateCv(data: CvUpdate): DbResult<Cv> {
         try {
-            const cv = await prisma.cv.create({data})
+            const cv = await prisma.cv.upsert({
+                where: {accountId: data.accountId},
+                update: {fileName: data.fileName},
+                create: data
+            })
 
             return Result.ok(cv)
         } catch (error) {

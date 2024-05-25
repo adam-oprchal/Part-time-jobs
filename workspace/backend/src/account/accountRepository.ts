@@ -151,6 +151,13 @@ export const accountRepository = {
 
     async updateCv(data: CvUpdate): DbResult<Cv> {
         try {
+            await prisma.account.findUniqueOrThrow({
+                where: {
+                    id: data.accountId,
+                    deletedAt: null
+                },
+            });
+
             const cv = await prisma.cv.upsert({
                 where: {accountId: data.accountId},
                 update: {fileName: data.fileName},

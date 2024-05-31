@@ -6,3 +6,12 @@
   height: 10rem;
   width: 90%;
 }
+
+.text-area__error {
+  border-color: var(--color-red);
+}
+
+.text-area__message {
+  margin: 0;
+  font-size: 1.1rem;
+}

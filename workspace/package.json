@@ -19,6 +19,7 @@
     "zod": "^3.23.6"
   },
   "devDependencies": {
+    "@hookform/resolvers": "^3.4.2",
     "@nx/cypress": "18.2.4",
     "@nx/eslint": "18.2.4",
     "@nx/eslint-plugin": "18.2.4",

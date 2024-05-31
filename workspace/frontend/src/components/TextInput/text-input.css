@@ -5,3 +5,11 @@
   font-size: 1.3rem;
   width: 90%;
 }
+
+.text-input__error {
+  border-color: var(--color-red);
+}
+
+.text-input__message {
+  margin: 0;
+}

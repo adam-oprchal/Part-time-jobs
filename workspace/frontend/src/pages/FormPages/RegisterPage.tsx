@@ -59,12 +59,14 @@ export const RegisterPage = () => {
         ></TextInput>
         <TextInput
           placeholder="password"
+          type="password"
           register={register}
           registerName="password"
           error={errors.password}
         ></TextInput>
         <TextInput
           placeholder="password again"
+          type="password"
           register={register}
           registerName="passwordAgain"
           // typescript doesn't like this,

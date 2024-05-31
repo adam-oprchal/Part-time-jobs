@@ -34,6 +34,7 @@ export const LoginPage = () => {
         ></TextInput>
         <TextInput
           placeholder="password"
+          type="password"
           register={register}
           registerName="password"
         ></TextInput>

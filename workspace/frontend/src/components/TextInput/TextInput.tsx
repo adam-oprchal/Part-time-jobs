@@ -8,6 +8,7 @@ import {
 
 interface TextInputProps<T extends FieldValues> {
   placeholder?: string;
+  type?: string;
   register: UseFormRegister<T>;
   registerName: Path<T>;
   error?: FieldError;
@@ -15,6 +16,7 @@ interface TextInputProps<T extends FieldValues> {
 
 export const TextInput = <T extends FieldValues>({
   placeholder,
+  type = 'text',
   register,
   registerName,
   error,
@@ -25,7 +27,7 @@ export const TextInput = <T extends FieldValues>({
     <>
       <input
         className={`text-input ${errorClass}`}
-        type="text"
+        type={type}
         placeholder={placeholder}
         {...register(registerName)}
       />

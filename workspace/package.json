@@ -5,6 +5,7 @@
   "scripts": {},
   "private": true,
   "dependencies": {
+    "@badrap/result": "^0.2.13",
     "@nrwl/express": "^18.2.4",
     "@nrwl/react": "^18.2.4",
     "@nrwl/storybook": "^18.2.4",

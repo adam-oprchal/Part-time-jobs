@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import {
-  accountsToCreate,
-  cvNames,
+    accountsToCreate,
+    cvNames, posts,
 } from './data';
 
 const prisma = new PrismaClient();
@@ -21,7 +21,16 @@ const seed = async () => {
         }
       })
     })
-  
+
+    for (const post of posts) {
+        await prisma.post.create({
+            data: {
+                ...post,
+                creatorId: accounts[Math.floor(Math.random() * accounts.length)].id
+            }
+        })
+    }
+
     console.log('Seeding finished.');
   };
   

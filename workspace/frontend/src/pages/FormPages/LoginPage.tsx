@@ -1,50 +1,65 @@
 import './form-page.css';
-import { Button } from '../../components/Button/Button';
-import { Link } from 'react-router-dom';
-import { TextInput } from '../../components/TextInput/TextInput';
+
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { isEmail } from 'validator';
+import { Box, Button, FormGroup, Paper, TextField, Typography } from '@mui/material';
 
 const loginSchema = z.object({
-  email: z.string(),
-  password: z.string(),
+
+  email: z.string().min(1, 'E-mail address is required!').refine(isEmail, 'E-mail address is invalid!'),
+  password: z.string().min(1, 'Password is required!'),
 });
 
 type LoginData = z.infer<typeof loginSchema>;
 
 export const LoginPage = () => {
-  const { register, handleSubmit } = useForm<LoginData>({
+
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginData>({
     resolver: zodResolver(loginSchema),
   });
 
-  const submitHandler: SubmitHandler<LoginData> = (values) => {
+
+  const onSubmit: SubmitHandler<LoginData> = (values) => {
     console.log('Submitted: ', values);
   };
 
   return (
-    <div className="form-page">
-      <form onSubmit={handleSubmit(submitHandler)} className="form-page__box">
-        <h1 className="form-page__header">Log in</h1>
 
-        <TextInput
-          placeholder="email"
-          register={register}
-          registerName="email"
-        ></TextInput>
-        <TextInput
-          placeholder="password"
-          type="password"
-          register={register}
-          registerName="password"
-        ></TextInput>
-
-        <Button label="Enter"></Button>
-
-        <Link to="/">
-          <Button label="Go back"></Button>
-        </Link>
-      </form>
-    </div>
+    <Paper className='form-page__header' style={{minHeight: 300, minWidth: 200, overflow: 'hidden'}} elevation={2}>
+      <Typography color="secondary.main" component="p" variant="h4" fontWeight='bold' textAlign={'center'}>
+        Login
+      </Typography>
+      <Box
+        component="form"
+        noValidate
+        autoComplete="off"
+      >
+        <Box component={FormGroup} padding={2}>
+          <TextField
+            label='email'
+            variant='filled'
+            style={{background: 'light'}}
+            {...register('email')}
+            error={typeof errors.email !== 'undefined'}
+            helperText={errors.email?.message}
+          />
+        </Box>
+        <Box component={FormGroup} padding={2}>
+          <TextField
+            variant='filled'
+            style={{background: 'light'}}
+            label='password'
+            {...register('password')}
+            error={typeof errors.password !== 'undefined'}
+            helperText={errors.password?.message}
+          />
+        </Box>
+      </Box>
+      <Box margin={2}>
+        <Button variant='contained' style={{fontWeight: 'bold', fontSize: '1.5rem' }} fullWidth type='submit' onClick={handleSubmit(onSubmit)}>Login</Button>
+      </Box>
+    </Paper>
   );
 };

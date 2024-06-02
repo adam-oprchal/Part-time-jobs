@@ -1,48 +1,58 @@
-import {
-  createBrowserRouter,
-  RouterProvider,
-  Navigate,
-} from 'react-router-dom';
-import { JobsPage } from '../pages/JobsPage/JobsPage';
-import { WelcomePage } from '../pages/WelcomePage/WelcomePage';
-import { LoginPage } from '../pages/FormPages/LoginPage';
-import { RegisterPage } from '../pages/FormPages/RegisterPage';
-import { AccountPage } from '../pages/AccountPage/AccountPage';
-import { CreatePostPage } from '../pages/FormPages/CreatePostPage';
+import { PaletteColor, ThemeOptions, ThemeProvider, createTheme } from '@mui/material'
+import themeOptions from '../../mui.theme.json'
+import { RouterProvider } from 'react-router-dom'
+import router from '../router';
 
-const router = createBrowserRouter([
-  {
-    path: '/',
-    Component: WelcomePage,
-  },
-  {
-    path: '/jobs',
-    Component: JobsPage,
-  },
-  {
-    path: '/login',
-    Component: LoginPage,
-  },
-  {
-    path: '/register',
-    Component: RegisterPage,
-  },
-  {
-    path: '/account',
-    Component: AccountPage,
-  },
-  {
-    path: '/create',
-    Component: CreatePostPage,
-  },
-  {
-    path: '*',
-    element: <Navigate to="/" />,
-  },
-]);
-
-export function App() {
-  return <RouterProvider router={router} />;
+declare module '@mui/material/styles' {
+  interface PaletteOptions {
+    custom: PaletteOptions['primary'];
+    dark: PaletteOptions['primary'];
+    light: PaletteOptions['primary'];
+  }
 }
 
-export default App;
+declare module '@mui/material/styles' {
+  interface Palette {
+    custom: PaletteColor;
+    dark: PaletteColor;
+    light: PaletteColor;
+  }
+}
+
+interface ColorOverrides {
+  custom: true;
+  light: true;
+  dark: true;
+}
+
+declare module '@mui/material/Button' {
+  interface ButtonPropsColorOverrides extends ColorOverrides {}
+}
+
+declare module '@mui/material/IconButton' {
+  interface IconButtonPropsColorOverrides extends ColorOverrides {}
+}
+
+declare module '@mui/material/ButtonGroup' {
+  interface ButtonGroupPropsColorOverrides extends ColorOverrides {}
+}
+
+declare module '@mui/material/AppBar' {
+  interface AppBarPropsColorOverrides extends ColorOverrides {}
+}
+
+declare module '@mui/material/Paper' {
+  interface PaperPropsColorOverrides extends ColorOverrides {}
+}
+
+export function App() {
+  const theme = createTheme(themeOptions as ThemeOptions)
+
+  return (
+    <ThemeProvider theme={theme}>
+      <RouterProvider router={router} />
+    </ThemeProvider>
+  )
+}
+
+export default App

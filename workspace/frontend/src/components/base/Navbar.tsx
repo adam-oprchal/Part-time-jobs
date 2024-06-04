@@ -4,21 +4,30 @@ import { Avatar, Badge, Box, Button, Container, Grid, IconButton, Menu, MenuItem
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useTheme } from '@mui/material/styles'
 import MailIcon from '@mui/icons-material/Mail';
+import MoreIcon from '@mui/icons-material/MoreVert';
 import { useState } from 'react'
+import { AccountCircle } from '@mui/icons-material'
 
 export default function Navbar() {
   const navigate = useNavigate();
   const theme = useTheme()
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState<null | HTMLElement>(null);
 
   const isMenuOpen = Boolean(anchorEl);
+  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
+  const handleMobileMenuClose = () => {
+    setMobileMoreAnchorEl(null);
+  };
+
   const handleMenuClose = () => {
     setAnchorEl(null);
+    handleMobileMenuClose();
   };
 
   const handleMyAccountClick = () => {
@@ -29,6 +38,10 @@ export default function Navbar() {
   const handleLogoutClick = () => {
     handleMenuClose();
     navigate('/');
+  };
+
+  const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setMobileMoreAnchorEl(event.currentTarget);
   };
 
   const menuId = 'primary-search-account-menu';
@@ -53,10 +66,50 @@ export default function Navbar() {
     </Menu>
   );
 
+  const mobileMenuId = 'primary-search-account-menu-mobile';
+  const renderMobileMenu = (
+    <Menu
+      anchorEl={mobileMoreAnchorEl}
+      anchorOrigin={{
+        vertical: 'top',
+        horizontal: 'right',
+      }}
+      id={mobileMenuId}
+      keepMounted
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'right',
+      }}
+      open={isMobileMenuOpen}
+      onClose={handleMobileMenuClose}
+    >
+      <MenuItem>
+        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+          <Badge badgeContent={4} color="error">
+            <MailIcon />
+          </Badge>
+        </IconButton>
+        <p>Messages</p>
+      </MenuItem>
+      <MenuItem onClick={handleProfileMenuOpen}>
+        <IconButton
+          size="large"
+          aria-label="account of current user"
+          aria-controls="primary-search-account-menu"
+          aria-haspopup="true"
+          color="inherit"
+        >
+          <AccountCircle />
+        </IconButton>
+        <p>Profile</p>
+      </MenuItem>
+    </Menu>
+  );
+
   return (
     <Box sx={{ flexGrow: 1 }}>
-    <AppBar position="static" sx={{ width: '100%' }} color="dark">
-      <Container disableGutters>
+    <AppBar position="static" color="dark">
+      <Container disableGutters maxWidth={false}>
         <Toolbar>
           <Grid margin={2} container spacing={2} justifyContent={'space-between'} >
             <Grid>
@@ -75,7 +128,7 @@ export default function Navbar() {
                 </Button>
             </Grid>
             <Grid>
-              <Grid container >
+              <Grid container sx={{ display: { xs: 'none', md: 'flex' } }}>
                 <Grid>
                   <IconButton size="large" aria-label="show 4 new mails" color="inherit">
                     <Badge badgeContent={4} color="error">
@@ -99,11 +152,24 @@ export default function Navbar() {
                   </IconButton>
                 </Grid>
               </Grid>
+              <Grid sx={{ display: { xs: 'flex', md: 'none' } }}>
+                <IconButton
+                  size="large"
+                  aria-label="show more"
+                  aria-controls={mobileMenuId}
+                  aria-haspopup="true"
+                  onClick={handleMobileMenuOpen}
+                  color="inherit"
+                >
+                  <MoreIcon />
+                </IconButton>
+              </Grid>
             </Grid>
           </Grid>
         </Toolbar>
       </Container>
     </AppBar>
+    {renderMobileMenu}
     {renderMenu}
   </Box>
   )

@@ -17,10 +17,10 @@ export const Post = ({
 }: PostProps) => {
   
   return (
-    <Box border={10} color={'dark.main'}>
+    <Box border={5} color={'dark.main'} sx={{backgroundColor: 'dark.main'}}>
     <Paper
-      style={{minHeight: 200, minWidth: 200, overflow: 'hidden' }}
-      sx={{backgroundColor: 'custom.main', color: 'dark.contrastText'}}
+      style={{overflow: 'hidden', margin: '0.5rem 0.8rem 0.5rem 0.8rem', padding: '0.5rem', borderRadius: '1rem' }}
+      sx={{backgroundColor: 'custom.main', color: 'dark.contrastText' }}
       elevation={2}
     >
       <Grid
@@ -28,32 +28,32 @@ export const Post = ({
         spacing={0}
         direction="row"
         alignItems="center"
-        style={{ minHeight: '200px' }}
+        style={{ minHeight: '12rem' }}
       >
         <Grid item xs={7}>
           <Grid container>
             <Grid item xs={12}>
-              <Typography component="p" variant="h4" margin={1}>
+              <Typography component="p" fontSize='2.5rem' margin={1}>
                 {name}
               </Typography>
             </Grid>
             <Grid item xs={12}>
-              <Typography component="p" variant="h6" margin={1}>
+              <Typography component="p" fontSize='1.3rem' margin={1}>
                 {description}
               </Typography>
             </Grid>
           </Grid>
         </Grid>
         <Grid item xs={2}>
-          <Typography component="p" variant="h6" margin={1}>
+          <Typography component="p" fontSize='1.3rem' margin={1}>
             <span style={{fontSize: '2rem'}}>${wage}</span> per hour
           </Typography>
-          <Typography component="p" variant="h6" margin={1}>
+          <Typography component="p" fontSize='1.3rem' margin={1}>
             <span style={{fontSize: '2rem'}}>{hours}</span> hour(s) per week
           </Typography>
         </Grid>
         <Grid item xs={2}>
-          <Typography component="p" variant="h4" textAlign={'left'} margin={1}>
+          <Typography component="p" fontSize='2rem' textAlign={'left'} margin={1}>
             {location}
           </Typography>
         </Grid>

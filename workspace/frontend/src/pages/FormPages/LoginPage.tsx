@@ -1,5 +1,3 @@
-import './form-page.css';
-
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -27,8 +25,8 @@ export const LoginPage = () => {
 
   return (
 
-    <Paper className='form-page__header' style={{minHeight: 300, minWidth: 200, overflow: 'hidden'}} elevation={2}>
-      <Typography color="secondary.main" component="p" variant="h4" fontWeight='bold' textAlign={'center'}>
+    <Paper style={{minHeight: 300, minWidth: 300, maxWidth: '20vw',  overflow: 'hidden'}} sx={{backgroundColor: 'light.main', margin: 'auto' }} elevation={2} >
+      <Typography color="secondary.main" component="p" variant="h4" fontWeight='bold' mt={2} textAlign={'center'}>
         Login
       </Typography>
       <Box
@@ -38,9 +36,18 @@ export const LoginPage = () => {
       >
         <Box component={FormGroup} padding={2}>
           <TextField
+            variant='outlined'
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '4px',
+                backgroundColor: 'secondary.contrastText',
+                '& fieldset': {
+                  borderRadius: '4px',
+                },
+              },
+            }}
+            InputProps={{ style: { fontWeight: 'bold' } }}
             label='email'
-            variant='filled'
-            style={{background: 'light'}}
             {...register('email')}
             error={typeof errors.email !== 'undefined'}
             helperText={errors.email?.message}
@@ -48,8 +55,17 @@ export const LoginPage = () => {
         </Box>
         <Box component={FormGroup} padding={2}>
           <TextField
-            variant='filled'
-            style={{background: 'light'}}
+            variant='outlined'
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '4px',
+                backgroundColor: 'secondary.contrastText',
+                '& fieldset': {
+                  borderRadius: '4px',
+                },
+              },
+            }}
+            InputProps={{ style: { fontWeight: 'bold' } }}
             label='password'
             {...register('password')}
             error={typeof errors.password !== 'undefined'}

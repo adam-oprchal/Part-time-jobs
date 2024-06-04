@@ -1,4 +1,3 @@
-import './form-page.css';
 import { Box, Button, FormGroup, Paper, TextField, Typography } from '@mui/material';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -7,7 +6,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 const createPostSchema = z.object({
   jobName: z.string().trim().min(1, { message: 'Cannot be empty' }),
   description: z.string().trim().min(1, { message: 'Cannot be empty' }),
-  salary: z.coerce.number({ message: 'Must be a number' })
+  wage: z.coerce.number({ message: 'Must be a number' })
     .positive({ message: 'Must be greater than 0' }),
   workTime: z.coerce.number({ message: 'Must be a number' })
     .positive({ message: 'Must be greater than 0' }),
@@ -30,7 +29,7 @@ export const CreatePostPage = () => {
   };
 
   return (
-    <Paper className='form-page__header' style={{minHeight: 300, minWidth: 300, overflow: 'hidden'}} sx={{backgroundColor: 'light.main'}} elevation={2} >
+    <Paper style={{minHeight: 300, minWidth: 300, maxWidth: '50vw',  overflow: 'hidden'}} sx={{backgroundColor: 'light.main', margin: 'auto' }} elevation={2} >
       <Typography color="secondary.main" component="p" variant="h4" fontWeight='bold' mt={2} textAlign={'center'}>
         Create a new job
       </Typography>
@@ -92,10 +91,10 @@ export const CreatePostPage = () => {
               },
             }}
             InputProps={{ style: { fontWeight: 'bold' } }}
-            label='Salary per hour'
-            {...register('salary')}
-            error={typeof errors.salary !== 'undefined'}
-            helperText={errors.salary?.message}
+            label='Wage per hour'
+            {...register('wage')}
+            error={typeof errors.wage !== 'undefined'}
+            helperText={errors.wage?.message}
           />
         </Box>
         <Box component={FormGroup} padding={2}>
@@ -137,7 +136,7 @@ export const CreatePostPage = () => {
           />
         </Box>
       </Box>
-      <Box ml={2} mr={2}>
+      <Box margin={2}>
         <Button variant='contained' style={{fontWeight: 'bold', fontSize: '1.5rem' }} fullWidth onClick={handleSubmit(onSubmit)}>Submit</Button>
       </Box>
     </Paper>

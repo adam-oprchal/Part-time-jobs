@@ -1,12 +1,10 @@
-import './form-page.css';
-
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Box, Button, FormGroup, Paper, TextField, Typography } from '@mui/material';
 import isEmail from 'validator/lib/isEmail'
 
-const registerSchema = z
+export const registerSchema = z
   .object({
     name: z.string().trim().min(1, { message: 'Cannot be empty' }),
     surname: z.string().trim().min(1, { message: 'Cannot be empty' }),
@@ -14,7 +12,7 @@ const registerSchema = z
     email: z.string().min(1, 'E-mail address is required.').refine(isEmail, 'E-mail address is invalid.'),
     password: z.string().min(5, { message: 'Needs at least 5 characters' }),
 
-    passwordConfirm: z.string(),
+    passwordConfirm: z.string().min(5, { message: 'Needs at least 5 characters' }),
 }).refine(
   (values) => {
     return values.password === values.passwordConfirm;
@@ -25,7 +23,7 @@ const registerSchema = z
   }
 );
 
-type RegisterData = z.infer<typeof registerSchema>;
+export type RegisterData = z.infer<typeof registerSchema>;
 
 export const RegisterPage = () => {
   const {
@@ -36,15 +34,13 @@ export const RegisterPage = () => {
     resolver: zodResolver(registerSchema),
   });
 
-
   const onSubmit: SubmitHandler<RegisterData> = (values) => {
     console.log('Submitted: ', values);
   };
 
   return (
-
-    <Paper className='form-page__header' style={{minHeight: 600, minWidth: 600, overflow: 'hidden'}} elevation={2}>
-      <Typography color="secondary.main" component="p" variant="h4" fontWeight='bold' textAlign={'center'}>
+    <Paper style={{minHeight: 300, minWidth: 300, maxWidth: '20vw',  overflow: 'hidden'}} sx={{backgroundColor: 'light.main', margin: 'auto' }} elevation={2} >
+      <Typography color="secondary.main" component="p" variant="h4" fontWeight='bold' mt={2} textAlign={'center'}>
         Register
       </Typography>
         <Box
@@ -55,7 +51,16 @@ export const RegisterPage = () => {
           <Box component={FormGroup} mt={1} padding={2}>
             <TextField
               variant='outlined'
-              style={{background: 'light'}}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '4px',
+                  backgroundColor: 'secondary.contrastText',
+                  '& fieldset': {
+                    borderRadius: '4px',
+                  },
+                },
+              }}
+              InputProps={{ style: { fontWeight: 'bold' } }}
               label='Name'
               {...register('name')}
               error={typeof errors.name !== 'undefined'}
@@ -65,7 +70,16 @@ export const RegisterPage = () => {
           <Box component={FormGroup} padding={2}>
             <TextField
               variant='outlined'
-              style={{background: 'light'}}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '4px',
+                  backgroundColor: 'secondary.contrastText',
+                  '& fieldset': {
+                    borderRadius: '4px',
+                  },
+                },
+              }}
+              InputProps={{ style: { fontWeight: 'bold' } }}
               label='Surname'
               {...register('surname')}
               error={typeof errors.surname !== 'undefined'}
@@ -75,7 +89,16 @@ export const RegisterPage = () => {
           <Box component={FormGroup} padding={2}>
             <TextField
               variant='outlined'
-              style={{background: 'light'}}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '4px',
+                  backgroundColor: 'secondary.contrastText',
+                  '& fieldset': {
+                    borderRadius: '4px',
+                  },
+                },
+              }}
+              InputProps={{ style: { fontWeight: 'bold' } }}
               label='e-Mail'
               {...register('email')}
               error={typeof errors.email !== 'undefined'}
@@ -85,7 +108,16 @@ export const RegisterPage = () => {
           <Box component={FormGroup} padding={2}>
             <TextField
               variant='outlined'
-              style={{background: 'light'}}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '4px',
+                  backgroundColor: 'secondary.contrastText',
+                  '& fieldset': {
+                    borderRadius: '4px',
+                  },
+                },
+              }}
+              InputProps={{ style: { fontWeight: 'bold' } }}
               label='Password'
               type='password'
               {...register('password')}
@@ -96,7 +128,16 @@ export const RegisterPage = () => {
           <Box component={FormGroup} padding={2}>
             <TextField
               variant='outlined'
-              style={{background: 'light'}}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '4px',
+                  backgroundColor: 'secondary.contrastText',
+                  '& fieldset': {
+                    borderRadius: '4px',
+                  },
+                },
+              }}
+              InputProps={{ style: { fontWeight: 'bold' } }}
               label='Password Confirmation'
               type='password'
               {...register('passwordConfirm')}
@@ -105,7 +146,7 @@ export const RegisterPage = () => {
             ></TextField>
           </Box>
         </Box>
-      <Box ml={2} mr={2}>
+      <Box margin={2}>
         <Button variant='contained' style={{fontWeight: 'bold', fontSize: '1.5rem' }} fullWidth type='submit' onClick={handleSubmit(onSubmit)}>Register</Button>
       </Box>
     </Paper>

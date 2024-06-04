@@ -22,6 +22,8 @@ npx prisma migrate dev
 
 npx prisma generate
 
+npx tsx seed/seed.ts
+
 nx run backend:serve
 
 ## Types

@@ -43,6 +43,9 @@ export const postController = {
         try {
             page = parseInt(request.query.page as string);
             pageSize = parseInt(request.query.pageSize as string);
+            const assert = require('chai').assert;
+            assert(page);
+            assert(pageSize);
         } catch (error) {
             response.status(400).send("Invalid query parameters");
             return;
@@ -53,7 +56,7 @@ export const postController = {
 
     getAmountOfPosts: async (request: Request, response: Response)=> {
         const result = await postRepository.getAmountOfPosts();
-        response.send(result)
+        response.send({amount: result})
     },
 
     getPostsByCreator: async (request: Request, response: Response)=> {

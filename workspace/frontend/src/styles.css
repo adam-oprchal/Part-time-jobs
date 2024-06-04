@@ -9,6 +9,7 @@
   --color-white: #fff;
   --color-dark-grey: #383838;
   --color-light-grey: #545454;
+  --color-red: red;
 
   color: var(--color-white);
   background-color: #c7c7c7;

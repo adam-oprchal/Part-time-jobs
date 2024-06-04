@@ -24,6 +24,8 @@ npx prisma generate
 
 npx tsx seed/seed.ts
 
+docker run -d -p 6379:6379 redis
+
 nx run backend:serve
 
 ## Types

@@ -12,3 +12,8 @@ export type CvUpdate = Omit<
     Cv,
     "id" | "createdAt" | "updatedAt" | "deletedAt"
 >
+
+export type User = {
+    id: string;
+    email: string;
+  };

@@ -12,6 +12,7 @@ import { passportStrategy } from './account/passportStrategy';
 import session from "express-session";
 import RedisStore from "connect-redis";
 import { redisClient } from "./redisClient";
+import { User } from './types';
 
 const app = express();
 
@@ -30,6 +31,23 @@ app.use(
     store: new RedisStore({ client: redisClient, prefix: "x-session:" }),
   })
 );
+
+
+passport.serializeUser((_user, cb) => {
+  process.nextTick(() => {
+    const user = _user as User;
+    return cb(null, {
+      id: user.id,
+      email: user.email,
+    });
+  });
+});
+  
+passport.deserializeUser((user, cb) => {
+  process.nextTick(() => {
+    return cb(null, user!);
+  });
+});
 
 app.use('/api/v1/account', accountRouter);
 app.use('/api/v1/post', postRouter);

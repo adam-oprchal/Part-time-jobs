@@ -7,3 +7,10 @@ export const postSchema = z.object({
     expectedHours: z.coerce.number(),
     creatorId: z.string().uuid(),
     });
+
+export const paginationSchema = z.object({
+    query: z.object({
+        page: z.coerce.number(),
+        pageSize: z.coerce.number(),
+    })
+})

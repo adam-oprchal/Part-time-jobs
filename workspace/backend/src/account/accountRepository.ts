@@ -139,14 +139,8 @@ export const accountRepository = {
         }
     },
 
-    async checkPassword(passwordHash: string, password: string): RepositoryResult<boolean> {
-        try {
-            const result = await argon2.verify(passwordHash, password)
-
-            return Result.ok(result)
-        } catch (error) {
-            return Result.err(new Error(error.code))
-        }
+    async checkPassword(passwordHash: string, password: string): Promise<boolean> {
+        return await argon2.verify(passwordHash, password);
     },
 
     async delete(id: string): RepositoryResult<undefined> {

@@ -2,53 +2,65 @@ import { Post } from 'types';
 import { axiosInstance } from '.';
 import { createPostData } from './types';
 
-export async function create(data: createPostData) {
+async function create(data: createPostData) {
   const resp = await axiosInstance.post<Post>('post/', data);
   return resp.data;
 }
 
-export async function deletePost(id: string) {
+async function deletePost(id: string) {
   const resp = await axiosInstance.delete<Post>(`post/${id}`);
   return resp.data;
 }
 
-export async function update(id: string, data: createPostData) {
+async function update(id: string, data: createPostData) {
   const resp = await axiosInstance.put<Post>(`post/${id}`, data);
   return resp.data;
 }
 
-export async function getAmountOfPosts() {
+async function getAmountOfPosts() {
   const resp = await axiosInstance.get<{ amount: number }>('post/amount');
   return resp.data;
 }
 
-export async function getPostsByCreator(creatorId: string) {
+async function getPostsByCreator(creatorId: string) {
   const resp = await axiosInstance.get<Post[]>(`post/by-creator/${creatorId}`);
   return resp.data;
 }
 
-export async function getPostsByApplicant(applicantId: string) {
+async function getPostsByApplicant(applicantId: string) {
   const resp = await axiosInstance.get<Post[]>(
     `post/by-applicant/${applicantId}`
   );
   return resp.data;
 }
 
-export async function apply(postId: string, applicantId: string) {
+async function apply(postId: string, applicantId: string) {
   const resp = await axiosInstance.post<Post>(
     `post/apply/${postId}/${applicantId}`
   );
   return resp.data;
 }
 
-export async function get(id: string) {
+async function get(id: string) {
   const resp = await axiosInstance.get<Post>(`post/${id}`);
   return resp.data;
 }
 
-export async function getAllPaginated(page: number, pageSize: number) {
+async function getAllPaginated(page: number, pageSize: number) {
   const resp = await axiosInstance.get<Post[]>('post/', {
     params: { page, pageSize },
   });
   return resp.data;
 }
+
+export const PostApi = {
+  create,
+  deletePost,
+  update,
+  getAmountOfPosts,
+  getPostsByCreator,
+  getPostsByApplicant,
+  apply,
+  get,
+  getAllPaginated,
+};

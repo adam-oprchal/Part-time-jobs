@@ -156,4 +156,22 @@ export const accountController = {
 
         response.download('../../uploads/cv/', currentUserId + '.pdf');
     }
+
+    login: async (_req: Request, res: Response) => {
+        res.status(200).end();
+    },
+
+    logout: (req, res, next) => {
+        req.logout(
+            {
+                keepSessionInfo: false,
+            },
+            (err) => {
+                if (err) {
+                    return next(err);
+                }
+                res.status(200).end();
+            }
+        );
+    }
 }

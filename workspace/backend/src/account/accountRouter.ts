@@ -20,9 +20,9 @@ accountRouter.post("/login", passport.authenticate("local"), accountController.l
 accountRouter.get("/logout", passport.session(), accountController.logout);
 
 accountRouter.get('/', passport.session(), isAuthenticated, accountController.getUserAccount);
+accountRouter.get('/applicants-by-post/:postId', passport.session(), isAuthenticated, accountController.getApplicantsOfPost);
+accountRouter.get('/applicants-by-account/:id', passport.session(), isAuthenticated, accountController.getApplicantsOfAccountPosts);
 
-accountRouter.get('/applicants-by-post/:postId', accountController.getApplicantsOfPost);
-accountRouter.get('/applicants-by-account/:id', accountController.getApplicantsOfAccountPosts);
 accountRouter.delete('/:id', accountController.delete);
 accountRouter.post('/cv', upload.single('cv'), accountController.uploadCv);
 accountRouter.get('/cv', accountController.downloadCv);

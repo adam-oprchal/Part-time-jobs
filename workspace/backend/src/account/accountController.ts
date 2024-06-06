@@ -1,11 +1,12 @@
 import {accountRepository} from "./accountRepository";
 import {Request, Response} from "express";
-import { deleteAccountRequestSchema, getApplicantsOfAccountPostsSchema, getApplicantsOfPostSchema, registerAccountRequestSchema, uploadCvSchema } from "./accountSchema";
+import { deleteAccountRequestSchema, getApplicantsOfPostSchema, registerAccountRequestSchema, uploadCvSchema } from "./accountSchema";
 import argon2 from "argon2"
 import { Account } from "types";
 import handleDbErrors from "./error";
 import * as path from "node:path";
 import {promises as fs} from "fs";
+import { postRepository } from "../post/postRepository";
 
 export const accountController = {
     register: async (request: Request, response: Response) => {
@@ -70,6 +71,12 @@ export const accountController = {
             return
         }
 
+        const post = await postRepository.getPost(validRequest.data.params.postId);
+        if (post.creatorId != request.session.passport.user.id) {
+            response.status(401).send("authentication required");
+            return
+        }
+
         const result = await accountRepository.getApplicantsOfPost(validRequest.data.params.postId);
 
         if (result.isOk) {
@@ -80,13 +87,7 @@ export const accountController = {
     },
 
     getApplicantsOfAccountPosts: async (request: Request, response: Response) => {
-        const validRequest = await getApplicantsOfAccountPostsSchema.safeParseAsync(request);
-        if (!validRequest.success) {
-            response.status(400).send("invalid request")
-            return
-        }
-
-        const result = await accountRepository.getApplicantsOfAccountPosts(validRequest.data.params.id);
+        const result = await accountRepository.getApplicantsOfAccountPosts(request.session.passport.user.id);
 
         if (result.isOk) {
             const foundUsers = new Map<string, Omit<Account, "passwordHash">[]>();

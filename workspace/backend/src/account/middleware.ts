@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 declare module "express-session" {
   interface SessionData {
     passport: {
-      user: { username: string; id: string };
+      user: { id: string };
     };
   }
 }
@@ -12,8 +12,9 @@ export const isAuthenticated = (
   res: Response,
   next: NextFunction
 ) => {
-  console.log(req.session);
-
-  if (req.session.passport?.user) next();
-  else res.status(401).send("authentication required");
+  if (req.session.passport?.user) {
+    next();
+  } else {
+    res.status(401).send("authentication required");
+  }
 };

@@ -16,12 +16,6 @@ export const getApplicantsOfPostSchema = z.object({
     })
 })
 
-export const getApplicantsOfAccountPostsSchema = z.object({
-    params: z.object({
-        id: z.string()
-    })
-})
-
 export const deleteAccountRequestSchema = z.object({
     params: z.object({
         id: z.string()

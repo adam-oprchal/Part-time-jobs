@@ -12,7 +12,7 @@ export const registerAccountRequestSchema = z.object({
 
 export const getApplicantsOfPostSchema = z.object({
     params: z.object({
-        postId: z.string()
+        postId: z.string().uuid()
     })
 })
 

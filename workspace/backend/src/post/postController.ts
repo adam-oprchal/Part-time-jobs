@@ -12,6 +12,11 @@ export const postController = {
             return;
         }
 
+	let post = {
+	    creatorId: request.session.passport.user.id,
+            ...request.body
+        }
+
         const result = await postRepository.createPost(request.body);
 
         if (result.isOk) {
@@ -26,11 +31,21 @@ export const postController = {
 
         const result = await postRepository.deletePost(request.params.id);
 
+        let post = {
+            creatorId: request.session.passport.user.id,
+            ...request.body
+        }
+
         if (result.isOk) {
             response.send(result.value);
         } else {
             response.status(400).send("Bad request");
         }
+    },
+
+    deletePost: async (request: Request, response: Response)=> {
+        const result = await postRepository.deletePost(request.session.passport.user.id);
+        response.send(result)
     },
 
     updatePost: async (request: Request, response: Response)=> {
@@ -42,7 +57,12 @@ export const postController = {
             return;
         }
 
-        const result = await postRepository.updatePost(request.params.id, request.body);
+        let post = {
+            creatorId: request.session.passport.user.id,
+            ...request.body
+        }
+
+        const result = await postRepository.updatePost(request.params.id, post);
 
         if (result.isOk) {
             response.send(result.value);
@@ -110,7 +130,7 @@ export const postController = {
     getPostsByApplicant: async (request: Request, response: Response)=> {
         console.log('getPostsByApplicant', request.params.applicantId)
 
-        const result = await postRepository.getPostsByApplicant(request.params.applicantId);
+        const result = await postRepository.getPostsByApplicant(request.session.passport.user.id);
 
         if (result.isOk) {
             response.send(result.value);
@@ -122,7 +142,7 @@ export const postController = {
     applyForPost: async (request: Request, response: Response)=> {
         console.log('applyForPost', request.params.postId, request.params.applicantId)
 
-        const result = await postRepository.addApplicantToPost(request.params.postId, request.params.applicantId);
+        const result = await postRepository.addApplicantToPost(request.params.postId, request.session.passport.user.id);
 
         if (result.isOk) {
             response.send(result.value);

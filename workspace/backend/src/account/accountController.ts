@@ -1,6 +1,6 @@
 import {accountRepository} from "./accountRepository";
 import {Request, Response} from "express";
-import { deleteAccountRequestSchema, getApplicantsOfPostSchema, registerAccountRequestSchema, uploadCvSchema } from "./accountSchema";
+import { getApplicantsOfPostSchema, registerAccountRequestSchema, uploadCvSchema } from "./accountSchema";
 import argon2 from "argon2"
 import { Account } from "types";
 import handleDbErrors from "./error";
@@ -99,13 +99,7 @@ export const accountController = {
     },
 
     delete: async (request: Request, response: Response) => {
-        const validRequest = await deleteAccountRequestSchema.safeParseAsync(request);
-        if (!validRequest.success) {
-            response.status(400).send("invalid request")
-            return
-        }
-
-        const result = await accountRepository.delete(validRequest.data.params.id);
+        const result = await accountRepository.delete(request.session.passport.user.id);
 
         if (result.isOk) {
             response.status(204).send()
@@ -137,7 +131,11 @@ export const accountController = {
             return
         }
 
-        const result = await accountRepository.updateCv(currentUserId);
+        const {fileName} = validRequest.data.body;
+        const accountId = request.session.passport.user.id;
+
+        const result = await accountRepository.updateCv({fileName, accountId});
+
         if (result.isOk) {
             response.status(200).send(result.value)
         } else if (result.isErr) {

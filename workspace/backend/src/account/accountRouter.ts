@@ -21,9 +21,8 @@ accountRouter.get("/logout", passport.session(), accountController.logout);
 
 accountRouter.get('/', passport.session(), isAuthenticated, accountController.getUserAccount);
 accountRouter.get('/applicants-by-post/:postId', passport.session(), isAuthenticated, accountController.getApplicantsOfPost);
-accountRouter.get('/applicants-by-account/:id', passport.session(), isAuthenticated, accountController.getApplicantsOfAccountPosts);
-
-accountRouter.delete('/:id', accountController.delete);
+accountRouter.get('/applicants-by-account', passport.session(), isAuthenticated, accountController.getApplicantsOfAccountPosts);
+accountRouter.delete('/', passport.session(), isAuthenticated, accountController.delete);
 accountRouter.post('/cv', upload.single('cv'), accountController.uploadCv);
 accountRouter.get('/cv', accountController.downloadCv);
 

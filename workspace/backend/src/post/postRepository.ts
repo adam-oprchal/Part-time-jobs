@@ -45,7 +45,7 @@ export const postRepository = {
 
     async getPost(id: string): RepositoryResult<Post> {
         try {
-            return Result.ok(await prisma.post.findUnique({
+            return Result.ok(await prisma.post.findUniqueOrThrow({
                 where: {
                     id: id,
                     deletedAt: null,

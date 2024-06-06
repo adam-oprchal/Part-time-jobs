@@ -2,7 +2,7 @@ import {postRepository} from "./postRepository";
 import {Request, Response} from "express";
 import {Post} from "types";
 import z from 'zod';
-import {postSchema} from "./schema";
+import {paginationSchema, postSchema} from "./schema";
 
 export const postController = {
     createPost: async (request: Request, response: Response)=> {
@@ -38,18 +38,14 @@ export const postController = {
     },
 
     getPostsPaginated: async (request: Request, response: Response)=> {
-        let page: number;
-        let pageSize: number;
-        try {
-            page = parseInt(request.query.page as string);
-            pageSize = parseInt(request.query.pageSize as string);
-            const assert = require('chai').assert;
-            assert(page);
-            assert(pageSize);
-        } catch (error) {
-            response.status(400).send("Invalid query parameters");
-            return;
+        const validRequest = await paginationSchema.safeParseAsync(request);
+        if (!validRequest.success) {
+            response.status(400).send("invalid request")
+            return
         }
+
+        const { page, pageSize } = validRequest.data.query
+
         const result = await postRepository.getPostsPaginated(page, pageSize);
         response.send(result)
     },

@@ -1,11 +1,11 @@
 import prisma  from "../db/client";
 import { AccountWithCvWithoutPassword, Cv } from "types"
 import {Result} from "@badrap/result";
-import { AccountRegister, CvUpdate, DbResult } from "../types";
+import { AccountRegister, CvUpdate, RepositoryResult } from "../types";
 import argon2 from "argon2"
 
 export const accountRepository = {
-    async create(data: AccountRegister): DbResult<AccountWithCvWithoutPassword> {
+    async create(data: AccountRegister): RepositoryResult<AccountWithCvWithoutPassword> {
         try {
             const result = await prisma.account.create({
                 data,
@@ -21,7 +21,7 @@ export const accountRepository = {
         }
     },
 
-    async getById(id: string): DbResult<AccountWithCvWithoutPassword> {
+    async getById(id: string): RepositoryResult<AccountWithCvWithoutPassword> {
         try {
             const result = await prisma.account.findUniqueOrThrow({
                 where: {
@@ -40,7 +40,7 @@ export const accountRepository = {
         }
     },
 
-    async getByEmail(email: string): DbResult<AccountWithCvWithoutPassword> {
+    async getByEmail(email: string): RepositoryResult<AccountWithCvWithoutPassword> {
         try {
             const result = await prisma.account.findUniqueOrThrow({
                 where: {
@@ -59,7 +59,7 @@ export const accountRepository = {
         }
     },
 
-    async getApplicantsOfPost(postId: string): DbResult<AccountWithCvWithoutPassword[]> {
+    async getApplicantsOfPost(postId: string): RepositoryResult<AccountWithCvWithoutPassword[]> {
         try {
             const post = await prisma.post.findUniqueOrThrow({
                 where: {
@@ -83,7 +83,7 @@ export const accountRepository = {
         }
     },
 
-    async getApplicantsOfAccountPosts(id: string): DbResult<Map<string, AccountWithCvWithoutPassword[]>> {
+    async getApplicantsOfAccountPosts(id: string): RepositoryResult<Map<string, AccountWithCvWithoutPassword[]>> {
         try {
             const posts = await prisma.post.findMany({
                 where: {
@@ -110,7 +110,7 @@ export const accountRepository = {
         }
     },
 
-    async changePassword(id: string, password: string): DbResult<undefined> {
+    async changePassword(id: string, password: string): RepositoryResult<undefined> {
         try {
             const passwordHash = await argon2.hash(password);
             const account = await prisma.account.update({
@@ -124,7 +124,7 @@ export const accountRepository = {
         }
     },
 
-    async checkPassword(id: string, password: string): DbResult<boolean> {
+    async checkPassword(id: string, password: string): RepositoryResult<boolean> {
         try {
             const account = await prisma.account.findUniqueOrThrow({where: {id}});
             const result = await argon2.verify(account.passwordHash, password)
@@ -135,7 +135,7 @@ export const accountRepository = {
         }
     },
 
-    async delete(id: string): DbResult<undefined> {
+    async delete(id: string): RepositoryResult<undefined> {
         try {
             const result = await prisma.account.update({
                 where: {id},
@@ -149,7 +149,7 @@ export const accountRepository = {
         }
     },
 
-    async updateCv(data: CvUpdate): DbResult<Cv> {
+    async updateCv(data: CvUpdate): RepositoryResult<Cv> {
         try {
             await prisma.account.findUniqueOrThrow({
                 where: {

@@ -2,6 +2,7 @@ import express from "express";
 import {accountController} from "./accountController";
 import multer from 'multer';
 import passport from "passport";
+import { isAuthenticated } from "./middleware";
 
 const accountRouter = express.Router();
 
@@ -15,7 +16,7 @@ const upload = multer({
 });
 
 accountRouter.post('/registration', accountController.register);
-accountRouter.get('/by-id/:id', accountController.getById);
+accountRouter.get('/by-id/:id', passport.session(), isAuthenticated, accountController.getById);
 accountRouter.get('/by-email/:email', accountController.getByEmail);
 accountRouter.get('/applicants-by-post/:postId', accountController.getApplicantsOfPost);
 accountRouter.get('/applicants-by-account/:id', accountController.getApplicantsOfAccountPosts);

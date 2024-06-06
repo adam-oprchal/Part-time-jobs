@@ -16,15 +16,15 @@ const upload = multer({
 });
 
 accountRouter.post('/registration', accountController.register);
-accountRouter.get('/by-id/:id', passport.session(), isAuthenticated, accountController.getById);
-accountRouter.get('/by-email/:email', accountController.getByEmail);
+accountRouter.post("/login", passport.authenticate("local"), accountController.login);
+accountRouter.get("/logout", passport.session(), accountController.logout);
+
+accountRouter.get('/', passport.session(), isAuthenticated, accountController.getUserAccount);
+
 accountRouter.get('/applicants-by-post/:postId', accountController.getApplicantsOfPost);
 accountRouter.get('/applicants-by-account/:id', accountController.getApplicantsOfAccountPosts);
 accountRouter.delete('/:id', accountController.delete);
 accountRouter.post('/cv', upload.single('cv'), accountController.uploadCv);
 accountRouter.get('/cv', accountController.downloadCv);
-
-accountRouter.post("/login", passport.authenticate("local"), accountController.login);
-accountRouter.get("/logout", passport.session(), accountController.logout);
 
 export default accountRouter;

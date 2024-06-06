@@ -1,6 +1,6 @@
 import {accountRepository} from "./accountRepository";
 import {Request, Response} from "express";
-import { deleteAccountRequestSchema, getAccountByEmailSchema, getAccountByIdSchema, getApplicantsOfAccountPostsSchema, getApplicantsOfPostSchema, registerAccountRequestSchema, uploadCvSchema } from "./accountSchema";
+import { deleteAccountRequestSchema, getApplicantsOfAccountPostsSchema, getApplicantsOfPostSchema, registerAccountRequestSchema, uploadCvSchema } from "./accountSchema";
 import argon2 from "argon2"
 import { Account } from "types";
 import handleDbErrors from "./error";
@@ -35,30 +35,26 @@ export const accountController = {
         }
     },
 
-    getById: async (request: Request, response: Response) => {
-        const validRequest = await getAccountByIdSchema.safeParseAsync(request);
-        if (!validRequest.success) {
-            response.status(400).send("invalid request")
-            return
-        }
-
-        const result = await accountRepository.getById(validRequest.data.params.id);
-
-        if (result.isOk) {
-            response.send(result.value)
-        } else if (result.isErr) {
-            handleDbErrors(result.error, response);
-        }
+    login: async (_req: Request, res: Response) => {
+        res.status(200).end();
     },
 
-    getByEmail: async (request: Request, response: Response) => {
-        const validRequest = await getAccountByEmailSchema.safeParseAsync(request);
-        if (!validRequest.success) {
-            response.status(400).send("invalid request")
-            return
-        }
+    logout: (req, res, next) => {
+        req.logout(
+            {
+                keepSessionInfo: false,
+            },
+            (err) => {
+                if (err) {
+                    return next(err);
+                }
+                res.status(200).end();
+            }
+        );
+    },
 
-        const result = await accountRepository.getByEmail(request.params.email);
+    getUserAccount: async (request: Request, response: Response) => {
+        const result = await accountRepository.getById(request.session.passport.user.id);
 
         if (result.isOk) {
             response.send(result.value)

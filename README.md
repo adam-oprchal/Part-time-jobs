@@ -29,3 +29,15 @@ nx run backend:serve
 ## Types
 
 Types is a library shared between FE and BE. When defining DTOs (which in the case of such simple application as ours are probably going to be the only types used), you should define them in this library and just import them on both BE and FE instead of defining them twice. As shown, the basic entities should also be defined just by importing types from Prisma, instead of defining prisma models and typescript objects separately.
+
+## Example upload CV request
+
+POST http://localhost:3333/api/v1/account/cv
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="cv"; filename="cv.pdf"
+Content-Type: application/pdf
+
+< C:\Users\davor\Desktop\cv.pdf
+--boundary--

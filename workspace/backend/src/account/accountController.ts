@@ -72,17 +72,21 @@ export const accountController = {
         }
 
         const post = await postRepository.getPost(validRequest.data.params.postId);
-        if (post.creatorId != request.session.passport.user.id) {
-            response.status(403).send("unauthorized");
-            return
-        }
-
-        const result = await accountRepository.getApplicantsOfPost(validRequest.data.params.postId);
-
-        if (result.isOk) {
-            response.send(result.value)
-        } else if (result.isErr) {
-            handleDbErrors(result.error, response);
+        if (post.isErr) {
+            response.status(400).send("Bad request");
+        } else if (post.isOk) {
+            if (post.value.creatorId != request.session.passport.user.id) {
+                response.status(403).send("unauthorized");
+                return
+            }
+    
+            const result = await accountRepository.getApplicantsOfPost(validRequest.data.params.postId);
+    
+            if (result.isOk) {
+                response.send(result.value)
+            } else if (result.isErr) {
+                handleDbErrors(result.error, response);
+            }
         }
     },
 
@@ -117,7 +121,7 @@ export const accountController = {
         console.log('uploadCv');
 
         // TODO: after authorization is done, replace this with the current logged in user
-        const currentUserId = '007144cf-f4f8-479f-864a-fc21ea14a29f'
+        const currentUserId = '007144cf-f4f8-479f-864a-fc21ea14a29f'     
 
         if (request.file) {
             const newFilename = currentUserId + '.pdf';
@@ -131,10 +135,7 @@ export const accountController = {
             return
         }
 
-        const {fileName} = validRequest.data.body;
-        const accountId = request.session.passport.user.id;
-
-        const result = await accountRepository.updateCv({fileName, accountId});
+        const result = await accountRepository.updateCv(currentUserId);
 
         if (result.isOk) {
             response.status(200).send(result.value)
@@ -150,23 +151,5 @@ export const accountController = {
         const currentUserId = '007144cf-f4f8-479f-864a-fc21ea14a29f'
 
         response.download('../../uploads/cv/', currentUserId + '.pdf');
-    }
-
-    login: async (_req: Request, res: Response) => {
-        res.status(200).end();
-    },
-
-    logout: (req, res, next) => {
-        req.logout(
-            {
-                keepSessionInfo: false,
-            },
-            (err) => {
-                if (err) {
-                    return next(err);
-                }
-                res.status(200).end();
-            }
-        );
     }
 }

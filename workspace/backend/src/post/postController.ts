@@ -12,29 +12,12 @@ export const postController = {
             return;
         }
 
-	let post = {
-	    creatorId: request.session.passport.user.id,
+	    let post = {
+	        creatorId: request.session.passport.user.id,
             ...request.body
         }
 
-        const result = await postRepository.createPost(request.body);
-
-        if (result.isOk) {
-            response.send(result.value);
-        } else {
-            response.status(400).send("Bad request");
-        }
-    },
-
-    deletePost: async (request: Request, response: Response)=> {
-        console.log('deletePost', request.params.id)
-
-        const result = await postRepository.deletePost(request.params.id);
-
-        let post = {
-            creatorId: request.session.passport.user.id,
-            ...request.body
-        }
+        const result = await postRepository.createPost(post);
 
         if (result.isOk) {
             response.send(result.value);
@@ -45,13 +28,22 @@ export const postController = {
 
     deletePost: async (request: Request, response: Response)=> {
         const post = await postRepository.getPost(request.params.postId);
-        if (post.creatorId != request.session.passport.user.id) {
-            response.status(403).send("unauthorized");
-            return
-        }
+        if (post.isErr) {
+            response.status(400).send("Bad request");
+        } else if (post.isOk) {
+            if (post.value.creatorId != request.session.passport.user.id) {
+                response.status(403).send("unauthorized");
+                return
+            }
 
-        const result = await postRepository.deletePost(request.params.id);
-        response.send(result)
+            const result = await postRepository.deletePost(request.params.id);
+    
+            if (result.isOk) {
+                response.send(result.value);
+            } else {
+                response.status(400).send("Bad request");
+            }
+        }
     },
 
     updatePost: async (request: Request, response: Response)=> {
@@ -64,22 +56,26 @@ export const postController = {
         }
 
         const originalPost = await postRepository.getPost(request.params.postId);
-        if (originalPost.creatorId != request.session.passport.user.id) {
-            response.status(403).send("unauthorized");
-            return
-        }
-
-        let post = {
-            creatorId: request.session.passport.user.id,
-            ...request.body
-        }
-
-        const result = await postRepository.updatePost(request.params.id, post);
-
-        if (result.isOk) {
-            response.send(result.value);
-        } else {
+        if (originalPost.isErr) {
             response.status(400).send("Bad request");
+        } else if (originalPost.isOk) {
+            if (originalPost.value.creatorId != request.session.passport.user.id) {
+                response.status(403).send("unauthorized");
+                return
+            }
+    
+            let post = {
+                creatorId: request.session.passport.user.id,
+                ...request.body
+            }
+    
+            const result = await postRepository.updatePost(request.params.id, post);
+    
+            if (result.isOk) {
+                response.send(result.value);
+            } else {
+                response.status(400).send("Bad request");
+            }
         }
     },
 

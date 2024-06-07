@@ -16,8 +16,8 @@ export const getApplicantsOfPostSchema = z.object({
     })
 })
 
-export const uploadCvSchema = z.object({
+export const downloadForeignCvSchema = z.object({
     body: z.object({
-        fileName: z.string(),
+        accountId: z.string().uuid(),
     })
 })

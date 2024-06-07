@@ -1,6 +1,6 @@
 import {accountRepository} from "./accountRepository";
 import {Request, Response} from "express";
-import { getApplicantsOfPostSchema, registerAccountRequestSchema, uploadCvSchema } from "./accountSchema";
+import { getApplicantsOfPostSchema, registerAccountRequestSchema, downloadForeignCvSchema } from "./accountSchema";
 import argon2 from "argon2"
 import { Account } from "types";
 import handleDbErrors from "./error";
@@ -149,5 +149,39 @@ export const accountController = {
         const currentUserId = request.session.passport.user.id;
 
         response.download('../../uploads/cv/', currentUserId + '.pdf');
+    },
+
+    downloadForeignCv: async (request: Request, response: Response) => {
+        console.log('downloadForeignCv');
+
+        const validRequest = await downloadForeignCvSchema.safeParseAsync(request);
+        if (!validRequest.success) {
+            response.status(400).send("invalid request")
+            return
+        }
+
+        const {accountId} = validRequest.data.body
+
+        const applicantMap = await accountRepository.getApplicantsOfAccountPosts(request.session.passport.user.id);
+        if (applicantMap.isErr) {
+            handleDbErrors(applicantMap.error, response);
+        } else if (applicantMap.isOk) {
+            let isApplicant = false;
+
+            applicantMap.value.forEach((applicants) => {
+                applicants.forEach((applicant) => {
+                    if (applicant.id === accountId) {
+                        isApplicant = true;
+                    }
+                })
+            })
+
+            if (!isApplicant) {
+                response.status(403).send("unauthorized");
+                return
+            }
+
+            response.download('../../uploads/cv/', accountId + '.pdf');
+        }
     }
 }

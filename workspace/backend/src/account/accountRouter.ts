@@ -25,5 +25,6 @@ accountRouter.get('/applicants-by-account', passport.session(), isAuthenticated,
 accountRouter.delete('/', passport.session(), isAuthenticated, accountController.delete);
 accountRouter.post('/cv', upload.single('cv'), passport.session(), isAuthenticated, accountController.uploadCv);
 accountRouter.get('/cv', passport.session(), isAuthenticated, accountController.downloadCv);
+accountRouter.get('/cv/:accountId', passport.session(), isAuthenticated, accountController.downloadForeignCv);
 
 export default accountRouter;

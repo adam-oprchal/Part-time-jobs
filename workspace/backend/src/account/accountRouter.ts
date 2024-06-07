@@ -20,5 +20,6 @@ accountRouter.get('/applicants-by-post/:postId', accountController.getApplicants
 accountRouter.get('/applicants-by-account/:id', accountController.getApplicantsOfAccountPosts);
 accountRouter.delete('/:id', accountController.delete);
 accountRouter.post('/cv', upload.single('cv'), accountController.uploadCv);
+accountRouter.get('/cv', accountController.downloadCv);
 
 export default accountRouter;

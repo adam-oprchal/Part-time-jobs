@@ -10,11 +10,6 @@ const upload = multer({
     limits: { fileSize: 5000000 }, // Limit file size to 5MB (optional)
     fileFilter: (req, file, cb) => {
         cb(null, true);
-        // if (file.mimetype === 'application/pdf') {
-        //     cb(null, true);
-        // } else {
-        //     cb(new Error('Only PDF files are allowed!'), false);
-        // }
     },
 });
 

@@ -44,7 +44,13 @@ export const postController = {
     },
 
     deletePost: async (request: Request, response: Response)=> {
-        const result = await postRepository.deletePost(request.session.passport.user.id);
+        const post = await postRepository.getPost(request.params.postId);
+        if (post.creatorId != request.session.passport.user.id) {
+            response.status(403).send("unauthorized");
+            return
+        }
+
+        const result = await postRepository.deletePost(request.params.id);
         response.send(result)
     },
 
@@ -55,6 +61,12 @@ export const postController = {
         if (!parseResult.success) {
             response.status(400).send(parseResult.error)
             return;
+        }
+
+        const originalPost = await postRepository.getPost(request.params.postId);
+        if (originalPost.creatorId != request.session.passport.user.id) {
+            response.status(403).send("unauthorized");
+            return
         }
 
         let post = {

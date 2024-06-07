@@ -73,7 +73,7 @@ export const accountController = {
 
         const post = await postRepository.getPost(validRequest.data.params.postId);
         if (post.creatorId != request.session.passport.user.id) {
-            response.status(401).send("authentication required");
+            response.status(403).send("unauthorized");
             return
         }
 

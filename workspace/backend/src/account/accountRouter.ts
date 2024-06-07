@@ -23,7 +23,7 @@ accountRouter.get('/', passport.session(), isAuthenticated, accountController.ge
 accountRouter.get('/applicants-by-post/:postId', passport.session(), isAuthenticated, accountController.getApplicantsOfPost);
 accountRouter.get('/applicants-by-account', passport.session(), isAuthenticated, accountController.getApplicantsOfAccountPosts);
 accountRouter.delete('/', passport.session(), isAuthenticated, accountController.delete);
-accountRouter.post('/cv', upload.single('cv'), accountController.uploadCv);
-accountRouter.get('/cv', accountController.downloadCv);
+accountRouter.post('/cv', upload.single('cv'), passport.session(), isAuthenticated, accountController.uploadCv);
+accountRouter.get('/cv', passport.session(), isAuthenticated, accountController.downloadCv);
 
 export default accountRouter;

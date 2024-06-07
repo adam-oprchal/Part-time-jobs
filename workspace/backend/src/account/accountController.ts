@@ -120,8 +120,7 @@ export const accountController = {
     uploadCv: async (request: Request & {file: any}, response: Response) => {
         console.log('uploadCv');
 
-        // TODO: after authorization is done, replace this with the current logged in user
-        const currentUserId = '007144cf-f4f8-479f-864a-fc21ea14a29f'     
+        const currentUserId = request.session.passport.user.id;     
 
         if (request.file) {
             const newFilename = currentUserId + '.pdf';
@@ -147,8 +146,7 @@ export const accountController = {
     downloadCv: async (request: Request, response: Response) => {
         console.log('downloadCv');
 
-        // TODO: after authorization is done, replace this with the current logged in user
-        const currentUserId = '007144cf-f4f8-479f-864a-fc21ea14a29f'
+        const currentUserId = request.session.passport.user.id;
 
         response.download('../../uploads/cv/', currentUserId + '.pdf');
     }

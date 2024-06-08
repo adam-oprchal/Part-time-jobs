@@ -20,6 +20,7 @@ accountRouter.post("/login", passport.authenticate("local"), accountController.l
 accountRouter.get("/logout", passport.session(), accountController.logout);
 
 accountRouter.get('/', passport.session(), isAuthenticated, accountController.getUserAccount);
+accountRouter.post('/change-password', passport.session(), isAuthenticated, accountController.changePassword);
 accountRouter.get('/applicants-by-post/:postId', passport.session(), isAuthenticated, accountController.getApplicantsOfPost);
 accountRouter.get('/applicants-by-account', passport.session(), isAuthenticated, accountController.getApplicantsOfAccountPosts);
 accountRouter.delete('/', passport.session(), isAuthenticated, accountController.delete);

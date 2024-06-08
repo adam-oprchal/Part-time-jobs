@@ -11,5 +11,4 @@ export type createPostData = {
   wage: number;
   location: string;
   expectedHours: number;
-  creatorId: string;
 };

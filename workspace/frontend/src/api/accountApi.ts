@@ -44,6 +44,14 @@ async function getApplicantsByAccount() {
   return resp.data;
 }
 
+async function changePassword(newPassword: string, newPasswordAgain: string) {
+  const resp = await axiosInstance.post<void>('account/change-password', {
+    newPassword,
+    newPasswordAgain,
+  });
+  return resp.data;
+}
+
 async function deleteAccount() {
   const resp = await axiosInstance.delete<void>('account/');
   return resp.data;
@@ -56,5 +64,6 @@ export const AccountApi = {
   getUserAccount,
   getApplicantsByPost,
   getApplicantsByAccount,
+  changePassword,
   deleteAccount,
 };

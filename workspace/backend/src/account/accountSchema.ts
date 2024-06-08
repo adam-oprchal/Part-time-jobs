@@ -10,39 +10,14 @@ export const registerAccountRequestSchema = z.object({
     })
 })
 
-export const getAccountByIdSchema = z.object({
-    params: z.object({
-        id: z.string()
-    })
-})
-
-export const getAccountByEmailSchema = z.object({
-    params: z.object({
-        email: z.string().email()
-    })
-})
-
 export const getApplicantsOfPostSchema = z.object({
     params: z.object({
-        postId: z.string()
+        postId: z.string().uuid()
     })
 })
 
-export const getApplicantsOfAccountPostsSchema = z.object({
-    params: z.object({
-        id: z.string()
-    })
-})
-
-export const deleteAccountRequestSchema = z.object({
-    params: z.object({
-        id: z.string()
-    })
-})
-
-export const uploadCvSchema = z.object({
+export const downloadForeignCvSchema = z.object({
     body: z.object({
-        fileName: z.string(),
-        accountId: z.string(),
+        accountId: z.string().uuid(),
     })
 })

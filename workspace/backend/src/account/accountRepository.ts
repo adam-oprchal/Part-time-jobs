@@ -1,5 +1,5 @@
 import prisma  from "../db/client";
-import { AccountWithCvWithoutPassword, Cv } from "types"
+import { Account, AccountWithCvWithoutPassword, Cv } from "types"
 import {Result} from "@badrap/result";
 import { AccountRegister, CvUpdate, RepositoryResult } from "../types";
 import argon2 from "argon2"
@@ -52,6 +52,21 @@ export const accountRepository = {
                 }
             });
             delete result.passwordHash
+
+            return Result.ok(result)
+        } catch (error) {
+            return Result.err(new Error(error.code))
+        }
+    },
+
+    async getUserForAuth(email: string): RepositoryResult<Account> {
+        try {
+            const result = await prisma.account.findUniqueOrThrow({
+                where: {
+                    email,
+                    deletedAt: null
+                },
+            });
 
             return Result.ok(result)
         } catch (error) {
@@ -124,15 +139,8 @@ export const accountRepository = {
         }
     },
 
-    async checkPassword(id: string, password: string): RepositoryResult<boolean> {
-        try {
-            const account = await prisma.account.findUniqueOrThrow({where: {id}});
-            const result = await argon2.verify(account.passwordHash, password)
-
-            return Result.ok(result)
-        } catch (error) {
-            return Result.err(new Error(error.code))
-        }
+    async checkPassword(passwordHash: string, password: string): Promise<boolean> {
+        return await argon2.verify(passwordHash, password);
     },
 
     async delete(id: string): RepositoryResult<undefined> {

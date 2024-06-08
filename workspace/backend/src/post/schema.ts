@@ -5,8 +5,7 @@ export const postSchema = z.object({
     wage: z.coerce.number(),
     location: z.string(),
     expectedHours: z.coerce.number(),
-    creatorId: z.string().uuid(),
-    });
+});
 
 export const paginationSchema = z.object({
     query: z.object({

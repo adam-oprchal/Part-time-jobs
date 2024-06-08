@@ -1,11 +1,12 @@
 import {accountRepository} from "./accountRepository";
 import {Request, Response} from "express";
-import { deleteAccountRequestSchema, getAccountByEmailSchema, getAccountByIdSchema, getApplicantsOfAccountPostsSchema, getApplicantsOfPostSchema, registerAccountRequestSchema, uploadCvSchema } from "./accountSchema";
+import { getApplicantsOfPostSchema, registerAccountRequestSchema, downloadForeignCvSchema } from "./accountSchema";
 import argon2 from "argon2"
 import { Account } from "types";
 import handleDbErrors from "./error";
 import * as path from "node:path";
 import {promises as fs} from "fs";
+import { postRepository } from "../post/postRepository";
 
 export const accountController = {
     register: async (request: Request, response: Response) => {
@@ -35,30 +36,26 @@ export const accountController = {
         }
     },
 
-    getById: async (request: Request, response: Response) => {
-        const validRequest = await getAccountByIdSchema.safeParseAsync(request);
-        if (!validRequest.success) {
-            response.status(400).send("invalid request")
-            return
-        }
-
-        const result = await accountRepository.getById(validRequest.data.params.id);
-
-        if (result.isOk) {
-            response.send(result.value)
-        } else if (result.isErr) {
-            handleDbErrors(result.error, response);
-        }
+    login: async (_req: Request, res: Response) => {
+        res.status(200).end();
     },
 
-    getByEmail: async (request: Request, response: Response) => {
-        const validRequest = await getAccountByEmailSchema.safeParseAsync(request);
-        if (!validRequest.success) {
-            response.status(400).send("invalid request")
-            return
-        }
+    logout: (req, res, next) => {
+        req.logout(
+            {
+                keepSessionInfo: false,
+            },
+            (err) => {
+                if (err) {
+                    return next(err);
+                }
+                res.status(200).end();
+            }
+        );
+    },
 
-        const result = await accountRepository.getByEmail(request.params.email);
+    getUserAccount: async (request: Request, response: Response) => {
+        const result = await accountRepository.getById(request.session.passport.user.id);
 
         if (result.isOk) {
             response.send(result.value)
@@ -74,23 +71,27 @@ export const accountController = {
             return
         }
 
-        const result = await accountRepository.getApplicantsOfPost(validRequest.data.params.postId);
-
-        if (result.isOk) {
-            response.send(result.value)
-        } else if (result.isErr) {
-            handleDbErrors(result.error, response);
+        const post = await postRepository.getPost(validRequest.data.params.postId);
+        if (post.isErr) {
+            response.status(400).send("Bad request");
+        } else if (post.isOk) {
+            if (post.value.creatorId != request.session.passport.user.id) {
+                response.status(403).send("unauthorized");
+                return
+            }
+    
+            const result = await accountRepository.getApplicantsOfPost(validRequest.data.params.postId);
+    
+            if (result.isOk) {
+                response.send(result.value)
+            } else if (result.isErr) {
+                handleDbErrors(result.error, response);
+            }
         }
     },
 
     getApplicantsOfAccountPosts: async (request: Request, response: Response) => {
-        const validRequest = await getApplicantsOfAccountPostsSchema.safeParseAsync(request);
-        if (!validRequest.success) {
-            response.status(400).send("invalid request")
-            return
-        }
-
-        const result = await accountRepository.getApplicantsOfAccountPosts(validRequest.data.params.id);
+        const result = await accountRepository.getApplicantsOfAccountPosts(request.session.passport.user.id);
 
         if (result.isOk) {
             const foundUsers = new Map<string, Omit<Account, "passwordHash">[]>();
@@ -102,13 +103,7 @@ export const accountController = {
     },
 
     delete: async (request: Request, response: Response) => {
-        const validRequest = await deleteAccountRequestSchema.safeParseAsync(request);
-        if (!validRequest.success) {
-            response.status(400).send("invalid request")
-            return
-        }
-
-        const result = await accountRepository.delete(validRequest.data.params.id);
+        const result = await accountRepository.delete(request.session.passport.user.id);
 
         if (result.isOk) {
             response.status(204).send()
@@ -125,8 +120,7 @@ export const accountController = {
     uploadCv: async (request: Request & {file: any}, response: Response) => {
         console.log('uploadCv');
 
-        // TODO: after authorization is done, replace this with the current logged in user
-        const currentUserId = '007144cf-f4f8-479f-864a-fc21ea14a29f'
+        const currentUserId = request.session.passport.user.id;     
 
         if (request.file) {
             const newFilename = currentUserId + '.pdf';
@@ -141,6 +135,7 @@ export const accountController = {
         }
 
         const result = await accountRepository.updateCv(currentUserId);
+
         if (result.isOk) {
             response.status(200).send(result.value)
         } else if (result.isErr) {
@@ -151,9 +146,42 @@ export const accountController = {
     downloadCv: async (request: Request, response: Response) => {
         console.log('downloadCv');
 
-        // TODO: after authorization is done, replace this with the current logged in user
-        const currentUserId = '007144cf-f4f8-479f-864a-fc21ea14a29f'
+        const currentUserId = request.session.passport.user.id;
 
         response.download('../../uploads/cv/', currentUserId + '.pdf');
+    },
+
+    downloadForeignCv: async (request: Request, response: Response) => {
+        console.log('downloadForeignCv');
+
+        const validRequest = await downloadForeignCvSchema.safeParseAsync(request);
+        if (!validRequest.success) {
+            response.status(400).send("invalid request")
+            return
+        }
+
+        const {accountId} = validRequest.data.body
+
+        const applicantMap = await accountRepository.getApplicantsOfAccountPosts(request.session.passport.user.id);
+        if (applicantMap.isErr) {
+            handleDbErrors(applicantMap.error, response);
+        } else if (applicantMap.isOk) {
+            let isApplicant = false;
+
+            applicantMap.value.forEach((applicants) => {
+                applicants.forEach((applicant) => {
+                    if (applicant.id === accountId) {
+                        isApplicant = true;
+                    }
+                })
+            })
+
+            if (!isApplicant) {
+                response.status(403).send("unauthorized");
+                return
+            }
+
+            response.download('../../uploads/cv/', accountId + '.pdf');
+        }
     }
 }

@@ -21,3 +21,10 @@ export const downloadForeignCvSchema = z.object({
         accountId: z.string().uuid(),
     })
 })
+
+export const changePasswordSchema = z.object({
+    body: z.object({
+        newPassword: z.string(),
+        newPasswordAgain: z.string(),
+    })
+})

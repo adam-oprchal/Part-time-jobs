@@ -1,6 +1,6 @@
 import {accountRepository} from "./accountRepository";
 import {Request, Response} from "express";
-import { getApplicantsOfPostSchema, registerAccountRequestSchema, downloadForeignCvSchema } from "./accountSchema";
+import { getApplicantsOfPostSchema, registerAccountRequestSchema, downloadForeignCvSchema, changePasswordSchema } from "./accountSchema";
 import argon2 from "argon2"
 import { Account } from "types";
 import handleDbErrors from "./error";
@@ -97,6 +97,31 @@ export const accountController = {
             const foundUsers = new Map<string, Omit<Account, "passwordHash">[]>();
             result.value.forEach((value, key) => foundUsers.set(key, value))
             response.send(foundUsers)
+        } else if (result.isErr) {
+            handleDbErrors(result.error, response);
+        }
+    },
+
+    changePassword: async (request: Request, response: Response) => {
+        const validRequest = await changePasswordSchema.safeParseAsync(request);
+        if (!validRequest.success) {
+            response.status(400).send("invalid request")
+            return
+        }
+
+        const {newPassword, newPasswordAgain} = validRequest.data.body
+
+        if (newPassword !== newPasswordAgain) {
+            response.status(400).send("passwords differ")
+            return
+        }
+
+        const result = await accountRepository.changePassword(
+            request.session.passport.user.id, newPassword
+        );
+
+        if (result.isOk) {
+            response.status(204).send()
         } else if (result.isErr) {
             handleDbErrors(result.error, response);
         }

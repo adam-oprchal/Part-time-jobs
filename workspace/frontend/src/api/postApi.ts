@@ -27,16 +27,14 @@ async function getPostsByCreator(creatorId: string) {
   return resp.data;
 }
 
-async function getPostsByApplicant(applicantId: string) {
-  const resp = await axiosInstance.get<Post[]>(
-    `post/by-applicant/${applicantId}`
-  );
+async function getAppliedPosts() {
+  const resp = await axiosInstance.get<Post[]>('post/applied');
   return resp.data;
 }
 
-async function apply(postId: string, applicantId: string) {
+async function apply(postId: string) {
   const resp = await axiosInstance.post<Post>(
-    `post/apply/${postId}/${applicantId}`
+    `post/apply/${postId}`
   );
   return resp.data;
 }
@@ -59,7 +57,7 @@ export const PostApi = {
   update,
   getAmountOfPosts,
   getPostsByCreator,
-  getPostsByApplicant,
+  getAppliedPosts,
   apply,
   get,
   getAllPaginated,

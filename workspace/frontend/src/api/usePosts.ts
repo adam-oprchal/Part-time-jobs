@@ -50,18 +50,18 @@ export const usePostsByCreator = (creatorId: string) => {
   });
 };
 
-export const usePostsByApplicant = (applicantId: string) => {
+export const useAppliedPosts = (userId: string) => {
   return useQuery<Post[]>({
-    queryKey: ['post', 'applicant', applicantId],
-    queryFn: () => PostApi.getPostsByApplicant(applicantId),
+    queryKey: ['post', 'applicant', userId],
+    queryFn: () => PostApi.getAppliedPosts(),
   });
 };
 
-export const usePostApply = (postId: string, applicantId: string) => {
+export const usePostApply = (postId: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => PostApi.apply(postId, applicantId),
+    mutationFn: () => PostApi.apply(postId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['post'] });
     },

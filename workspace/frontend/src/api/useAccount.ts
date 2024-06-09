@@ -2,6 +2,18 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AccountApi } from './accountApi';
 import { Account, AccountWithCvWithoutPassword } from 'types';
 
+export const useLogout = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => AccountApi.logout(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['account'] });
+      queryClient.invalidateQueries({ queryKey: ['post'] });
+    },
+  });
+};
+
 export const useApplicantsByPost = (postId: string) => {
   return useQuery<AccountWithCvWithoutPassword[]>({
     queryKey: ['account', 'byPost', postId],

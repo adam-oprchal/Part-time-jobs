@@ -1,7 +1,7 @@
 import prisma  from "../db/client";
 import { Account, AccountWithCvWithoutPassword, Cv } from "types"
 import {Result} from "@badrap/result";
-import { AccountRegister, CvUpdate, RepositoryResult } from "../types";
+import { AccountRegister, AccountRegisterWithoutPassword, CvUpdate, RepositoryResult } from "../types";
 import argon2 from "argon2"
 
 export const accountRepository = {
@@ -17,6 +17,7 @@ export const accountRepository = {
 
             return Result.ok(result)
         } catch (error) {
+            console.error(error.message);
             return Result.err(new Error(error.code))
         }
     },
@@ -34,6 +35,23 @@ export const accountRepository = {
             });
             delete result.passwordHash
 
+            return Result.ok(result)
+        } catch (error) {
+            return Result.err(new Error(error.code))
+        }
+    },
+
+    async getByIdForAuth(id: string): RepositoryResult<Account> {
+        try {
+            const result = await prisma.account.findUniqueOrThrow({
+                where: {
+                    id,
+                    deletedAt: null
+                },
+                include: {
+                    cv: true
+                },
+            });
             return Result.ok(result)
         } catch (error) {
             return Result.err(new Error(error.code))
@@ -132,7 +150,9 @@ export const accountRepository = {
                 where: {id},
                 data: {passwordHash}
             });
-
+            if (!account) {
+                return Result.err(new Error('cannot change password'))
+            }
             return Result.ok(undefined)
         } catch (error) {
             return Result.err(new Error(error.code))
@@ -141,6 +161,25 @@ export const accountRepository = {
 
     async checkPassword(passwordHash: string, password: string): Promise<boolean> {
         return await argon2.verify(passwordHash, password);
+    },
+
+    async update(id: string, data: AccountRegisterWithoutPassword): RepositoryResult<Account> {
+        try {
+            const result = await prisma.account.update({
+                where: {id},
+                data: {
+                    firstName: data.firstName,
+                    surname: data.surname,
+                    email: data.email,
+                    avatar: data.avatar,
+                    updatedAt: new Date()
+                }
+            });
+
+            return Result.ok(result)
+        } catch (error) {
+            return Result.err(new Error(error.code))
+        }
     },
 
     async delete(id: string): RepositoryResult<undefined> {
@@ -157,16 +196,42 @@ export const accountRepository = {
         }
     },
 
-    async updateCv(currentUserId: string): RepositoryResult<Cv> {
+    async getCv(accountId: string): RepositoryResult<Cv> {
         try {
-            const data = {
-                accountId: currentUserId,
-                fileName: currentUserId + ".pdf"
+            const cv = await prisma.cv.findUniqueOrThrow({
+                where: {
+                    id: accountId,
+                    deletedAt: null
+                },
+            });
+            if (!cv) {
+                return Result.err(new Error('No Cv for specific user'));
             }
+            return Result.ok(cv)
+        } catch (error) {
+            return Result.err(new Error(error.code))
+        }     
+    },
+
+    async updateCv(data: CvUpdate): RepositoryResult<Cv> {
+        try {
+            await prisma.account.findUniqueOrThrow({
+                where: {
+                    id: data.accountId,
+                    deletedAt: null
+                },
+            });
 
             const cv = await prisma.cv.upsert({
                 where: {accountId: data.accountId},
-                update: {fileName: data.fileName},
+                update: {
+                    fileName: data.fileName,
+                    fileType: data.fileType,
+                    fileSize: data.fileSize,
+                    fileContent: data.fileContent,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                },
                 create: data
             })
 

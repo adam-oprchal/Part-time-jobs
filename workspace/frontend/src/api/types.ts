@@ -3,10 +3,11 @@ export type registerData = {
   surname: string;
   email: string;
   password: string;
-  passwordAgain: string;
+  passwordConfirm: string;
 };
 
 export type createPostData = {
+  jobName: string;
   description: string;
   wage: number;
   location: string;

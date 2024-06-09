@@ -1,96 +1,232 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { RegisterData, registerSchema } from '../FormPages/RegisterPage';
 import { z } from 'zod';
-import { Avatar, Box, Button, FormGroup, IconButton, Paper, TextField, Typography } from '@mui/material';
-import { avatarData}  from './icon'
+import { Avatar, Box, Button, FormGroup, IconButton, Menu, MenuItem, Paper, TextField, Tooltip, Typography } from '@mui/material';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
-import PersonIcon from '@mui/icons-material/Person';
+import { PasswordDialog } from './ChangePasswordDialog';
+import { AccountApi } from '../../api/accountApi';
+import { AccountWithoutPassword } from 'types';
+import { useNavigate } from 'react-router-dom';
+import isEmail from 'validator/lib/isEmail';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import { documentData}  from './icon'
+import { Buffer } from 'buffer';
 
-const innerSchema = (registerSchema).innerType();
-const accountSchema = innerSchema.extend({
-  avatar: z.string(),
-});
+const accountUpdateSchema = z.object({
+    name: z.string().trim().min(1, { message: 'Cannot be empty' }),
+    surname: z.string().trim().min(1, { message: 'Cannot be empty' }),
+
+    email: z.string().min(1, 'E-mail address is required.').refine(isEmail, 'E-mail address is invalid.'),
+  });
+
+type AccountUpdateData = z.infer<typeof accountUpdateSchema>;
 
 export const AccountPage = () => {
-  const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(avatarData.data);
-  const iconButtonRef = useRef<HTMLInputElement | null>(null);
+  const [preview, setPreview] = useState<string | null>();
+  const [cvPreview, setCvPreview] = useState<string | null>();
+  const [account, setAccount] = useState<AccountWithoutPassword | null>();
+  const avatarButtonRef = useRef<HTMLInputElement | null>(null);
+  const cvButtonRef = useRef<HTMLInputElement | null>(null);
+  const [anchorElAvatar, setAnchorElAvatar] = useState<null | HTMLElement>(null);
+  const [anchorElCv, setAnchorElCv] = useState<null | HTMLElement>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const setResp = async () => {
+      const account = await AccountApi.getUserAccount();
+      setAccount(account);
+      account && setPreview(account.avatar);
+    }
+    if (!account) {
+      setResp();
+    }
+  }, [account, setPreview]);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<RegisterData>({
-    resolver: zodResolver(accountSchema),
+  } = useForm<AccountUpdateData>({
+    resolver: zodResolver(accountUpdateSchema),
   });
 
-  const onSubmit: SubmitHandler<RegisterData> = (values) => {
-    console.log('Submitted: ', values);
-  };
-
-  const showButtons = () => {
-    const button1 = document.getElementById('changeAvatar');
-    if (button1) {
-      button1.style.display = 'flex';
-    }
-    const button2 = document.getElementById('deleteAvatar');
-    if (button2) {
-      button2.style.display = 'flex';
-    }
-    const button3 = document.getElementById('cancelAvatar');
-    if (button3) {
-      button3.style.display = 'flex';
-    }
+  if (!account) {
+    return <div>Loading...</div>
   }
 
-  const handleOnClick = () => {
-    if (preview !== '') {
-      showButtons();
-    } else {
-      if (iconButtonRef.current) {
-        iconButtonRef.current.click();
+  const handleOpenDialog = () => {
+    setIsDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+  };
+
+  const isAvartarMenuOpen = Boolean(anchorElAvatar);
+  const isCvMenuOpen = Boolean(anchorElCv);
+
+  const handleFileMenuAvatarOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElAvatar(event.currentTarget);
+  };
+
+  const handleFileMenuCvOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElCv(event.currentTarget);
+  };
+
+  const handleMenuAvatarClose = () => {
+    setAnchorElAvatar(null);
+  };
+
+  const handleMenuCvClose = () => {
+    setAnchorElCv(null);
+  };
+
+  const handleAvatarChangeClick = () => {
+    handleMenuAvatarClose();
+    if (avatarButtonRef.current) {
+      avatarButtonRef.current.click();
+    }
+    handleMenuAvatarClose();
+  };
+
+  const handleAvatarDeleteClick = () => {
+    handleMenuAvatarClose();
+    setPreview('');
+  };
+
+  const handleCvChangeClick = () => {
+    handleMenuCvClose();
+    if (cvButtonRef.current) {
+      cvButtonRef.current.click();
+    }
+    handleMenuCvClose();
+  };
+
+  const handleCvDeleteClick = () => {
+    handleMenuCvClose();
+    setCvPreview('');
+  };
+
+  const handleCancelAvatarClick = () => {
+    handleMenuAvatarClose();
+  };
+
+  const handleCancelCvClick = () => {
+    handleMenuCvClose();
+  };
+
+  const menuId = 'avatar-menu';
+  const renderAvatarMenu = (
+    <Menu
+      anchorEl={anchorElAvatar}
+      anchorOrigin={{
+        vertical: 'top',
+        horizontal: 'right',
+      }}
+      id={menuId}
+      keepMounted
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'right',
+      }}
+      open={isAvartarMenuOpen}
+      onClose={handleMenuAvatarClose}
+    >
+      {preview && <MenuItem onClick={handleAvatarChangeClick}>Change</MenuItem>}
+      {!preview && <MenuItem onClick={handleAvatarChangeClick}>Insert</MenuItem>}
+      {preview && <MenuItem onClick={handleAvatarDeleteClick}>Delete</MenuItem>}
+      <MenuItem onClick={handleCancelAvatarClick}>Cancel</MenuItem>
+    </Menu>
+  );
+
+  const menuCvId = 'cv-menu';
+  const renderCvMenu = (
+    <Menu
+      anchorEl={anchorElCv}
+      anchorOrigin={{
+        vertical: 'top',
+        horizontal: 'right',
+      }}
+      id={menuCvId}
+      keepMounted
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'right',
+      }}
+      open={isCvMenuOpen}
+      onClose={handleMenuCvClose}
+    >
+      {cvPreview && <MenuItem onClick={handleCvChangeClick}>Change</MenuItem>}
+      {!cvPreview && <MenuItem onClick={handleCvChangeClick}>Insert</MenuItem>}
+      {cvPreview && <MenuItem onClick={handleCvDeleteClick}>Delete</MenuItem>}
+      <MenuItem onClick={handleCancelCvClick}>Cancel</MenuItem>
+    </Menu>
+  );
+
+  const onSubmit: SubmitHandler<AccountUpdateData> = async (values) => {
+    await AccountApi.updateAccount({ firstName: values.name, surname: values.surname, email: values.email, avatar: preview as string });
+    navigate('/jobs');
+  };
+
+  const onClose = () => {
+    navigate('/jobs');
+  }
+
+  const handleAvatarFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
+    const files = event.target.files;
+    if (files && files[0]) {
+      const file = files[0];
+
+      const compressedBase64 = await compressImage(file);
+      setPreview(compressedBase64);
+      if (avatarButtonRef.current) {
+        avatarButtonRef.current.value = '';
       }
     }
   }
 
-  const hideButtons = () => {
-    const button1 = document.getElementById('changeAvatar');
-    if (button1) {
-      button1.style.display = 'none';
-    }
-    const button2 = document.getElementById('deleteAvatar');
-    if (button2) {
-      button2.style.display = 'none';
-    }
-    const button3 = document.getElementById('cancelAvatar');
-    if (button3) {
-      button3.style.display = 'none';
-    }
-  }
-
-  const deleteAvatar = () => {
-    setPreview('');
-    hideButtons();
-  }
-
-  const changeAvatar = async () => {
-    if (iconButtonRef.current) {
-      iconButtonRef.current.click();
-    }
-    hideButtons();
-  }
-
-  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+  const handleCvFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
     const files = event.target.files;
     if (files && files[0]) {
       const file = files[0];
-      setFile(file);
 
-      const compressedBase64 = await compressImage(file);
-      setPreview(compressedBase64);
-    }
+      loadFile(file)
+        .then((fileContent) => {
+          console.log(`fileContent: ${JSON.stringify(fileContent, null, 2)}`);
+          const buffer = Buffer.from(new Uint8Array(fileContent));
+          AccountApi.uploadCv({
+            fileName: file.name,
+            fileType: file.type,
+            fileSize: file.size,
+            fileContent: buffer,
+          }).then ((result) => {
+            console.log(`Cv Update: ${JSON.stringify(result, null, 2)}`);
+            setCvPreview(documentData.data);
+            if (cvButtonRef.current) {
+              cvButtonRef.current.value = '';
+            }
+          });
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+      }
   }
+
+  const loadFile = async (file: File): Promise<ArrayBuffer> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        console.log("File loaded successfully:", reader.result);
+        resolve(reader.result as ArrayBuffer);
+      };
+      reader.onerror = (error) => reject(error);
+      reader.readAsArrayBuffer(file);
+    });
+  };
 
   const compressImage = async (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -158,10 +294,11 @@ export const AccountPage = () => {
               }}
               InputProps={{ style: { fontWeight: 'bold' } }}
               label='Name'
+              defaultValue={account.firstName}
               {...register('name')}
               error={typeof errors.name !== 'undefined'}
               helperText={errors.name?.message}
-            ></TextField>
+            />
           </Box>
           <Box component={FormGroup} padding={2}>
             <TextField
@@ -177,10 +314,11 @@ export const AccountPage = () => {
               }}
               InputProps={{ style: { fontWeight: 'bold' } }}
               label='Surname'
+              defaultValue={account ? account.surname : ''}
               {...register('surname')}
               error={typeof errors.surname !== 'undefined'}
               helperText={errors.surname?.message}
-            ></TextField>
+            />
           </Box>
           <Box component={FormGroup} padding={2}>
             <TextField
@@ -196,88 +334,79 @@ export const AccountPage = () => {
               }}
               InputProps={{ style: { fontWeight: 'bold' } }}
               label='e-Mail'
+              defaultValue={account ? account.email : ''}
               {...register('email')}
               error={typeof errors.email !== 'undefined'}
               helperText={errors.email?.message}
-            ></TextField>
+            />
           </Box>
           <Box component={FormGroup} padding={2}>
-            <TextField
-              variant='outlined'
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: '4px',
-                  backgroundColor: 'secondary.contrastText',
-                  '& fieldset': {
-                    borderRadius: '4px',
-                  },
-                },
-              }}
-              InputProps={{ style: { fontWeight: 'bold' } }}
-              disabled={true}
-              hidden={true}
-              label='Password'
-              type='password'
-              {...register('password')}
-              error={typeof errors.password !== 'undefined'}
-              helperText={errors.password?.message}
-            ></TextField>
+            <Button
+              variant='contained'
+              style={{width: 'auto'}}
+              onClick={handleOpenDialog}
+            >Change Password</Button>
           </Box>
-          <Box component={FormGroup} padding={2}>
-            <TextField
-              variant='outlined'
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: '4px',
-                  backgroundColor: 'secondary.contrastText',
-                  '& fieldset': {
-                    borderRadius: '4px',
-                  },
-                }
-              }}
-              InputProps={{ style: { fontWeight: 'bold' } }}
-              disabled={true}
-              label='Password Confirmation'
-              type='password'
-              {...register('passwordConfirm')}
-              error={typeof errors.passwordConfirm !== 'undefined'}
-              helperText={errors.passwordConfirm?.message}
-            ></TextField>
-          </Box>
+          <PasswordDialog isOpen={isDialogOpen} onClose={handleCloseDialog} />
         </Box>
       <Box display={'flex'} justifyContent={'center'}>
-          <IconButton
-            onClick={handleOnClick}>
+      <Tooltip title='Avatar'>
+        <IconButton
+            onClick={handleFileMenuAvatarOpen}>
             <input
-              ref={iconButtonRef}
+              ref={avatarButtonRef}
               id='avatarButton'
               type="file"
               style={{display:'none'}}
               hidden
               accept="image/*"
-              onChange={handleFileChange}
-              />
+              onChange={handleAvatarFileChange}
+            />
             <Avatar
-          alt="Preview"
-          src={preview || ''}
-          style={{
-            margin: "10px",
-            width: "100px",
-            height: "100px",
-          }} 
-          />
+              alt="Preview"
+              src={preview || ''}
+              style={{
+                margin: "10px",
+                width: "100px",
+                height: "100px",
+              }} 
+            />
           </IconButton>
+        </Tooltip>
+        <Tooltip title='CV'>
+          <IconButton
+            onClick={handleFileMenuCvOpen}>
+            <input
+              ref={cvButtonRef}
+              id='cvButton'
+              type="file"
+              style={{display:'none'}}
+              hidden
+              accept="document/*"
+              onChange={handleCvFileChange}
+            />
+            <Avatar
+              alt="Preview"
+              src={cvPreview || ''}
+              style={{
+                margin: "10px",
+                width: "100px",
+                height: "100px",
+              }} 
+            >
+              <AssignmentIcon />
+            </Avatar>
+           </IconButton>
+         </Tooltip>
       </Box>
       <Box margin={2} display={'flex'} justifyContent={'space-between'}>
-        <Button id='changeAvatar' variant='contained' style={{fontWeight: 'bold', fontSize: '0.7rem', display: 'none' }} onClick={changeAvatar}>Change Avatar</Button>
-        <Button id='deleteAvatar' variant='contained' style={{fontWeight: 'bold', fontSize: '0.7rem', display: 'none' }} onClick={deleteAvatar}>Remove Avatar</Button>
-        <Button id='cancelAvatar' variant='contained' style={{fontWeight: 'bold', fontSize: '0.7rem', display: 'none' }} onClick={hideButtons}>Cancel</Button>
-      </Box>
-      <Box margin={2}>
-        <Button variant='contained' style={{fontWeight: 'bold', fontSize: '1.5rem' }} fullWidth type='submit' onClick={handleSubmit(onSubmit)}>Save</Button>
+        <Button variant='contained' style={{fontWeight: 'bold', fontSize: '1rem' }} type='submit' onClick={handleSubmit(onSubmit)}>Save</Button>
+        <Button variant='contained' style={{fontWeight: 'bold', fontSize: '1rem' }} onClick={onClose}>Cancel</Button>
       </Box>
       <Box>
       </Box>
+      {renderAvatarMenu}
+      {renderCvMenu}
     </Paper>
   );
 };

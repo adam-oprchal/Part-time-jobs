@@ -1,8 +1,3 @@
-/**
- * This is not a production server yet!
- * This is only a minimal backend to get started.
- */
-
 import express from 'express';
 import * as path from 'path';
 import postRouter from "./post/postRouter";
@@ -13,13 +8,19 @@ import session from "express-session";
 import RedisStore from "connect-redis";
 import { redisClient } from "./redisClient";
 import { User } from './types';
+import cors from 'cors';
 
 const app = express();
+const corsOptions = {
+  origin: 'http://localhost:4200',
+  credentials: true
+};
+app.use(cors(corsOptions));
 
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true  }));
 
 passport.use(passportStrategy());
 app.use(
@@ -32,6 +33,8 @@ app.use(
   })
 );
 
+app.use(passport.initialize());
+app.use(passport.session());
 
 passport.serializeUser((_user, cb) => {
   process.nextTick(() => {
@@ -43,19 +46,15 @@ passport.serializeUser((_user, cb) => {
   });
 });
   
-passport.deserializeUser((user, cb) => {
+passport.deserializeUser((_user, cb) => {
   process.nextTick(() => {
-    return cb(null, user!);
+    const user = _user as User;
+    return cb(null, user);
   });
 });
 
 app.use('/api/v1/account', accountRouter);
 app.use('/api/v1/post', postRouter);
-
-app.use(function(err, req, res, next) {
-  console.error(err)
-  res.status(500);
-});
 
 app.get('/api', (req, res) => {
   res.send({ message: 'Welcome to backend!' });

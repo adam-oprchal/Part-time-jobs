@@ -45,6 +45,10 @@ declare module '@mui/material/Paper' {
   interface PaperPropsColorOverrides extends ColorOverrides {}
 }
 
+declare module '@mui/material/Pagination' {
+  interface PaginationPropsColorOverrides extends ColorOverrides {}
+}
+
 export function App() {
   const theme = createTheme(themeOptions as ThemeOptions)
 

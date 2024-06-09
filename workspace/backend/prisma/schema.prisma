@@ -14,45 +14,52 @@ datasource db {
 }
 
 model Account {
-  id           String @id @default(uuid())
-  firstName    String
-  surname      String
-  email        String @unique
-  passwordHash String
+  id            String      @id @default(uuid()) @unique @db.Uuid
+  firstName     String
+  surname       String
+  email         String      @unique
+  passwordHash  String
+  avatar        String      @default("")
 
-  cv Cv?
-  createdPosts Post[] @relation("createdPosts")
-  appliedTo Post[] @relation("appliedTo")
+  cv            Cv?         @relation(name: "CV")
+  createdPosts  Post[]      @relation(name: "createdPosts")
+  appliedTo     Post[]      @relation(name: "appliedTo")
+  readPosts     Post[]      @relation(name: "readPosts")
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  deletedAt     DateTime?
 }
 
 model Cv {
-  id       String @id @default(uuid())
-  fileName String
+  id            String      @id @default(uuid()) @unique @db.Uuid
+  fileName      String
+  fileType      String      @default("")
+  fileSize      Int         @default(0)
+  fileContent   Bytes       @db.ByteA @default("")
 
-  account Account @relation(fields: [accountId], references: [id])
-  accountId String @unique
+  account       Account     @relation(name: "CV", fields: [accountId], references: [id])
+  accountId     String      @unique @db.Uuid
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  deletedAt     DateTime?
 }
 
 model Post {
-  id            String @id @default(uuid())
+  id            String      @id @default(uuid()) @unique @db.Uuid
+  jobName       String
   description   String
   wage          Float
   location      String
   expectedHours Float
 
-  creator Account @relation(name: "createdPosts", fields: [creatorId], references: [id])
-  creatorId String
-  applicants Account[] @relation("appliedTo")
+  creator       Account     @relation(name: "createdPosts", fields: [creatorId], references: [id])
+  creatorId     String      @db.Uuid
+  applicants    Account[]   @relation(name: "appliedTo")
+  readers       Account[]   @relation(name: "readPosts")
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  deletedAt     DateTime?
 }

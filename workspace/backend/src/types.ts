@@ -5,7 +5,10 @@ export type RepositoryResult<T> = Promise<Result<T>>;
 
 export type AccountRegister = Omit<
     Account,
-    "id" | "paswordHash" | "createdAt" | "updatedAt" | "deletedAt"
+    "id" | "createdAt" | "updatedAt" | "deletedAt"
+>
+export type AccountRegisterWithoutPassword = Omit<
+    AccountRegister, "passwordHash"
 >
 
 export type CvUpdate = Omit<

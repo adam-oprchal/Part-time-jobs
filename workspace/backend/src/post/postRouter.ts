@@ -8,12 +8,13 @@ const postRouter = express.Router();
 postRouter.get('/amount', postController.getAmountOfPosts);
 postRouter.get('/by-creator/:creatorId', postController.getPostsByCreator);
 postRouter.get('/:id', postController.getPost);
-postRouter.get('/', postController.getPostsPaginated);
+postRouter.get('/applied', passport.session(), isAuthenticated, postController.getPostsByApplicant);
+postRouter.get('/pages', postController.getPostsPaginated);
+postRouter.get('/', postController.getPosts);
 
-postRouter.post('/', passport.session(), isAuthenticated, postController.createPost);
 postRouter.delete('/:id', passport.session(), isAuthenticated, postController.deletePost);
 postRouter.put('/:id', passport.session(), isAuthenticated, postController.updatePost);
-postRouter.get('/applied', passport.session(), isAuthenticated, postController.getPostsByApplicant);
 postRouter.post('/apply/:postId', passport.session(), isAuthenticated, postController.applyForPost);
+postRouter.post('/', passport.session(), isAuthenticated, postController.createPost);
 
 export default postRouter;

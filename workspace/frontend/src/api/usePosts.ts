@@ -81,3 +81,10 @@ export const usePosts = (page: number, pageSize: number) => {
     queryFn: () => PostApi.getAllPaginated(page, pageSize),
   });
 };
+
+export const useAllPosts = () => {
+  return useQuery<Post[]>({
+    queryKey: ['post'],
+    queryFn: () => PostApi.getPosts(),
+  });
+};

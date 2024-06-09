@@ -57,6 +57,19 @@ export const postRepository = {
         }
     },
 
+    async getPosts(): RepositoryResult<Post[]> {
+        try {
+            return Result.ok(await prisma.post.findMany({
+                where: {
+                    deletedAt: null,
+                }
+            }));
+        } catch (error) {
+            console.error(error);
+            return Result.err(error);
+        }
+    },
+
     async getPostsPaginated(page: number, pageSize: number): RepositoryResult<Post[]> {
         try {
             return Result.ok(await prisma.post.findMany({

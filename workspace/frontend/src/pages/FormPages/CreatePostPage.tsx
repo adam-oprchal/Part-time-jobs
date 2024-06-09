@@ -2,13 +2,15 @@ import { Box, Button, FormGroup, Paper, TextField, Typography } from '@mui/mater
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import { usePostCreate } from '../../api/usePosts';
+import { useNavigate } from 'react-router-dom';
 
 const createPostSchema = z.object({
   jobName: z.string().trim().min(1, { message: 'Cannot be empty' }),
   description: z.string().trim().min(1, { message: 'Cannot be empty' }),
   wage: z.coerce.number({ message: 'Must be a number' })
     .positive({ message: 'Must be greater than 0' }),
-  workTime: z.coerce.number({ message: 'Must be a number' })
+  expectedHours: z.coerce.number({ message: 'Must be a number' })
     .positive({ message: 'Must be greater than 0' }),
   location: z.string().trim().min(1, { message: 'Cannot be empty' }),
 });
@@ -16,6 +18,8 @@ const createPostSchema = z.object({
 type CreatePostData = z.infer<typeof createPostSchema>;
 
 export const CreatePostPage = () => {
+  const { mutateAsync: createJob } = usePostCreate();
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -24,8 +28,13 @@ export const CreatePostPage = () => {
     resolver: zodResolver(createPostSchema),
   });
 
-  const onSubmit: SubmitHandler<CreatePostData> = (values) => {
+  const onSubmit: SubmitHandler<CreatePostData> = async (values) => {
+    const result = createJob({ ...values });
+    if (!result) {
+      console.error('Create joj failed');
+    }
     console.log('Submitted: ', values);
+    navigate('/jobs');
   };
 
   return (
@@ -111,9 +120,9 @@ export const CreatePostPage = () => {
             }}
             InputProps={{ style: { fontWeight: 'bold' } }}
             label='Hours per week'
-            {...register('workTime')}
-            error={typeof errors.workTime !== 'undefined'}
-            helperText={errors.workTime?.message}
+            {...register('expectedHours')}
+            error={typeof errors.expectedHours !== 'undefined'}
+            helperText={errors.expectedHours?.message}
           />
         </Box>
         <Box component={FormGroup} padding={2}>

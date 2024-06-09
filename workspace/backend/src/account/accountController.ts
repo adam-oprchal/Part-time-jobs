@@ -1,11 +1,9 @@
 import {accountRepository} from "./accountRepository";
-import {Request, Response} from "express";
-import { getApplicantsOfPostSchema, registerAccountRequestSchema, downloadForeignCvSchema, changePasswordSchema } from "./accountSchema";
+import {NextFunction, Request, Response} from "express";
+import { getApplicantsOfPostSchema, registerAccountRequestSchema, downloadForeignCvSchema, changePasswordRequestSchema, loginRequestSchema, updateAccountRequestSchema, downloadCvSchema } from "./accountSchema";
 import argon2 from "argon2"
 import { Account } from "types";
 import handleDbErrors from "./error";
-import * as path from "node:path";
-import {promises as fs} from "fs";
 import { postRepository } from "../post/postRepository";
 
 export const accountController = {
@@ -16,9 +14,9 @@ export const accountController = {
             return
         }
 
-        const {firstName, surname, email, password, passwordAgain} = validRequest.data.body
+        const {firstName, surname, email, password, passwordConfirm} = validRequest.data.body
 
-        if (password !== passwordAgain) {
+        if (password !== passwordConfirm) {
             response.status(400).send("passwords differ")
             return
         }
@@ -26,7 +24,7 @@ export const accountController = {
         const passwordHash = await argon2.hash(password);
 
         const result = await accountRepository.create({
-            firstName, surname, email, passwordHash
+            firstName, surname, email, passwordHash, avatar: ''
         });
 
         if (result.isOk) {
@@ -36,27 +34,58 @@ export const accountController = {
         }
     },
 
-    login: async (_req: Request, res: Response) => {
-        res.status(200).end();
+    login: async (request: Request, response: Response) => {
+        const validRequest = await loginRequestSchema.safeParseAsync(request);
+        if (!validRequest.success) {
+            response.status(400).send("invalid request")
+            return
+        }
+        const {email, password} = validRequest.data.body
+        const account = await accountRepository.getUserForAuth(email);
+        if (account.isErr) {
+            response.status(401).send(account.error);
+        }
+        const result = await accountRepository.checkPassword(account.unwrap().passwordHash, password);
+        if (!result) {
+            response.status(401).send("unauthorized")
+        }
+        response.status(200).send(result);
     },
 
-    logout: (req, res, next) => {
-        req.logout(
+    logout: (request: Request, response:Response, next: NextFunction) => {
+        request.logout(
             {
                 keepSessionInfo: false,
             },
-            (err) => {
+            (err: Error) => {
                 if (err) {
                     return next(err);
                 }
-                res.status(200).end();
+                response.status(200).end();
             }
         );
     },
 
+    update: async (request: Request, response: Response) => {
+        const validRequest = await updateAccountRequestSchema.safeParseAsync(request);
+        if (!validRequest.success) {
+            response.status(400).send("invalid request")
+            return
+        }
+
+        const {firstName, surname, email, avatar} = validRequest.data.body
+
+        const result = await accountRepository.update(request.session.passport.user.id, { firstName, surname, email, avatar });
+
+        if (result.isOk) {
+            response.status(201).send(result.value)
+        } else if (result.isErr) {
+            handleDbErrors(result.error, response);
+        }
+    },
+
     getUserAccount: async (request: Request, response: Response) => {
         const result = await accountRepository.getById(request.session.passport.user.id);
-
         if (result.isOk) {
             response.send(result.value)
         } else if (result.isErr) {
@@ -103,15 +132,26 @@ export const accountController = {
     },
 
     changePassword: async (request: Request, response: Response) => {
-        const validRequest = await changePasswordSchema.safeParseAsync(request);
+        const validRequest = await changePasswordRequestSchema.safeParseAsync(request);
         if (!validRequest.success) {
+            console.error(validRequest.error.message);
             response.status(400).send("invalid request")
             return
         }
 
-        const {newPassword, newPasswordAgain} = validRequest.data.body
+        const {oldPassword, newPassword, newPasswordConfirm} = validRequest.data.body
 
-        if (newPassword !== newPasswordAgain) {
+        const account = await accountRepository.getByIdForAuth(request.session.passport.user.id);
+        if (account.isErr) {
+            response.status(401).send(account.error);
+        }
+        const valid = await accountRepository.checkPassword(account.unwrap().passwordHash, oldPassword);
+        if (!valid) {
+            response.status(401).send("unauthorized")
+        }
+        response.status(200).send(valid);
+
+        if (newPassword !== newPasswordConfirm) {
             response.status(400).send("passwords differ")
             return
         }
@@ -137,46 +177,37 @@ export const accountController = {
         }
     },
 
-    moveUploadedFile: async (filePath: string, newFilename: string) =>  {
-        const fs = require('fs').promises; // Import for file system operations (promises)
-        await fs.rename(filePath, path.join(__dirname, '../uploads/', newFilename));
-    },
-
-    uploadCv: async (request: Request & {file: any}, response: Response) => {
-        console.log('uploadCv');
-
-        const currentUserId = request.session.passport.user.id;     
-
-        if (request.file) {
-            const newFilename = currentUserId + '.pdf';
-            const fs = require('fs').promises;
-            await fs.rename(request.file.path, path.join('../../uploads/cv/', newFilename));
-
-            console.log('File uploaded successfully:', request.file.filename);
-        } else {
-            console.error('error uploading file');
-            response.status(400).send("Bad request")
+    uploadCv: async (request: Request, response: Response) => {
+        const validRequest = await downloadCvSchema.safeParseAsync(request);
+        if (!validRequest.success) {
+            console.log(JSON.stringify(validRequest, null, 2));
+            response.status(400).send("invalid request")
             return
         }
 
-        const result = await accountRepository.updateCv(currentUserId);
+        const {fileName, fileType, fileSize, fileContent} = validRequest.data.body;
+        const accountId = request.session.passport.user.id;
+
+        const result = await accountRepository.updateCv({fileName, accountId, fileType, fileSize, fileContent});
 
         if (result.isOk) {
-            response.status(200).send(result.value)
+            response.status(200).send(result.unwrap())
         } else if (result.isErr) {
             handleDbErrors(result.error, response);
         }
     },
 
-    downloadCv: async (request: Request, response: Response) => {
-        console.log('downloadCv');
+    getCv: async (request: Request, response: Response) => {
+        const result = await accountRepository.getCv(request.session.passport.user.id);
 
-        const currentUserId = request.session.passport.user.id;
-
-        response.download('../../uploads/cv/', currentUserId + '.pdf');
+        if (result.isOk) {
+            response.send(result.value)
+        } else if (result.isErr) {
+            handleDbErrors(result.error, response);
+        }
     },
 
-    downloadForeignCv: async (request: Request, response: Response) => {
+    getForeignCv: async (request: Request, response: Response) => {
         console.log('downloadForeignCv');
 
         const validRequest = await downloadForeignCvSchema.safeParseAsync(request);

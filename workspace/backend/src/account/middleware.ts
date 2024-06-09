@@ -8,13 +8,13 @@ declare module "express-session" {
 }
 
 export const isAuthenticated = (
-  req: Request,
-  res: Response,
+  request: Request,
+  response: Response,
   next: NextFunction
 ) => {
-  if (req.session.passport?.user) {
+  if (request.session.passport?.user) {
     next();
   } else {
-    res.status(401).send("authentication required");
+    response.status(401).send("authentication required");
   }
 };

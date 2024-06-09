@@ -7,6 +7,7 @@ import MailIcon from '@mui/icons-material/Mail';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import { useState } from 'react'
 import { AccountCircle } from '@mui/icons-material'
+import { AccountApi } from '../../api/accountApi';
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -37,14 +38,15 @@ export default function Navbar() {
 
   const handleLogoutClick = () => {
     handleMenuClose();
-    navigate('/');
+    AccountApi.logout();
+    navigate('/login');
   };
 
   const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
-  const menuId = 'primary-search-account-menu';
+  const menuId = 'primary-menu';
   const renderMenu = (
     <Menu
       anchorEl={anchorEl}
@@ -66,7 +68,7 @@ export default function Navbar() {
     </Menu>
   );
 
-  const mobileMenuId = 'primary-search-account-menu-mobile';
+  const mobileMenuId = 'primary-menu-mobile';
   const renderMobileMenu = (
     <Menu
       anchorEl={mobileMoreAnchorEl}
@@ -95,7 +97,7 @@ export default function Navbar() {
         <IconButton
           size="large"
           aria-label="account of current user"
-          aria-controls="primary-search-account-menu"
+          aria-controls="primary-menu"
           aria-haspopup="true"
           color="inherit"
         >

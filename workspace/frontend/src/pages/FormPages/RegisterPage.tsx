@@ -1,10 +1,12 @@
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Box, Button, FormGroup, Paper, TextField, Typography } from '@mui/material';
+import { Box, Button, FormGroup, Link, Paper, TextField, Typography } from '@mui/material';
 import isEmail from 'validator/lib/isEmail'
+import { useNavigate } from 'react-router-dom';
+import { AccountApi } from '../../api/accountApi';
 
-export const registerSchema = z
+const registerSchema = z
   .object({
     name: z.string().trim().min(1, { message: 'Cannot be empty' }),
     surname: z.string().trim().min(1, { message: 'Cannot be empty' }),
@@ -23,9 +25,11 @@ export const registerSchema = z
   }
 );
 
-export type RegisterData = z.infer<typeof registerSchema>;
+type RegisterData = z.infer<typeof registerSchema>;
 
 export const RegisterPage = () => {
+  const navigate = useNavigate();
+  
   const {
     register,
     handleSubmit,
@@ -34,8 +38,16 @@ export const RegisterPage = () => {
     resolver: zodResolver(registerSchema),
   });
 
-  const onSubmit: SubmitHandler<RegisterData> = (values) => {
-    console.log('Submitted: ', values);
+  const handleLogin = () => {
+    navigate('/login');
+  }
+
+  const onSubmit: SubmitHandler<RegisterData> = async (values) => {
+    const result = await AccountApi.register({ firstName: values.name, surname: values.surname, email: values.email, password: values.password, passwordConfirm: values.passwordConfirm });
+    if (!result) {
+      return;
+    }
+    navigate('/login');
   };
 
   return (
@@ -146,6 +158,9 @@ export const RegisterPage = () => {
             ></TextField>
           </Box>
         </Box>
+      <Box component={FormGroup} display='flex' padding={2}>
+        <Link component="button" variant="body2" textAlign='right' underline="none" sx={{color: 'blue'}} onClick={handleLogin} >I already have an account</Link>
+      </Box>
       <Box margin={2}>
         <Button variant='contained' style={{fontWeight: 'bold', fontSize: '1.5rem' }} fullWidth type='submit' onClick={handleSubmit(onSubmit)}>Register</Button>
       </Box>

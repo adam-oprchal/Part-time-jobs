@@ -4,15 +4,13 @@ import {paginationSchema, postSchema} from "./schema";
 
 export const postController = {
     createPost: async (request: Request, response: Response)=> {
-        console.log('createPost', request.body)
-
         const parseResult = await postSchema.safeParseAsync(request.body)
         if (!parseResult.success) {
             response.status(400).send(parseResult.error);
             return;
         }
 
-	    let post = {
+        const post = {
 	        creatorId: request.session.passport.user.id,
             ...request.body
         }
@@ -47,8 +45,6 @@ export const postController = {
     },
 
     updatePost: async (request: Request, response: Response)=> {
-        console.log('updatePost', request.params.id, request.body)
-
         const parseResult = await postSchema.safeParseAsync(request.body)
         if (!parseResult.success) {
             response.status(400).send(parseResult.error)
@@ -64,7 +60,7 @@ export const postController = {
                 return
             }
     
-            let post = {
+            const post = {
                 creatorId: request.session.passport.user.id,
                 ...request.body
             }
@@ -80,7 +76,6 @@ export const postController = {
     },
 
     getPost: async (request: Request, response: Response)=> {
-        console.log('getPost', request.params.id)
 
         const result = await postRepository.getPost(request.params.id);
 
@@ -92,7 +87,6 @@ export const postController = {
     },
 
     getPostsPaginated: async (request: Request, response: Response)=> {
-        console.log('getPostsPaginated', request.query)
 
         const validRequest = await paginationSchema.safeParseAsync(request);
         if (!validRequest.success) {
@@ -111,8 +105,18 @@ export const postController = {
         }
     },
 
+    getPosts: async (request: Request, response: Response)=> {
+
+        const result = await postRepository.getPosts();
+
+        if (result.isOk) {
+            response.send(result.value);
+        } else {
+            response.status(400).send("Bad request");
+        }
+    },
+
     getAmountOfPosts: async (request: Request, response: Response)=> {
-        console.log('getAmountOfPosts')
 
         const result = await postRepository.getAmountOfPosts();
 
@@ -124,7 +128,6 @@ export const postController = {
     },
 
     getPostsByCreator: async (request: Request, response: Response)=> {
-        console.log('getPostsByCreator', request.params.creatorId)
 
         const result = await postRepository.getPostsByCreator(request.params.creatorId);
 
@@ -136,7 +139,6 @@ export const postController = {
     },
 
     getPostsByApplicant: async (request: Request, response: Response)=> {
-        console.log('getPostsByApplicant', request.params.applicantId)
 
         const result = await postRepository.getPostsByApplicant(request.session.passport.user.id);
 
@@ -148,8 +150,6 @@ export const postController = {
     },
 
     applyForPost: async (request: Request, response: Response)=> {
-        console.log('applyForPost', request.params.postId, request.params.applicantId)
-
         const result = await postRepository.addApplicantToPost(request.params.postId, request.session.passport.user.id);
 
         if (result.isOk) {

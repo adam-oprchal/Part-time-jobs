@@ -1,17 +1,25 @@
 import { axiosInstance } from '.';
 import { registerData } from './types';
-import { Account, AccountWithCvWithoutPassword, Cv } from 'types';
+import { Account, AccountRegisterWithoutPassword, AccountWithCvWithoutPassword, AccountWithoutPassword, Cv, CvUpdate } from 'types';
 
 async function register(data: registerData) {
-  const resp = await axiosInstance.post<AccountWithCvWithoutPassword>(
-    'account/registration',
+  const resp = await axiosInstance.post<AccountWithoutPassword>(
+    'account/register',
+    data
+  );
+  return resp.data;
+}
+
+async function updateAccount(data: AccountRegisterWithoutPassword) {
+  const resp = await axiosInstance.put<AccountRegisterWithoutPassword>(
+    'account/update',
     data
   );
   return resp.data;
 }
 
 async function login(email: string, password: string) {
-  const resp = await axiosInstance.post<void>('account/login', {
+  const resp = await axiosInstance.post<boolean>('account/login', {
     email,
     password,
   });
@@ -24,10 +32,14 @@ async function logout() {
 }
 
 async function getUserAccount() {
-  const resp = await axiosInstance.get<AccountWithCvWithoutPassword>(
-    'account/'
-  );
-  return resp.data;
+  try{
+    const resp = await axiosInstance.get<AccountWithoutPassword>(
+      'account/'
+    );
+    return resp.data;
+  } catch(error) {
+    console.error(`getUserAccount: ${error}`);
+  }
 }
 
 async function getApplicantsByPost(postId: string) {
@@ -44,17 +56,32 @@ async function getApplicantsByAccount() {
   return resp.data;
 }
 
-async function changePassword(newPassword: string, newPasswordAgain: string) {
-  const resp = await axiosInstance.post<void>('account/change-password', {
-    newPassword,
-    newPasswordAgain,
-  });
-  return resp.data;
+async function changePassword(oldPassword: string, newPassword: string, newPasswordConfirm: string) {
+  try{
+      const resp = await axiosInstance.put<boolean>('account/change-password', {
+        oldPassword,
+        newPassword,
+        newPasswordConfirm,
+    });
+    return resp.data;
+  } catch(error) {
+    console.error(`changePassword: ${error}`);
+  }
 }
 
 async function deleteAccount() {
   const resp = await axiosInstance.delete<void>('account/');
   return resp.data;
+}
+
+async function uploadCv(cvData: CvUpdate) {
+  try{
+    console.log(JSON.stringify(cvData, null, 2));
+    const resp = await axiosInstance.post<Cv>('account/cv', { cvData });
+    return resp.data;
+  } catch(error) {
+    console.error(error);
+  }
 }
 
 export const AccountApi = {
@@ -65,5 +92,7 @@ export const AccountApi = {
   getApplicantsByPost,
   getApplicantsByAccount,
   changePassword,
+  updateAccount,
   deleteAccount,
+  uploadCv,
 };

@@ -9,7 +9,7 @@ export const passportStrategy = () =>
             usernameField: "email",
             passwordField: "password",
         },
-        async (email, password, done) => {
+        async (email: string, password: string, done) => {
             const account = await accountRepository.getUserForAuth(email);
 
             if (account.isErr) {

@@ -1,31 +1,21 @@
 import express from "express";
 import {accountController} from "./accountController";
-import multer from 'multer';
 import passport from "passport";
 import { isAuthenticated } from "./middleware";
 
 const accountRouter = express.Router();
 
-// Configure Multer for single file upload
-const upload = multer({
-    dest: '../../uploads/cv/', // Change this to your desired upload directory
-    limits: { fileSize: 5000000 }, // Limit file size to 5MB (optional)
-    fileFilter: (req, file, cb) => {
-        cb(null, true);
-    },
-});
-
-accountRouter.post('/registration', accountController.register);
+accountRouter.post('/register', accountController.register);
 accountRouter.post("/login", passport.authenticate("local"), accountController.login);
+accountRouter.post('/cv', passport.session(), isAuthenticated, accountController.uploadCv);
 accountRouter.get("/logout", passport.session(), accountController.logout);
-
-accountRouter.get('/', passport.session(), isAuthenticated, accountController.getUserAccount);
-accountRouter.post('/change-password', passport.session(), isAuthenticated, accountController.changePassword);
 accountRouter.get('/applicants-by-post/:postId', passport.session(), isAuthenticated, accountController.getApplicantsOfPost);
 accountRouter.get('/applicants-by-account', passport.session(), isAuthenticated, accountController.getApplicantsOfAccountPosts);
+accountRouter.get('/cv', passport.session(), isAuthenticated, accountController.getCv);
+accountRouter.get('/cv/:accountId', passport.session(), isAuthenticated, accountController.getForeignCv);
+accountRouter.get('/', passport.session(), isAuthenticated, accountController.getUserAccount);
+accountRouter.put("/update", passport.session(), isAuthenticated, accountController.update);
+accountRouter.put('/change-password', passport.session(), isAuthenticated, accountController.changePassword);
 accountRouter.delete('/', passport.session(), isAuthenticated, accountController.delete);
-accountRouter.post('/cv', upload.single('cv'), passport.session(), isAuthenticated, accountController.uploadCv);
-accountRouter.get('/cv', passport.session(), isAuthenticated, accountController.downloadCv);
-accountRouter.get('/cv/:accountId', passport.session(), isAuthenticated, accountController.downloadForeignCv);
 
 export default accountRouter;

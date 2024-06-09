@@ -2,7 +2,9 @@
   "name": "workspace",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "db:seed": "tsx seed/seed.ts"
+  },
   "private": true,
   "dependencies": {
     "@badrap/result": "^0.2.13",

@@ -1,27 +1,36 @@
 import { Prisma } from '@prisma/client';
-import { faker } from '@faker-js/faker';
-import argon2 from "argon2"
+import { fakerSK } from '@faker-js/faker';
 
-faker.seed(42);
+fakerSK.seed(42);
 
 // example password hash generated from the string "password"
 const passwordHash = "$argon2id$v=19$m=65536,t=3,p=4$Y3xzwKSSBcAx4aI426P4vA$lJPzVvFd1EAi6/eqUpOMDBWb+zVtoyQ03qFXpwfgxAo"
 
 export const accountsToCreate: Prisma.AccountCreateInput[] = Array.from({ length: 10 }, () => ({
-    firstName: faker.person.firstName(),
-    surname: faker.person.lastName(),
-    email: faker.internet.email(),
+    firstName: fakerSK.person.firstName(),
+    surname: fakerSK.person.lastName(),
+    email: fakerSK.internet.email(),
     passwordHash
 }));
 
-export const cvNames: string[] = Array.from({ length: 7 }, () => (
-    faker.string.alphanumeric({length: 8})
-));
+export const cvs = [
+    { fileName: 'CV01.pdf', fileType: 'application/pdf', fileSize: 318570, fileContent: './seed/examples/CV01.pdf'},
+    { fileName: 'CV02.pdf', fileType: 'application/pdf', fileSize: 68360, fileContent: './seed/examples/CV02.pdf'},
+    { fileName: 'CV03.pdf', fileType: 'application/pdf', fileSize: 318570, fileContent: './seed/examples/CV03.pdf'},
+    { fileName: 'CV04.pdf', fileType: 'application/pdf', fileSize: 68360, fileContent: './seed/examples/CV04.pdf'},
+    { fileName: 'CV05.pdf', fileType: 'application/pdf', fileSize: 318570, fileContent: './seed/examples/CV05.pdf'},
+    { fileName: 'CV06.pdf', fileType: 'application/pdf', fileSize: 68360, fileContent: './seed/examples/CV06.pdf'},
+    { fileName: 'CV07.pdf', fileType: 'application/pdf', fileSize: 318570, fileContent: './seed/examples/CV07.pdf'},
+    { fileName: 'CV08.pdf', fileType: 'application/pdf', fileSize: 68360, fileContent: './seed/examples/CV08.pdf'},
+    { fileName: 'CV09.pdf', fileType: 'application/pdf', fileSize: 318570, fileContent: './seed/examples/CV09.pdf'},
+    { fileName: 'CV10.pdf', fileType: 'application/pdf', fileSize: 68360, fileContent: './seed/examples/CV01.pdf'},
+];
 
 export const posts = Array.from({ length: 10 }, () => ({
-    description: faker.company.name(),
-    location: faker.location.city(),
-    wage: faker.number.int({min: 100, max: 1000}),
-    expectedHours: faker.number.int({min: 10, max: 80}),
+    jobName: fakerSK.person.jobTitle(),
+    description: fakerSK.lorem.paragraphs({min: 3, max: 5}),
+    location: fakerSK.location.city(),
+    wage: fakerSK.number.int({min: 10, max: 50}),
+    expectedHours: fakerSK.number.int({min: 10, max: 80}),
 }));
   

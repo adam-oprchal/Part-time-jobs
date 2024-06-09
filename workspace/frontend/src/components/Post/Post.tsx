@@ -1,19 +1,19 @@
 import { Box, Button, Grid, Paper, Typography } from '@mui/material';
 
 interface PostProps {
-  name: string;
+  jobName: string;
   description: string;
   wage: number;
   location: string;
-  hours: number;
+  expectedHours: number;
 }
 
-export const Post = ({
-  name,
+export const SinglePost = ({
+  jobName,
   description,
   wage,
   location,
-  hours
+  expectedHours
 }: PostProps) => {
   
   return (
@@ -27,40 +27,40 @@ export const Post = ({
         container
         spacing={0}
         direction="row"
-        alignItems="center"
-        style={{ minHeight: '12rem' }}
+        style={{ minHeight: '8rem' }}
+        maxHeight={50}
       >
         <Grid item xs={7}>
-          <Grid container>
+          <Grid container maxHeight={50}>
             <Grid item xs={12}>
-              <Typography component="p" fontSize='2.5rem' margin={1}>
-                {name}
+              <Typography component="p" fontSize='1.5rem' margin={1}>
+                {jobName}
               </Typography>
             </Grid>
             <Grid item xs={12}>
-              <Typography component="p" fontSize='1.3rem' margin={1}>
+              <Typography component="p" fontSize='1rem' margin={1}>
                 {description}
               </Typography>
             </Grid>
           </Grid>
         </Grid>
         <Grid item xs={2}>
-          <Typography component="p" fontSize='1.3rem' margin={1}>
-            <span style={{fontSize: '2rem'}}>${wage}</span> per hour
+          <Typography component="p" fontSize='1rem' margin={1}>
+            <span style={{fontSize: '1.5rem'}}>${wage}</span> per hour
           </Typography>
-          <Typography component="p" fontSize='1.3rem' margin={1}>
-            <span style={{fontSize: '2rem'}}>{hours}</span> hour(s) per week
+          <Typography component="p" fontSize='1rem' margin={1}>
+            <span style={{fontSize: '1.5rem'}}>{expectedHours}</span> hour(s) per week
           </Typography>
         </Grid>
         <Grid item xs={2}>
-          <Typography component="p" fontSize='2rem' textAlign={'left'} margin={1}>
+          <Typography component="p" fontSize='1.4rem' textAlign={'left'} margin={1}>
             {location}
           </Typography>
         </Grid>
         <Grid item xs={1}>
           <Box display={'flex'} flexDirection={'column'} rowGap={2} alignItems={'center'}>
-            <Button style={{fontSize: '1.2rem'}} variant="contained">Details</Button>
-            <Button style={{fontSize: '1.2rem'}} variant="contained">Apply</Button>
+            <Button style={{fontSize: '1rem'}} variant="contained">Details</Button>
+            <Button style={{fontSize: '1rem'}} variant="contained">Apply</Button>
           </Box>
         </Grid>
       </Grid>

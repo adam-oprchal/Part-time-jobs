@@ -29,7 +29,7 @@ export function Page({ title, color, children } : PageProps) {
       <>
         <Typography
           component="h1"
-          variant="h4"
+          variant="h5"
           color={color}
           ml={2}
           mb={2}

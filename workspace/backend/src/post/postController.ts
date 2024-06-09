@@ -111,6 +111,17 @@ export const postController = {
         }
     },
 
+    getPosts: async (request: Request, response: Response)=> {
+
+        const result = await postRepository.getPosts();
+
+        if (result.isOk) {
+            response.send(result.value);
+        } else {
+            response.status(400).send("Bad request");
+        }
+    },
+
     getAmountOfPosts: async (request: Request, response: Response)=> {
         console.log('getAmountOfPosts')
 

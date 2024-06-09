@@ -45,8 +45,14 @@ async function get(id: string) {
 }
 
 async function getAllPaginated(page: number, pageSize: number) {
-  const resp = await axiosInstance.get<Post[]>('post/', {
+  const resp = await axiosInstance.get<Post[]>('post/pages', {
     params: { page, pageSize },
+  });
+  return resp.data;
+}
+
+async function getPosts() {
+  const resp = await axiosInstance.get<Post[]>('post/', {
   });
   return resp.data;
 }
@@ -61,4 +67,5 @@ export const PostApi = {
   apply,
   get,
   getAllPaginated,
+  getPosts,
 };

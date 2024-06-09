@@ -1,28 +1,27 @@
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { isEmail } from 'validator';
-import { Box, Button, FormGroup, Paper, TextField, Typography } from '@mui/material';
+import { Box, Button, FormGroup, Link, Paper, TextField, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { AccountApi } from '../../api/accountApi';
+import { LoginCredentials } from 'types';
 
-const loginSchema = z.object({
-
-  email: z.string().min(1, 'E-mail address is required!').refine(isEmail, 'E-mail address is invalid!'),
-  password: z.string().min(1, 'Password is required!'),
-});
-
-type LoginData = z.infer<typeof loginSchema>;
 
 export const LoginPage = () => {
-
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginData>({
-    resolver: zodResolver(loginSchema),
+  const navigate = useNavigate();
+  
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginCredentials>({
   });
 
+  const handleRegister = () => {
+    navigate('/register');
+  }
 
-  const onSubmit: SubmitHandler<LoginData> = (values) => {
-    console.log('Submitted: ', values);
+  const onSubmit: SubmitHandler<LoginCredentials> = async (values) => {
+    const result = await AccountApi.login(values.email, values.password);
+    if (!result) {
+      return;
+    }
+    navigate('/jobs');
   };
-
   return (
 
     <Paper style={{minHeight: 300, minWidth: 300, maxWidth: '20vw',  overflow: 'hidden'}} sx={{backgroundColor: 'light.main', margin: 'auto' }} elevation={2} >
@@ -67,11 +66,15 @@ export const LoginPage = () => {
             }}
             InputProps={{ style: { fontWeight: 'bold' } }}
             label='password'
+            type='password'
             {...register('password')}
             error={typeof errors.password !== 'undefined'}
             helperText={errors.password?.message}
           />
         </Box>
+      </Box>
+      <Box component={FormGroup} display='flex' padding={2}>
+        <Link component="button" variant="body2" textAlign='right' underline="none" sx={{color: 'blue'}} onClick={handleRegister} >Signup for an account</Link>
       </Box>
       <Box margin={2}>
         <Button variant='contained' style={{fontWeight: 'bold', fontSize: '1.5rem' }} fullWidth type='submit' onClick={handleSubmit(onSubmit)}>Login</Button>

@@ -1,5 +1,4 @@
 import { Navigate, RouteObject } from "react-router-dom"
-// import { WelcomePage } from "../pages/WelcomePage/WelcomePage";
 import { JobsPage } from "../pages/JobsPage/JobsPage";
 import { LoginPage } from "../pages/FormPages/LoginPage";
 import { RegisterPage } from "../pages/FormPages/RegisterPage";

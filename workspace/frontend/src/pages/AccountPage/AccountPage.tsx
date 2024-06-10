@@ -11,6 +11,7 @@ import isEmail from 'validator/lib/isEmail';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import { documentData}  from './icon'
 import { Buffer } from 'buffer';
+import { useAccount } from '../../components/base/AccountContext';
 
 const accountUpdateSchema = z.object({
     name: z.string().trim().min(1, { message: 'Cannot be empty' }),
@@ -22,6 +23,7 @@ const accountUpdateSchema = z.object({
 type AccountUpdateData = z.infer<typeof accountUpdateSchema>;
 
 export const AccountPage = () => {
+  const { setAvatar, setFirstName, setSurname } = useAccount();
   const [preview, setPreview] = useState<string | null>();
   const [cvPreview, setCvPreview] = useState<string | null>();
   const [account, setAccount] = useState<AccountWithoutPassword | null>();
@@ -31,7 +33,7 @@ export const AccountPage = () => {
   const [anchorElCv, setAnchorElCv] = useState<null | HTMLElement>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const navigate = useNavigate();
-
+  
   useEffect(() => {
     const setResp = async () => {
       const account = await AccountApi.getUserAccount();
@@ -166,6 +168,9 @@ export const AccountPage = () => {
 
   const onSubmit: SubmitHandler<AccountUpdateData> = async (values) => {
     await AccountApi.updateAccount({ firstName: values.name, surname: values.surname, email: values.email, avatar: preview as string });
+    setAvatar(preview as string);
+    setFirstName(values.name as string);
+    setSurname(values.surname as string);
     navigate('/jobs');
   };
 
@@ -294,7 +299,7 @@ export const AccountPage = () => {
               }}
               InputProps={{ style: { fontWeight: 'bold' } }}
               label='Name'
-              defaultValue={account.firstName}
+              defaultValue={account ? account.firstName : ''}
               {...register('name')}
               error={typeof errors.name !== 'undefined'}
               helperText={errors.name?.message}
@@ -370,7 +375,9 @@ export const AccountPage = () => {
                 width: "100px",
                 height: "100px",
               }} 
-            />
+            >
+              {!preview && account.firstName.slice(0, 1) + account.surname.slice(0, 1)}
+            </Avatar>
           </IconButton>
         </Tooltip>
         <Tooltip title='CV'>

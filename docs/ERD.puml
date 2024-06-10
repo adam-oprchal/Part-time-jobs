@@ -5,25 +5,39 @@ skin rose
 entity Account {
   * id: uuid
   --
-  * name: string
+  * firstName: string
   * surname: string
   * email: string @unique
-  * hashedPassword: string
+  * passwordHash: string
+  * avatar: string
+  * createdAt: datetime
+  * updatedAt: datetime
+  deletedAt: datetime
 }
 
 entity Post {
   * id: uuid
   --
+  * jobName: string
   * description: string
-  * wage: decimal
+  * wage: float
   * location: string
-  * expectedHours: decimal
+  * expectedHours: float
+  * createdAt: datetime
+  * updatedAt: datetime
+  deletedAt: datetime
 }
 
 entity CV {
   * id: uuid
   --
-  * filename: string
+  * fileName: string
+  * fileType: string
+  * fileSize: int
+  * fileContent: bytes  
+  * createdAt: datetime
+  * updatedAt: datetime
+  deletedAt: datetime
 }
 
 Account ||--o{ Post : creates 

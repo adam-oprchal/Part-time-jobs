@@ -5,11 +5,12 @@ import { Avatar, Box, Button, FormGroup, IconButton, Menu, MenuItem, Paper, Text
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { PasswordDialog } from './ChangePasswordDialog';
 import { AccountApi } from '../../api/accountApi';
-import { AccountWithoutPassword } from 'types';
+import { AccountWithoutPassword, CvDown } from 'types';
 import { useNavigate } from 'react-router-dom';
 import isEmail from 'validator/lib/isEmail';
 import AssignmentIcon from '@mui/icons-material/Assignment';
-import { documentData}  from './icon'
+import { documentData}  from './icondoc'
+import { pdfData}  from './iconpdf'
 import { Buffer } from 'buffer';
 import { useAccount } from '../../components/base/AccountContext';
 
@@ -27,6 +28,7 @@ export const AccountPage = () => {
   const [preview, setPreview] = useState<string | null>();
   const [cvPreview, setCvPreview] = useState<string | null>();
   const [account, setAccount] = useState<AccountWithoutPassword | null>();
+  const [cv, setCv] = useState<CvDown | null>();
   const avatarButtonRef = useRef<HTMLInputElement | null>(null);
   const cvButtonRef = useRef<HTMLInputElement | null>(null);
   const [anchorElAvatar, setAnchorElAvatar] = useState<null | HTMLElement>(null);
@@ -39,6 +41,20 @@ export const AccountPage = () => {
       const account = await AccountApi.getUserAccount();
       setAccount(account);
       account && setPreview(account.avatar);
+      AccountApi.downloadCv()
+      .then((data) => {
+        setCv(data);
+        if (data) {
+          if (data.fileType.includes('pdf')) {
+            setCvPreview(pdfData.data);
+          } else {
+            setCvPreview(documentData.data);
+          }
+        }
+      }).catch(() => {
+        setCv(null);
+        setCvPreview('');
+      })
     }
     if (!account) {
       setResp();
@@ -105,8 +121,47 @@ export const AccountPage = () => {
     handleMenuCvClose();
   };
 
-  const handleCvDeleteClick = () => {
+  function dataURLToArrayBuffer(dataURL: string) {
+    const base64String = dataURL.split(',')[1];
+    const binaryString = atob(base64String);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes.buffer;
+  }
+
+  const showFile = (fileBuffer: Buffer, fileType: string) => {
+    const blob = new Blob([fileBuffer], { type: fileType });
+    const blobUrl = URL.createObjectURL(blob);
+    const width = 600;
+    const height = 800;
+    const left = (window.screen.width / 2) - (width / 2);
+    const top = (window.screen.height / 2) - (height / 2);
+    const newWindow = window.open(
+      blobUrl, 
+      '_blank', 
+      `width=${width},height=${height},top=${top},left=${left},resizable,scrollbars`
+    );
+    if (newWindow) {
+      newWindow.focus();
+    } else {
+      alert('Popup blocked. Please allow popups for this website.');
+    }
+  }
+  
+  const handleCvOpenClick = async () => {
     handleMenuCvClose();
+    const cv = await AccountApi.downloadCv();
+    if (cv) {
+      showFile(Buffer.from(dataURLToArrayBuffer(cv.fileContent)), cv.fileType);
+    }
+  }
+
+  const handleCvDeleteClick = async () => {
+    handleMenuCvClose();
+    await AccountApi.deleteCv();
     setCvPreview('');
   };
 
@@ -159,6 +214,7 @@ export const AccountPage = () => {
       open={isCvMenuOpen}
       onClose={handleMenuCvClose}
     >
+      {cvPreview && <MenuItem onClick={handleCvOpenClick}>Show</MenuItem>}
       {cvPreview && <MenuItem onClick={handleCvChangeClick}>Change</MenuItem>}
       {!cvPreview && <MenuItem onClick={handleCvChangeClick}>Insert</MenuItem>}
       {cvPreview && <MenuItem onClick={handleCvDeleteClick}>Delete</MenuItem>}
@@ -192,44 +248,41 @@ export const AccountPage = () => {
     }
   }
 
-  const handleCvFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleCvFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
     const files = event.target.files;
     if (files && files[0]) {
       const file = files[0];
 
-      loadFile(file)
-        .then((fileContent) => {
-          console.log(`fileContent: ${JSON.stringify(fileContent, null, 2)}`);
-          const buffer = Buffer.from(new Uint8Array(fileContent));
-          AccountApi.uploadCv({
-            fileName: file.name,
-            fileType: file.type,
-            fileSize: file.size,
-            fileContent: buffer,
-          }).then ((result) => {
-            console.log(`Cv Update: ${JSON.stringify(result, null, 2)}`);
-            setCvPreview(documentData.data);
-            if (cvButtonRef.current) {
-              cvButtonRef.current.value = '';
-            }
-          });
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-      }
+      const fileContent = await loadFile(file);
+      AccountApi.uploadCv({
+        fileName: file.name,
+        fileType: file.type,
+        fileSize: file.size,
+        fileContent: fileContent,
+      }).then (() => {
+        if (file.type.includes('pdf')) {
+          setCvPreview(pdfData.data);
+        } else {
+          setCvPreview(documentData.data);
+        }
+        if (cvButtonRef.current) {
+          cvButtonRef.current.value = '';
+        }
+      });
+      showFile(Buffer.from(dataURLToArrayBuffer(fileContent)), file.type);
+    }
   }
 
-  const loadFile = async (file: File): Promise<ArrayBuffer> => {
+  const loadFile = async (file: File): Promise<string> => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+  
     return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        console.log("File loaded successfully:", reader.result);
-        resolve(reader.result as ArrayBuffer);
-      };
+      reader.onloadend = () => {
+        resolve(reader.result as string);
+      }
       reader.onerror = (error) => reject(error);
-      reader.readAsArrayBuffer(file);
     });
   };
 
@@ -297,7 +350,6 @@ export const AccountPage = () => {
                   },
                 },
               }}
-              InputProps={{ style: { fontWeight: 'bold' } }}
               label='Name'
               defaultValue={account ? account.firstName : ''}
               {...register('name')}
@@ -317,7 +369,6 @@ export const AccountPage = () => {
                   },
                 },
               }}
-              InputProps={{ style: { fontWeight: 'bold' } }}
               label='Surname'
               defaultValue={account ? account.surname : ''}
               {...register('surname')}
@@ -337,7 +388,6 @@ export const AccountPage = () => {
                   },
                 },
               }}
-              InputProps={{ style: { fontWeight: 'bold' } }}
               label='e-Mail'
               defaultValue={account ? account.email : ''}
               {...register('email')}

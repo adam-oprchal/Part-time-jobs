@@ -1,5 +1,5 @@
 import { Post } from 'types';
-import { axiosInstance } from '.';
+import axiosInstance from '.';
 import { createPostData } from './types';
 
 async function create(data: createPostData) {
@@ -52,9 +52,7 @@ async function getAllPaginated(page: number, pageSize: number) {
 }
 
 async function getPosts() {
-  const resp = await axiosInstance.get<Post[]>('post/', {
-  });
-  return resp.data;
+    return (await axiosInstance.get<Post[]>('post/')).data;
 }
 
 export const PostApi = {

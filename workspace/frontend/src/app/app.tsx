@@ -2,6 +2,7 @@ import { PaletteColor, ThemeOptions, ThemeProvider, createTheme } from '@mui/mat
 import themeOptions from '../../mui.theme.json'
 import { RouterProvider } from 'react-router-dom'
 import router from '../router';
+import { AccountProvider } from '../components/base/AccountContext';
 
 declare module '@mui/material/styles' {
   interface PaletteOptions {
@@ -54,7 +55,9 @@ export function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <RouterProvider router={router} />
+      <AccountProvider>
+        <RouterProvider router={router} />
+      </AccountProvider>
     </ThemeProvider>
   )
 }

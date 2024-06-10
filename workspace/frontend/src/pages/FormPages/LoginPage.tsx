@@ -1,25 +1,32 @@
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Box, Button, FormGroup, Link, Paper, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, FormGroup, Link, Paper, Stack, TextField, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { AccountApi } from '../../api/accountApi';
 import { LoginCredentials } from 'types';
-
+import { useAccount } from '../../components/base/AccountContext';
+import { useState } from 'react';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
-  
+  const { setAvatar, setFirstName, setSurname } = useAccount();
+  const [ loginError, setLoginError ] = useState(false);
   const { register, handleSubmit, formState: { errors } } = useForm<LoginCredentials>({
   });
 
   const handleRegister = () => {
     navigate('/register');
   }
-
   const onSubmit: SubmitHandler<LoginCredentials> = async (values) => {
     const result = await AccountApi.login(values.email, values.password);
-    if (!result) {
+    if (result === false) {
+      setLoginError(true);
       return;
     }
+    setLoginError(false);
+    const account = await AccountApi.getUserAccount();
+    setAvatar(account.avatar);
+    setFirstName(account.firstName);
+    setSurname(account.surname);
     navigate('/jobs');
   };
   return (
@@ -79,6 +86,12 @@ export const LoginPage = () => {
       <Box margin={2}>
         <Button variant='contained' style={{fontWeight: 'bold', fontSize: '1.5rem' }} fullWidth type='submit' onClick={handleSubmit(onSubmit)}>Login</Button>
       </Box>
+      {loginError &&
+      <Stack sx={{ width: '100%' }} spacing={2}>
+        <Alert severity="error">
+          The username or password is incorrect!
+        </Alert>
+      </Stack>}
     </Paper>
   );
 };

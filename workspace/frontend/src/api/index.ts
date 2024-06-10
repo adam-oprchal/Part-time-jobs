@@ -1,6 +1,15 @@
 import axios from 'axios';
 
-export const axiosInstance = axios.create({
+const axiosInstance = axios.create({
   baseURL: 'http://localhost:3333/api/v1',
   withCredentials: true
 });
+
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+export default axiosInstance;

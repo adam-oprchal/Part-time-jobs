@@ -8,12 +8,14 @@ import MoreIcon from '@mui/icons-material/MoreVert';
 import { useState } from 'react'
 import { AccountCircle } from '@mui/icons-material'
 import { AccountApi } from '../../api/accountApi';
+import { useAccount } from './AccountContext';
 
 export default function Navbar() {
   const navigate = useNavigate();
-  const theme = useTheme()
+  const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState<null | HTMLElement>(null);
+  const { avatar, setAvatar, firstName, setFirstName, surname, setSurname } = useAccount();
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -36,9 +38,12 @@ export default function Navbar() {
     navigate('/account');
   };
 
-  const handleLogoutClick = () => {
+  const handleLogoutClick = async () => {
     handleMenuClose();
     AccountApi.logout();
+    setAvatar('');
+    setFirstName('');
+    setSurname('');
     navigate('/login');
   };
 
@@ -63,8 +68,10 @@ export default function Navbar() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMyAccountClick}>My Account</MenuItem>
-      <MenuItem onClick={handleLogoutClick}>Logout</MenuItem>
+      {!firstName && <MenuItem disabled onClick={handleMyAccountClick}>My Account</MenuItem>}
+      {!firstName && <MenuItem disabled onClick={handleLogoutClick}>Logout</MenuItem>}
+      {firstName && <MenuItem onClick={handleMyAccountClick}>My Account</MenuItem>}
+      {firstName && <MenuItem onClick={handleLogoutClick}>Logout</MenuItem>}
     </Menu>
   );
 
@@ -85,15 +92,23 @@ export default function Navbar() {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem>
+      {firstName && <MenuItem>
         <IconButton size="large" aria-label="show 4 new mails" color="inherit">
           <Badge badgeContent={4} color="error">
             <MailIcon />
           </Badge>
         </IconButton>
         <p>Messages</p>
-      </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
+      </MenuItem>}
+      {!firstName && <MenuItem disabled>
+        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+          <Badge badgeContent={4} color="error">
+            <MailIcon />
+          </Badge>
+        </IconButton>
+        <p>Messages</p>
+      </MenuItem>}
+      {firstName && <MenuItem onClick={handleProfileMenuOpen}>
         <IconButton
           size="large"
           aria-label="account of current user"
@@ -104,7 +119,19 @@ export default function Navbar() {
           <AccountCircle />
         </IconButton>
         <p>Profile</p>
-      </MenuItem>
+      </MenuItem>}
+      {!firstName && <MenuItem disabled onClick={handleProfileMenuOpen}>
+        <IconButton
+          size="large"
+          aria-label="account of current user"
+          aria-controls="primary-menu"
+          aria-haspopup="true"
+          color="inherit"
+        >
+          <AccountCircle />
+        </IconButton>
+        <p>Profile</p>
+      </MenuItem>}
     </Menu>
   );
 
@@ -142,14 +169,19 @@ export default function Navbar() {
                   <IconButton
                     style={{ padding: 0 }}
                     onClick={handleProfileMenuOpen}
-                  >
-                    <Avatar
-                      variant='circular'
-                      alt="Person"
-                      sizes=''
-                      sx={{ padding: 3.5, fontWeight: 'bold', fontSize: '1.5rem' }}
+                    hidden
                     >
-                      {'N/A'}
+                    <Avatar
+                      alt="Preview"
+                      src={avatar || ''}
+                      style={{
+                        margin: "1px",
+                        width: "100px",
+                        height: "100px",
+                      }}
+                      sizes=''
+                    >
+                      {!avatar && firstName ? firstName.slice(0, 1) + surname.slice(0, 1) : 'N/A'}
                     </Avatar>
                   </IconButton>
                 </Grid>

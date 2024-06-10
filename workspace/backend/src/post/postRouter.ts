@@ -5,12 +5,12 @@ import { isAuthenticated } from "../account/middleware";
 
 const postRouter = express.Router();
 
-postRouter.get('/amount', postController.getAmountOfPosts);
+postRouter.get('/amount', passport.session(), isAuthenticated, postController.getAmountOfPosts);
 postRouter.get('/by-creator/:creatorId', postController.getPostsByCreator);
-postRouter.get('/:id', postController.getPost);
+postRouter.get('/:id', passport.session(), isAuthenticated, postController.getPost);
 postRouter.get('/applied', passport.session(), isAuthenticated, postController.getPostsByApplicant);
-postRouter.get('/pages', postController.getPostsPaginated);
-postRouter.get('/', postController.getPosts);
+postRouter.get('/pages', passport.session(), isAuthenticated, postController.getPostsPaginated);
+postRouter.get('/', passport.session(), isAuthenticated, postController.getPosts);
 
 postRouter.delete('/:id', passport.session(), isAuthenticated, postController.deletePost);
 postRouter.put('/:id', passport.session(), isAuthenticated, postController.updatePost);

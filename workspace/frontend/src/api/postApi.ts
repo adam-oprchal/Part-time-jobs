@@ -1,5 +1,5 @@
 import { Post } from 'types';
-import { axiosInstance } from '.';
+import axiosInstance from '.';
 import { createPostData } from './types';
 
 async function create(data: createPostData) {

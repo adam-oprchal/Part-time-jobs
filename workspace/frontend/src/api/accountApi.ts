@@ -1,4 +1,4 @@
-import { axiosInstance } from '.';
+import axiosInstance from '.';
 import { registerData } from './types';
 import { Account, AccountRegisterWithoutPassword, AccountWithCvWithoutPassword, AccountWithoutPassword, Cv, CvUpdate } from 'types';
 

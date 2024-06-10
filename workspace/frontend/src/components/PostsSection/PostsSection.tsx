@@ -2,13 +2,15 @@ import { Box, MenuItem, Pagination, Select } from '@mui/material';
 import { SinglePost } from '../Post/Post';
 import { useAllPosts } from '../../api/usePosts';
 import { Post } from 'types'
-import { SetStateAction, useState } from 'react';
+import { ChangeEvent, SetStateAction, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export const PostsSection = () => {
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-
-  const handlePageChange = (_event: any, newPage: SetStateAction<number>) => {
+  const navigate = useNavigate();
+  
+  const handlePageChange = (_event: ChangeEvent<unknown>, newPage: SetStateAction<number>) => {
     setPage(newPage);
   };
 
@@ -17,12 +19,15 @@ export const PostsSection = () => {
     setPage(1);
   };
 
-  const result = useAllPosts();
-  if (result.error) {
-    console.log(JSON.stringify(result, null, 2));
-    return;
-  }
-  const posts: Post[] = result.data || [];
+  const { data, error } = useAllPosts();
+
+  useEffect(() => {
+    if (error && error.message === 'Request failed with status code 401') {
+      navigate('/login');
+    }
+  }, [error, navigate]);
+
+  const posts: Post[] = data || [];
 
   const indexOfLastRow = page * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;

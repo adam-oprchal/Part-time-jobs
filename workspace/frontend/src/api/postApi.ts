@@ -52,9 +52,7 @@ async function getAllPaginated(page: number, pageSize: number) {
 }
 
 async function getPosts() {
-  const resp = await axiosInstance.get<Post[]>('post/', {
-  });
-  return resp.data;
+    return (await axiosInstance.get<Post[]>('post/')).data;
 }
 
 export const PostApi = {

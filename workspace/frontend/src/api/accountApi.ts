@@ -19,11 +19,15 @@ async function updateAccount(data: AccountRegisterWithoutPassword) {
 }
 
 async function login(email: string, password: string) {
-  const resp = await axiosInstance.post<boolean>('account/login', {
-    email,
-    password,
-  });
-  return resp.data;
+  try{
+    const resp = await axiosInstance.post<boolean>('account/login', {
+      email,
+      password,
+    });
+    return resp.data;
+  } catch(error) {
+    return false;
+  }
 }
 
 async function logout() {
@@ -32,14 +36,10 @@ async function logout() {
 }
 
 async function getUserAccount() {
-  try{
     const resp = await axiosInstance.get<AccountWithoutPassword>(
       'account/'
     );
     return resp.data;
-  } catch(error) {
-    console.error(`getUserAccount: ${error}`);
-  }
 }
 
 async function getApplicantsByPost(postId: string) {

@@ -3,7 +3,11 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "db:seed": "tsx seed/seed.ts"
+    "db:seed": "tsx seed/seed.ts",
+    "format:check": "prettier -c **/*.{ts,tsx,html,css}",
+    "format:fix": "prettier -w **/*.{ts,tsx,html,css}",
+    "lint:check": "eslint frontend/ backend/ types/",
+    "lint:fix": "eslint --fix frontend/ backend/ types/"
   },
   "private": true,
   "dependencies": {

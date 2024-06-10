@@ -13,3 +13,20 @@ export const paginationSchema = z.object({
         pageSize: z.coerce.number(),
     })
 })
+
+export const postSortingSchema = z.object({
+    query: z.object({
+        sorting: z.union([
+            z.undefined(),
+            z.object({
+                jobName: z.union([z.literal("asc"), z.literal("desc")])
+            }),
+            z.object({
+                location: z.union([z.literal("asc"), z.literal("desc")])
+            }),
+            z.object({
+                wage: z.union([z.literal("asc"), z.literal("desc")])
+            })
+        ])
+    })
+})

@@ -20,3 +20,8 @@ export type User = {
     id: string;
     email: string;
   };
+
+export type PostSorting = undefined 
+    | { jobName?: 'asc' | 'desc' } 
+    | { location?: 'asc' | 'desc' }
+    | { wage?: 'asc' | 'desc' }

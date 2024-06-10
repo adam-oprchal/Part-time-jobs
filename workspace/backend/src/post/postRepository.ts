@@ -2,6 +2,7 @@ import prisma  from "../db/client";
 import {Post} from "types";
 import {RepositoryResult} from "../types";
 import {Result} from "@badrap/result";
+import { PostSorting } from "../types";
 
 export const postRepository = {
 
@@ -57,12 +58,13 @@ export const postRepository = {
         }
     },
 
-    async getPosts(): RepositoryResult<Post[]> {
+    async getPosts(sorting: PostSorting): RepositoryResult<Post[]> {
         try {
             return Result.ok(await prisma.post.findMany({
                 where: {
                     deletedAt: null,
-                }
+                },
+                orderBy: sorting,
             }));
         } catch (error) {
             console.error(error);
@@ -70,14 +72,15 @@ export const postRepository = {
         }
     },
 
-    async getPostsPaginated(page: number, pageSize: number): RepositoryResult<Post[]> {
+    async getPostsPaginated(page: number, pageSize: number, sorting: PostSorting): RepositoryResult<Post[]> {
         try {
             return Result.ok(await prisma.post.findMany({
                 skip: page * pageSize,
                 take: pageSize,
                 where: {
                     deletedAt: null,
-                }
+                },
+                orderBy: sorting,
             }));
         } catch (error) {
             console.error(error);

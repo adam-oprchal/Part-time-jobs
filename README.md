@@ -6,10 +6,6 @@
 
 ```npm i```
 
-### Running FE
-
-```npx nx run frontend:serve```
-
 ### Running BE
 
 ```cd backend```
@@ -27,6 +23,10 @@ create .env file according to .env.example
 ```docker run -d -p 6379:6379 redis```
 
 ```npx nx run backend:serve```
+
+### Running FE
+
+```npx nx run frontend:serve```
 
 ## Types
 

@@ -1,6 +1,6 @@
 import {postRepository} from "./postRepository";
 import {Request, Response} from "express";
-import {paginationSchema, postSchema} from "./schema";
+import {paginationSchema, postSchema, postSortingSchema} from "./schema";
 
 export const postController = {
     createPost: async (request: Request, response: Response)=> {
@@ -96,7 +96,15 @@ export const postController = {
 
         const { page, pageSize } = validRequest.data.query
 
-        const result = await postRepository.getPostsPaginated(page, pageSize);
+        const sortingRequest = await postSortingSchema.safeParseAsync(request);
+        if (!sortingRequest.success) {
+            response.status(400).send("Bad request")
+            return
+        }
+
+        const { sorting } = sortingRequest.data.query;
+
+        const result = await postRepository.getPostsPaginated(page, pageSize, sorting);
 
         if (result.isOk) {
             response.send(result.value);
@@ -107,7 +115,15 @@ export const postController = {
 
     getPosts: async (request: Request, response: Response)=> {
 
-        const result = await postRepository.getPosts();
+        const validRequest = await postSortingSchema.safeParseAsync(request);
+        if (!validRequest.success) {
+            response.status(400).send("Bad request")
+            return
+        }
+
+        const { sorting } = validRequest.data.query;
+
+        const result = await postRepository.getPosts(sorting);
 
         if (result.isOk) {
             response.send(result.value);

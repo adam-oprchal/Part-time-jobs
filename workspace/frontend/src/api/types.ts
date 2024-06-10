@@ -13,3 +13,9 @@ export type createPostData = {
   location: string;
   expectedHours: number;
 };
+
+export type PostSorting =
+  | undefined
+  | { jobName: 'asc' | 'desc' }
+  | { location: 'asc' | 'desc' }
+  | { wage: 'asc' | 'desc' };

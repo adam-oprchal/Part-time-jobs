@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { PostApi } from './postApi';
 import { Post } from 'types';
-import { createPostData } from './types';
+import { PostSorting, createPostData } from './types';
 
 export const usePostCreate = () => {
   const queryClient = useQueryClient();
@@ -79,18 +79,22 @@ export const usePost = (id: string) => {
   });
 };
 
-export const usePosts = (page: number, pageSize: number) => {
+export const usePosts = (
+  page: number,
+  pageSize: number,
+  sorting: PostSorting = undefined
+) => {
   return useQuery<Post[]>({
-    queryKey: ['post', page, pageSize],
-    queryFn: () => PostApi.getAllPaginated(page, pageSize),
-    retry:0,
+    queryKey: ['post', page, pageSize, sorting],
+    queryFn: () => PostApi.getAllPaginated(page, pageSize, sorting),
+    retry: 0,
   });
 };
 
-export const useAllPosts = () => {
+export const useAllPosts = (sorting: PostSorting = undefined) => {
   return useQuery<Post[]>({
-    queryKey: ['post'],
-    queryFn: () => PostApi.getPosts(),
-    retry:0,
+    queryKey: ['post', sorting],
+    queryFn: () => PostApi.getPosts(sorting),
+    retry: 0,
   });
 };

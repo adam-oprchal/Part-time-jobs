@@ -4,8 +4,8 @@
   "license": "MIT",
   "scripts": {
     "db:seed": "tsx seed/seed.ts",
-    "format:check": "prettier -c **/*.{ts,tsx,html,css}",
-    "format:fix": "prettier -w **/*.{ts,tsx,html,css}",
+    "format:check": "prettier --ignore-path backend/data/ -c **/*.{ts,tsx,html,css}",
+    "format:fix": "prettier --ignore-path backend/data/ -w **/*.{ts,tsx,html,css}",
     "lint:check": "eslint frontend/ backend/ types/",
     "lint:fix": "eslint --fix frontend/ backend/ types/"
   },

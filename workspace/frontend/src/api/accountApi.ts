@@ -1,6 +1,6 @@
 import axiosInstance from '.';
 import { registerData } from './types';
-import { Account, AccountRegisterWithoutPassword, AccountWithCvWithoutPassword, AccountWithoutPassword, Cv, CvUpdate } from 'types';
+import { Account, AccountRegisterWithoutPassword, AccountWithCvWithoutPassword, AccountWithoutPassword, Cv, CvDown, CvUpdate } from 'types';
 
 async function register(data: registerData) {
   const resp = await axiosInstance.post<AccountWithoutPassword>(
@@ -19,7 +19,7 @@ async function updateAccount(data: AccountRegisterWithoutPassword) {
 }
 
 async function login(email: string, password: string) {
-  try{
+  try {
     const resp = await axiosInstance.post<boolean>('account/login', {
       email,
       password,
@@ -75,13 +75,31 @@ async function deleteAccount() {
 }
 
 async function uploadCv(cvData: CvUpdate) {
-  try{
-    console.log(JSON.stringify(cvData, null, 2));
-    const resp = await axiosInstance.post<Cv>('account/cv', { cvData });
+  try {
+    const resp = await axiosInstance.post<Cv>('account/cv', {...cvData} );
     return resp.data;
   } catch(error) {
     console.error(error);
   }
+}
+
+async function downloadCv() {
+  try {
+    const resp = await axiosInstance.get<CvDown>('account/cv');
+    return resp.data;
+  } catch(error) {
+    console.error(error);
+  }
+}
+
+async function downloadForeignCv(accountId: string) {
+  const resp = await axiosInstance.get<Cv>(`account/cv/${accountId}`);
+  return resp.data;
+}
+
+async function deleteCv() {
+  const resp = await axiosInstance.delete<void>('account/cv');
+  return resp.data;
 }
 
 export const AccountApi = {
@@ -95,4 +113,7 @@ export const AccountApi = {
   updateAccount,
   deleteAccount,
   uploadCv,
+  downloadCv,
+  downloadForeignCv,
+  deleteCv,
 };

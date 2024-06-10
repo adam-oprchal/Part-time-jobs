@@ -1,6 +1,6 @@
 import {accountRepository} from "./accountRepository";
 import {NextFunction, Request, Response} from "express";
-import { getApplicantsOfPostSchema, registerAccountRequestSchema, downloadForeignCvSchema, changePasswordRequestSchema, loginRequestSchema, updateAccountRequestSchema, downloadCvSchema } from "./accountSchema";
+import { getApplicantsOfPostSchema, registerAccountRequestSchema, downloadForeignCvSchema, changePasswordRequestSchema, loginRequestSchema, updateAccountRequestSchema, uploadCvSchema } from "./accountSchema";
 import argon2 from "argon2"
 import { Account } from "types";
 import handleDbErrors from "./error";
@@ -134,7 +134,6 @@ export const accountController = {
     changePassword: async (request: Request, response: Response) => {
         const validRequest = await changePasswordRequestSchema.safeParseAsync(request);
         if (!validRequest.success) {
-            console.error(validRequest.error.message);
             response.status(400).send("invalid request")
             return
         }
@@ -178,20 +177,19 @@ export const accountController = {
     },
 
     uploadCv: async (request: Request, response: Response) => {
-        const validRequest = await downloadCvSchema.safeParseAsync(request);
+        const validRequest = await uploadCvSchema.safeParseAsync(request);
         if (!validRequest.success) {
-            console.log(JSON.stringify(validRequest, null, 2));
             response.status(400).send("invalid request")
             return
         }
 
         const {fileName, fileType, fileSize, fileContent} = validRequest.data.body;
         const accountId = request.session.passport.user.id;
-
-        const result = await accountRepository.updateCv({fileName, accountId, fileType, fileSize, fileContent});
+        const fileUpload = Buffer.from(fileContent);
+        const result = await accountRepository.updateCv({fileName, accountId, fileType, fileSize, fileContent: fileUpload});
 
         if (result.isOk) {
-            response.status(200).send(result.unwrap())
+            response.status(201).send(result);
         } else if (result.isErr) {
             handleDbErrors(result.error, response);
         }
@@ -201,7 +199,8 @@ export const accountController = {
         const result = await accountRepository.getCv(request.session.passport.user.id);
 
         if (result.isOk) {
-            response.send(result.value)
+            const originalFile = { ...result.value, fileContent: result.value.fileContent.toString() } 
+            response.send(originalFile);
         } else if (result.isErr) {
             handleDbErrors(result.error, response);
         }
@@ -239,5 +238,15 @@ export const accountController = {
 
             response.download('../../uploads/cv/', accountId + '.pdf');
         }
-    }
+    },
+
+    deleteCv: async (request: Request, response: Response) => {
+        const result = await accountRepository.deleteCv(request.session.passport.user.id);
+
+        if (result.isOk) {
+            response.status(204).send()
+        } else if (result.isErr) {
+            handleDbErrors(result.error, response);
+        }
+    },    
 }

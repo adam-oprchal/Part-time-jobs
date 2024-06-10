@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { Buffer } from 'buffer';
 
 export const registerAccountRequestSchema = z.object({
     body: z.object({
@@ -32,16 +31,16 @@ export const getApplicantsOfPostSchema = z.object({
         fileName: z.string(),
         fileType: z.string(),
         fileSize: z.number(),
-        fileContent: z.instanceof(Buffer),
+        fileContent: z.string(),
     })
 })
 
-export const downloadCvSchema = z.object({
+export const uploadCvSchema = z.object({
     body: z.object({
         fileName: z.string(),
         fileType: z.string(),
         fileSize: z.number(),
-        fileContent: z.instanceof(Buffer),
+        fileContent: z.string(),
     })
 })
 

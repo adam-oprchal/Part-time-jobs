@@ -17,7 +17,6 @@ export const accountRepository = {
 
             return Result.ok(result)
         } catch (error) {
-            console.error(error.message);
             return Result.err(new Error(error.code))
         }
     },
@@ -200,13 +199,10 @@ export const accountRepository = {
         try {
             const cv = await prisma.cv.findUniqueOrThrow({
                 where: {
-                    id: accountId,
+                    accountId,
                     deletedAt: null
                 },
             });
-            if (!cv) {
-                return Result.err(new Error('No Cv for specific user'));
-            }
             return Result.ok(cv)
         } catch (error) {
             return Result.err(new Error(error.code))
@@ -231,6 +227,7 @@ export const accountRepository = {
                     fileContent: data.fileContent,
                     createdAt: new Date(),
                     updatedAt: new Date(),
+                    deletedAt: null,
                 },
                 create: data
             })
@@ -239,5 +236,18 @@ export const accountRepository = {
         } catch (error) {
             return Result.err(new Error(error.code))
         }
-    }
+    },
+
+    async deleteCv(accountId: string): RepositoryResult<undefined> {
+        try {
+            await prisma.cv.update({
+                where: {accountId: accountId},
+                data: {deletedAt: new Date()}
+            });
+            return Result.ok(undefined)
+        } catch (error) {
+            return Result.err(new Error(error.code))
+        }
+    },
+
 }

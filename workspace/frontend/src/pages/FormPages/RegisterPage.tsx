@@ -72,7 +72,6 @@ export const RegisterPage = () => {
                   },
                 },
               }}
-              InputProps={{ style: { fontWeight: 'bold' } }}
               label='Name'
               {...register('name')}
               error={typeof errors.name !== 'undefined'}
@@ -91,7 +90,6 @@ export const RegisterPage = () => {
                   },
                 },
               }}
-              InputProps={{ style: { fontWeight: 'bold' } }}
               label='Surname'
               {...register('surname')}
               error={typeof errors.surname !== 'undefined'}
@@ -110,7 +108,6 @@ export const RegisterPage = () => {
                   },
                 },
               }}
-              InputProps={{ style: { fontWeight: 'bold' } }}
               label='e-Mail'
               {...register('email')}
               error={typeof errors.email !== 'undefined'}
@@ -129,7 +126,6 @@ export const RegisterPage = () => {
                   },
                 },
               }}
-              InputProps={{ style: { fontWeight: 'bold' } }}
               label='Password'
               type='password'
               {...register('password')}
@@ -149,7 +145,6 @@ export const RegisterPage = () => {
                   },
                 },
               }}
-              InputProps={{ style: { fontWeight: 'bold' } }}
               label='Password Confirmation'
               type='password'
               {...register('passwordConfirm')}

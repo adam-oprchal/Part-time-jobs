@@ -65,7 +65,6 @@ export const PasswordDialog: FC<PasswordDialogProps> = ({ isOpen, onClose }) => 
                   },
                 },
               }}
-              InputProps={{ style: { fontWeight: 'bold' } }}
               label='Old password'
               type='password'
               {...register('oldPassword')}
@@ -85,7 +84,6 @@ export const PasswordDialog: FC<PasswordDialogProps> = ({ isOpen, onClose }) => 
                   },
                 },
               }}
-              InputProps={{ style: { fontWeight: 'bold' } }}
               label='New Password'
               type='password'
               {...register('newPassword')}
@@ -105,7 +103,6 @@ export const PasswordDialog: FC<PasswordDialogProps> = ({ isOpen, onClose }) => 
                   },
                 },
               }}
-              InputProps={{ style: { fontWeight: 'bold' } }}
               label='New password confirmation'
               type='password'
               {...register('newPasswordConfirm')}

@@ -52,7 +52,6 @@ export const LoginPage = () => {
                 },
               },
             }}
-            InputProps={{ style: { fontWeight: 'bold' } }}
             label='email'
             {...register('email')}
             error={typeof errors.email !== 'undefined'}
@@ -71,7 +70,6 @@ export const LoginPage = () => {
                 },
               },
             }}
-            InputProps={{ style: { fontWeight: 'bold' } }}
             label='password'
             type='password'
             {...register('password')}

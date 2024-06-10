@@ -59,7 +59,6 @@ export const CreatePostPage = () => {
                 },
               },
             }}
-            InputProps={{ style: { fontWeight: 'bold' } }}
             label='Job name'
             {...register("jobName")}
             error={typeof errors.jobName !== 'undefined'}
@@ -79,7 +78,6 @@ export const CreatePostPage = () => {
                 },
               },
             }}
-            InputProps={{ style: { fontWeight: 'bold' } }}
             variant='outlined'
             label='Job description'
             {...register("description")}
@@ -99,7 +97,6 @@ export const CreatePostPage = () => {
                 },
               },
             }}
-            InputProps={{ style: { fontWeight: 'bold' } }}
             label='Wage per hour'
             {...register('wage')}
             error={typeof errors.wage !== 'undefined'}
@@ -118,7 +115,6 @@ export const CreatePostPage = () => {
                 },
               },
             }}
-            InputProps={{ style: { fontWeight: 'bold' } }}
             label='Hours per week'
             {...register('expectedHours')}
             error={typeof errors.expectedHours !== 'undefined'}
@@ -137,7 +133,6 @@ export const CreatePostPage = () => {
                 },
               },
             }}
-            InputProps={{ style: { fontWeight: 'bold' } }}
             label='Location'
             {...register('location')}
             error={typeof errors.location !== 'undefined'}

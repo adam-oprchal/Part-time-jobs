@@ -1,0 +1,25 @@
+default:
+  image: node:18-alpine3.14
+  before_script:
+    - cd workspace
+  tags:
+    - shared-fi
+
+stages:
+  - style
+
+format:
+  stage: style
+  script:
+    - npm i --save-dev prettier
+    - npm run format:check
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push"
+
+lint:
+  stage: style
+  script:
+    - npm i --save-dev eslint
+    - npm run lint:check
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push"

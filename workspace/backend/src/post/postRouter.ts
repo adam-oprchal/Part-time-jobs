@@ -15,6 +15,7 @@ postRouter.get('/', passport.session(), isAuthenticated, postController.getPosts
 postRouter.delete('/:id', passport.session(), isAuthenticated, postController.deletePost);
 postRouter.put('/:id', passport.session(), isAuthenticated, postController.updatePost);
 postRouter.post('/apply/:postId', passport.session(), isAuthenticated, postController.applyForPost);
+postRouter.post('/unapply/:postId', passport.session(), isAuthenticated, postController.unapplyFromPost);
 postRouter.post('/', passport.session(), isAuthenticated, postController.createPost);
 
 export default postRouter;

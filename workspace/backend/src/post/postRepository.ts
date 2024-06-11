@@ -151,5 +151,25 @@ export const postRepository = {
             console.error(error);
             return Result.err(error);
         }
+    },
+
+    async removeApplicantFromPost(postId: string, applicantId: string): RepositoryResult<Post> {
+        try {
+            return Result.ok(await prisma.post.update({
+                where: {
+                    id: postId,
+                },
+                data: {
+                    applicants: {
+                        disconnect: {
+                            id: applicantId,
+                        }
+                    }
+                }
+            }));
+        } catch (error) {
+            console.error(error);
+            return Result.err(error);
+        }
     }
 }

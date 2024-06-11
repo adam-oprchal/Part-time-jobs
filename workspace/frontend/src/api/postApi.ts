@@ -39,6 +39,13 @@ async function apply(postId: string) {
   return resp.data;
 }
 
+async function unapply(postId: string) {
+  const resp = await axiosInstance.post<Post>(
+    `post/unapply/${postId}`
+  );
+  return resp.data;
+}
+
 async function get(id: string) {
   const resp = await axiosInstance.get<Post>(`post/${id}`);
   return resp.data;
@@ -68,6 +75,7 @@ export const PostApi = {
   getPostsByCreator,
   getAppliedPosts,
   apply,
+  unapply,
   get,
   getAllPaginated,
   getPosts,

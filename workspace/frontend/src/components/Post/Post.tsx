@@ -1,6 +1,9 @@
 import { Box, Button, Grid, Paper, Typography } from '@mui/material';
+import { usePostApply, usePostUnapply } from '../../api/usePosts';
+import { useState } from 'react';
 
 interface PostProps {
+  id: string,
   jobName: string;
   description: string;
   wage: number;
@@ -9,12 +12,28 @@ interface PostProps {
 }
 
 export const SinglePost = ({
+  id,
   jobName,
   description,
   wage,
   location,
   expectedHours
 }: PostProps) => {
+  const {mutateAsync: applyToPost } = usePostApply(id);
+  const {mutateAsync: unapplyToPost } = usePostUnapply(id);
+  const [ buttonLabel, setButtonLabel ] = useState<"Apply"|"Unapply">("Apply");
+
+  const onApply = () => {
+    if (buttonLabel === "Apply") {
+      applyToPost()
+        .then(_ => setButtonLabel("Unapply"))
+        .catch(_ => console.log("apply failed"))
+    } else {
+      unapplyToPost()
+        .then(_ => setButtonLabel("Apply"))
+        .catch(_ => console.log("unapply failed"))
+    }
+  };
   
   return (
     <Box border={5} color={'dark.main'} sx={{backgroundColor: 'dark.main'}}>
@@ -60,7 +79,7 @@ export const SinglePost = ({
         <Grid item xs={1}>
           <Box display={'flex'} flexDirection={'column'} rowGap={2} alignItems={'center'}>
             <Button style={{fontSize: '1rem'}} variant="contained">Details</Button>
-            <Button style={{fontSize: '1rem'}} variant="contained">Apply</Button>
+            <Button style={{fontSize: '1rem'}} variant="contained" onClick={onApply} color={buttonLabel === "Apply" ? 'primary' : 'secondary'}>{buttonLabel}</Button>
           </Box>
         </Grid>
       </Grid>

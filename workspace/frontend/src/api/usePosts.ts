@@ -71,6 +71,17 @@ export const usePostApply = (postId: string) => {
   });
 };
 
+export const usePostUnapply = (postId: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => PostApi.unapply(postId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['post'] });
+    },
+  });
+};
+
 export const usePost = (id: string) => {
   return useQuery<Post>({
     queryKey: ['post', id],

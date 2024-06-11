@@ -174,4 +174,14 @@ export const postController = {
             response.status(400).send("Bad request");
         }
     },
+
+    unapplyFromPost: async (request: Request, response: Response)=> {
+        const result = await postRepository.removeApplicantFromPost(request.params.postId, request.session.passport.user.id);
+
+        if (result.isOk) {
+            response.send(result.value);
+        } else {
+            response.status(400).send("Bad request");
+        }
+    },
 }

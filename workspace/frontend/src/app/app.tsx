@@ -1,6 +1,11 @@
-import { PaletteColor, ThemeOptions, ThemeProvider, createTheme } from '@mui/material'
-import themeOptions from '../../mui.theme.json'
-import { RouterProvider } from 'react-router-dom'
+import {
+  PaletteColor,
+  ThemeOptions,
+  ThemeProvider,
+  createTheme,
+} from '@mui/material';
+import themeOptions from '../../mui.theme.json';
+import { RouterProvider } from 'react-router-dom';
 import router from '../router';
 import { AccountProvider } from '../components/base/AccountContext';
 
@@ -51,7 +56,7 @@ declare module '@mui/material/Pagination' {
 }
 
 export function App() {
-  const theme = createTheme(themeOptions as ThemeOptions)
+  const theme = createTheme(themeOptions as ThemeOptions);
 
   return (
     <ThemeProvider theme={theme}>
@@ -59,7 +64,7 @@ export function App() {
         <RouterProvider router={router} />
       </AccountProvider>
     </ThemeProvider>
-  )
+  );
 }
 
-export default App
+export default App;

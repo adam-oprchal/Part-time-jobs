@@ -33,16 +33,12 @@ async function getAppliedPosts() {
 }
 
 async function apply(postId: string) {
-  const resp = await axiosInstance.post<Post>(
-    `post/apply/${postId}`
-  );
+  const resp = await axiosInstance.post<Post>(`post/apply/${postId}`);
   return resp.data;
 }
 
 async function unapply(postId: string) {
-  const resp = await axiosInstance.post<Post>(
-    `post/unapply/${postId}`
-  );
+  const resp = await axiosInstance.post<Post>(`post/unapply/${postId}`);
   return resp.data;
 }
 

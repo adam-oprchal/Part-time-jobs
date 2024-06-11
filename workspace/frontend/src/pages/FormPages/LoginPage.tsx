@@ -1,5 +1,15 @@
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Alert, Box, Button, FormGroup, Link, Paper, Stack, TextField, Typography } from '@mui/material';
+import {
+  Alert,
+  Box,
+  Button,
+  FormGroup,
+  Link,
+  Paper,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { AccountApi } from '../../api/accountApi';
 import { LoginCredentials } from 'types';
@@ -9,13 +19,16 @@ import { useState } from 'react';
 export const LoginPage = () => {
   const navigate = useNavigate();
   const { setAvatar, setFirstName, setSurname } = useAccount();
-  const [ loginError, setLoginError ] = useState(false);
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginCredentials>({
-  });
+  const [loginError, setLoginError] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginCredentials>({});
 
   const handleRegister = () => {
     navigate('/register');
-  }
+  };
   const onSubmit: SubmitHandler<LoginCredentials> = async (values) => {
     const result = await AccountApi.login(values.email, values.password);
     if (result === false) {
@@ -30,19 +43,30 @@ export const LoginPage = () => {
     navigate('/jobs');
   };
   return (
-
-    <Paper style={{minHeight: 300, minWidth: 300, maxWidth: '20vw',  overflow: 'hidden'}} sx={{backgroundColor: 'light.main', margin: 'auto' }} elevation={2} >
-      <Typography color="secondary.main" component="p" variant="h4" fontWeight='bold' mt={2} textAlign={'center'}>
+    <Paper
+      style={{
+        minHeight: 300,
+        minWidth: 300,
+        maxWidth: '20vw',
+        overflow: 'hidden',
+      }}
+      sx={{ backgroundColor: 'light.main', margin: 'auto' }}
+      elevation={2}
+    >
+      <Typography
+        color="secondary.main"
+        component="p"
+        variant="h4"
+        fontWeight="bold"
+        mt={2}
+        textAlign={'center'}
+      >
         Login
       </Typography>
-      <Box
-        component="form"
-        noValidate
-        autoComplete="off"
-      >
+      <Box component="form" noValidate autoComplete="off">
         <Box component={FormGroup} padding={2}>
           <TextField
-            variant='outlined'
+            variant="outlined"
             sx={{
               '& .MuiOutlinedInput-root': {
                 borderRadius: '4px',
@@ -52,7 +76,7 @@ export const LoginPage = () => {
                 },
               },
             }}
-            label='email'
+            label="email"
             {...register('email')}
             error={typeof errors.email !== 'undefined'}
             helperText={errors.email?.message}
@@ -60,7 +84,7 @@ export const LoginPage = () => {
         </Box>
         <Box component={FormGroup} padding={2}>
           <TextField
-            variant='outlined'
+            variant="outlined"
             sx={{
               '& .MuiOutlinedInput-root': {
                 borderRadius: '4px',
@@ -70,26 +94,42 @@ export const LoginPage = () => {
                 },
               },
             }}
-            label='password'
-            type='password'
+            label="password"
+            type="password"
             {...register('password')}
             error={typeof errors.password !== 'undefined'}
             helperText={errors.password?.message}
           />
         </Box>
       </Box>
-      <Box component={FormGroup} display='flex' padding={2}>
-        <Link component="button" variant="body2" textAlign='right' underline="none" sx={{color: 'blue'}} onClick={handleRegister} >Signup for an account</Link>
+      <Box component={FormGroup} display="flex" padding={2}>
+        <Link
+          component="button"
+          variant="body2"
+          textAlign="right"
+          underline="none"
+          sx={{ color: 'blue' }}
+          onClick={handleRegister}
+        >
+          Signup for an account
+        </Link>
       </Box>
       <Box margin={2}>
-        <Button variant='contained' style={{fontWeight: 'bold', fontSize: '1.5rem' }} fullWidth type='submit' onClick={handleSubmit(onSubmit)}>Login</Button>
+        <Button
+          variant="contained"
+          style={{ fontWeight: 'bold', fontSize: '1.5rem' }}
+          fullWidth
+          type="submit"
+          onClick={handleSubmit(onSubmit)}
+        >
+          Login
+        </Button>
       </Box>
-      {loginError &&
-      <Stack sx={{ width: '100%' }} spacing={2}>
-        <Alert severity="error">
-          The username or password is incorrect!
-        </Alert>
-      </Stack>}
+      {loginError && (
+        <Stack sx={{ width: '100%' }} spacing={2}>
+          <Alert severity="error">The username or password is incorrect!</Alert>
+        </Stack>
+      )}
     </Paper>
   );
 };

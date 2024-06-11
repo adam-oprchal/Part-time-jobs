@@ -1,27 +1,26 @@
-import type { Result } from '@badrap/result'
+import type { Result } from '@badrap/result';
 import { Account, Cv } from 'types/src/lib/entities';
 
 export type RepositoryResult<T> = Promise<Result<T>>;
 
 export type AccountRegister = Omit<
-    Account,
-    "id" | "createdAt" | "updatedAt" | "deletedAt"
->
+  Account,
+  'id' | 'createdAt' | 'updatedAt' | 'deletedAt'
+>;
 export type AccountRegisterWithoutPassword = Omit<
-    AccountRegister, "passwordHash"
->
+  AccountRegister,
+  'passwordHash'
+>;
 
-export type CvUpdate = Omit<
-    Cv,
-    "id" | "createdAt" | "updatedAt" | "deletedAt"
->
+export type CvUpdate = Omit<Cv, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>;
 
 export type User = {
-    id: string;
-    email: string;
-  };
+  id: string;
+  email: string;
+};
 
-export type PostSorting = undefined 
-    | { jobName?: 'asc' | 'desc' } 
-    | { location?: 'asc' | 'desc' }
-    | { wage?: 'asc' | 'desc' }
+export type PostSorting =
+  | undefined
+  | { jobName?: 'asc' | 'desc' }
+  | { location?: 'asc' | 'desc' }
+  | { wage?: 'asc' | 'desc' };

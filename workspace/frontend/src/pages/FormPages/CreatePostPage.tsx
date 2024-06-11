@@ -1,4 +1,11 @@
-import { Box, Button, FormGroup, Paper, TextField, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  FormGroup,
+  Paper,
+  TextField,
+  Typography,
+} from '@mui/material';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -8,9 +15,11 @@ import { useNavigate } from 'react-router-dom';
 const createPostSchema = z.object({
   jobName: z.string().trim().min(1, { message: 'Cannot be empty' }),
   description: z.string().trim().min(1, { message: 'Cannot be empty' }),
-  wage: z.coerce.number({ message: 'Must be a number' })
+  wage: z.coerce
+    .number({ message: 'Must be a number' })
     .positive({ message: 'Must be greater than 0' }),
-  expectedHours: z.coerce.number({ message: 'Must be a number' })
+  expectedHours: z.coerce
+    .number({ message: 'Must be a number' })
     .positive({ message: 'Must be greater than 0' }),
   location: z.string().trim().min(1, { message: 'Cannot be empty' }),
 });
@@ -38,18 +47,30 @@ export const CreatePostPage = () => {
   };
 
   return (
-    <Paper style={{minHeight: 300, minWidth: 300, maxWidth: '50vw',  overflow: 'hidden'}} sx={{backgroundColor: 'light.main', margin: 'auto' }} elevation={2} >
-      <Typography color="secondary.main" component="p" variant="h4" fontWeight='bold' mt={2} textAlign={'center'}>
+    <Paper
+      style={{
+        minHeight: 300,
+        minWidth: 300,
+        maxWidth: '50vw',
+        overflow: 'hidden',
+      }}
+      sx={{ backgroundColor: 'light.main', margin: 'auto' }}
+      elevation={2}
+    >
+      <Typography
+        color="secondary.main"
+        component="p"
+        variant="h4"
+        fontWeight="bold"
+        mt={2}
+        textAlign={'center'}
+      >
         Create a new job
       </Typography>
-      <Box
-        component="form"
-        noValidate
-        autoComplete="off"
-      >
+      <Box component="form" noValidate autoComplete="off">
         <Box component={FormGroup} mt={1} padding={2}>
           <TextField
-            variant='outlined'
+            variant="outlined"
             sx={{
               '& .MuiOutlinedInput-root': {
                 borderRadius: '4px',
@@ -59,8 +80,8 @@ export const CreatePostPage = () => {
                 },
               },
             }}
-            label='Job name'
-            {...register("jobName")}
+            label="Job name"
+            {...register('jobName')}
             error={typeof errors.jobName !== 'undefined'}
             helperText={errors.jobName?.message}
           />
@@ -78,16 +99,16 @@ export const CreatePostPage = () => {
                 },
               },
             }}
-            variant='outlined'
-            label='Job description'
-            {...register("description")}
+            variant="outlined"
+            label="Job description"
+            {...register('description')}
             error={typeof errors.description !== 'undefined'}
             helperText={errors.description?.message}
           />
         </Box>
         <Box component={FormGroup} padding={2}>
           <TextField
-            variant='outlined'
+            variant="outlined"
             sx={{
               '& .MuiOutlinedInput-root': {
                 borderRadius: '4px',
@@ -97,7 +118,7 @@ export const CreatePostPage = () => {
                 },
               },
             }}
-            label='Wage per hour'
+            label="Wage per hour"
             {...register('wage')}
             error={typeof errors.wage !== 'undefined'}
             helperText={errors.wage?.message}
@@ -105,7 +126,7 @@ export const CreatePostPage = () => {
         </Box>
         <Box component={FormGroup} padding={2}>
           <TextField
-            variant='outlined'
+            variant="outlined"
             sx={{
               '& .MuiOutlinedInput-root': {
                 borderRadius: '4px',
@@ -115,7 +136,7 @@ export const CreatePostPage = () => {
                 },
               },
             }}
-            label='Hours per week'
+            label="Hours per week"
             {...register('expectedHours')}
             error={typeof errors.expectedHours !== 'undefined'}
             helperText={errors.expectedHours?.message}
@@ -123,7 +144,7 @@ export const CreatePostPage = () => {
         </Box>
         <Box component={FormGroup} padding={2}>
           <TextField
-            variant='outlined'
+            variant="outlined"
             sx={{
               '& .MuiOutlinedInput-root': {
                 borderRadius: '4px',
@@ -133,7 +154,7 @@ export const CreatePostPage = () => {
                 },
               },
             }}
-            label='Location'
+            label="Location"
             {...register('location')}
             error={typeof errors.location !== 'undefined'}
             helperText={errors.location?.message}
@@ -141,8 +162,15 @@ export const CreatePostPage = () => {
         </Box>
       </Box>
       <Box margin={2}>
-        <Button variant='contained' style={{fontWeight: 'bold', fontSize: '1.5rem' }} fullWidth onClick={handleSubmit(onSubmit)}>Submit</Button>
+        <Button
+          variant="contained"
+          style={{ fontWeight: 'bold', fontSize: '1.5rem' }}
+          fullWidth
+          onClick={handleSubmit(onSubmit)}
+        >
+          Submit
+        </Button>
       </Box>
     </Paper>
-  )
-}
+  );
+};

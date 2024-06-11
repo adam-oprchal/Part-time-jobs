@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from "express";
-declare module "express-session" {
+import { Request, Response, NextFunction } from 'express';
+declare module 'express-session' {
   interface SessionData {
     passport: {
       user: { id: string };
@@ -15,6 +15,6 @@ export const isAuthenticated = (
   if (request.session.passport?.user) {
     next();
   } else {
-    response.status(401).send("authentication required");
+    response.status(401).send('authentication required');
   }
 };

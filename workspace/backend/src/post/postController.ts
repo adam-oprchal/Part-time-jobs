@@ -1,187 +1,195 @@
-import {postRepository} from "./postRepository";
-import {Request, Response} from "express";
-import {paginationSchema, postSchema, postSortingSchema} from "./schema";
+import { postRepository } from './postRepository';
+import { Request, Response } from 'express';
+import { paginationSchema, postSchema, postSortingSchema } from './schema';
 
 export const postController = {
-    createPost: async (request: Request, response: Response)=> {
-        const parseResult = await postSchema.safeParseAsync(request.body)
-        if (!parseResult.success) {
-            response.status(400).send(parseResult.error);
-            return;
-        }
+  createPost: async (request: Request, response: Response) => {
+    const parseResult = await postSchema.safeParseAsync(request.body);
+    if (!parseResult.success) {
+      response.status(400).send(parseResult.error);
+      return;
+    }
 
-        const post = {
-	        creatorId: request.session.passport.user.id,
-            ...request.body
-        }
+    const post = {
+      creatorId: request.session.passport.user.id,
+      ...request.body,
+    };
 
-        const result = await postRepository.createPost(post);
+    const result = await postRepository.createPost(post);
 
-        if (result.isOk) {
-            response.send(result.value);
-        } else {
-            response.status(400).send("Bad request");
-        }
-    },
+    if (result.isOk) {
+      response.send(result.value);
+    } else {
+      response.status(400).send('Bad request');
+    }
+  },
 
-    deletePost: async (request: Request, response: Response)=> {
-        const post = await postRepository.getPost(request.params.postId);
-        if (post.isErr) {
-            response.status(400).send("Bad request");
-        } else if (post.isOk) {
-            if (post.value.creatorId != request.session.passport.user.id) {
-                response.status(403).send("unauthorized");
-                return
-            }
+  deletePost: async (request: Request, response: Response) => {
+    const post = await postRepository.getPost(request.params.postId);
+    if (post.isErr) {
+      response.status(400).send('Bad request');
+    } else if (post.isOk) {
+      if (post.value.creatorId != request.session.passport.user.id) {
+        response.status(403).send('unauthorized');
+        return;
+      }
 
-            const result = await postRepository.deletePost(request.params.id);
-    
-            if (result.isOk) {
-                response.send(result.value);
-            } else {
-                response.status(400).send("Bad request");
-            }
-        }
-    },
+      const result = await postRepository.deletePost(request.params.id);
 
-    updatePost: async (request: Request, response: Response)=> {
-        const parseResult = await postSchema.safeParseAsync(request.body)
-        if (!parseResult.success) {
-            response.status(400).send(parseResult.error)
-            return;
-        }
+      if (result.isOk) {
+        response.send(result.value);
+      } else {
+        response.status(400).send('Bad request');
+      }
+    }
+  },
 
-        const originalPost = await postRepository.getPost(request.params.postId);
-        if (originalPost.isErr) {
-            response.status(400).send("Bad request");
-        } else if (originalPost.isOk) {
-            if (originalPost.value.creatorId != request.session.passport.user.id) {
-                response.status(403).send("unauthorized");
-                return
-            }
-    
-            const post = {
-                creatorId: request.session.passport.user.id,
-                ...request.body
-            }
-    
-            const result = await postRepository.updatePost(request.params.id, post);
-    
-            if (result.isOk) {
-                response.send(result.value);
-            } else {
-                response.status(400).send("Bad request");
-            }
-        }
-    },
+  updatePost: async (request: Request, response: Response) => {
+    const parseResult = await postSchema.safeParseAsync(request.body);
+    if (!parseResult.success) {
+      response.status(400).send(parseResult.error);
+      return;
+    }
 
-    getPost: async (request: Request, response: Response)=> {
+    const originalPost = await postRepository.getPost(request.params.postId);
+    if (originalPost.isErr) {
+      response.status(400).send('Bad request');
+    } else if (originalPost.isOk) {
+      if (originalPost.value.creatorId != request.session.passport.user.id) {
+        response.status(403).send('unauthorized');
+        return;
+      }
 
-        const result = await postRepository.getPost(request.params.id);
+      const post = {
+        creatorId: request.session.passport.user.id,
+        ...request.body,
+      };
 
-        if (result.isOk) {
-            response.send(result.value);
-        } else {
-            response.status(400).send("Bad request");
-        }
-    },
+      const result = await postRepository.updatePost(request.params.id, post);
 
-    getPostsPaginated: async (request: Request, response: Response)=> {
+      if (result.isOk) {
+        response.send(result.value);
+      } else {
+        response.status(400).send('Bad request');
+      }
+    }
+  },
 
-        const validRequest = await paginationSchema.safeParseAsync(request);
-        if (!validRequest.success) {
-            response.status(400).send("Bad request")
-            return
-        }
+  getPost: async (request: Request, response: Response) => {
+    const result = await postRepository.getPost(request.params.id);
 
-        const { page, pageSize } = validRequest.data.query
+    if (result.isOk) {
+      response.send(result.value);
+    } else {
+      response.status(400).send('Bad request');
+    }
+  },
 
-        const sortingRequest = await postSortingSchema.safeParseAsync(request);
-        if (!sortingRequest.success) {
-            response.status(400).send("Bad request")
-            return
-        }
+  getPostsPaginated: async (request: Request, response: Response) => {
+    const validRequest = await paginationSchema.safeParseAsync(request);
+    if (!validRequest.success) {
+      response.status(400).send('Bad request');
+      return;
+    }
 
-        const { sorting } = sortingRequest.data.query;
+    const { page, pageSize } = validRequest.data.query;
 
-        const result = await postRepository.getPostsPaginated(page, pageSize, sorting);
+    const sortingRequest = await postSortingSchema.safeParseAsync(request);
+    if (!sortingRequest.success) {
+      response.status(400).send('Bad request');
+      return;
+    }
 
-        if (result.isOk) {
-            response.send(result.value);
-        } else {
-            response.status(400).send("Bad request");
-        }
-    },
+    const { sorting } = sortingRequest.data.query;
 
-    getPosts: async (request: Request, response: Response)=> {
+    const result = await postRepository.getPostsPaginated(
+      page,
+      pageSize,
+      sorting
+    );
 
-        const validRequest = await postSortingSchema.safeParseAsync(request);
-        if (!validRequest.success) {
-            response.status(400).send("Bad request")
-            return
-        }
+    if (result.isOk) {
+      response.send(result.value);
+    } else {
+      response.status(400).send('Bad request');
+    }
+  },
 
-        const { sorting } = validRequest.data.query;
+  getPosts: async (request: Request, response: Response) => {
+    const validRequest = await postSortingSchema.safeParseAsync(request);
+    if (!validRequest.success) {
+      response.status(400).send('Bad request');
+      return;
+    }
 
-        const result = await postRepository.getPosts(sorting);
+    const { sorting } = validRequest.data.query;
 
-        if (result.isOk) {
-            response.send(result.value);
-        } else {
-            response.status(400).send("Bad request");
-        }
-    },
+    const result = await postRepository.getPosts(sorting);
 
-    getAmountOfPosts: async (request: Request, response: Response)=> {
+    if (result.isOk) {
+      response.send(result.value);
+    } else {
+      response.status(400).send('Bad request');
+    }
+  },
 
-        const result = await postRepository.getAmountOfPosts();
+  getAmountOfPosts: async (request: Request, response: Response) => {
+    const result = await postRepository.getAmountOfPosts();
 
-        if (result.isOk) {
-            response.send({amount: result.value});
-        } else {
-            response.status(400).send("Bad request");
-        }
-    },
+    if (result.isOk) {
+      response.send({ amount: result.value });
+    } else {
+      response.status(400).send('Bad request');
+    }
+  },
 
-    getPostsByCreator: async (request: Request, response: Response)=> {
+  getPostsByCreator: async (request: Request, response: Response) => {
+    const result = await postRepository.getPostsByCreator(
+      request.params.creatorId
+    );
 
-        const result = await postRepository.getPostsByCreator(request.params.creatorId);
+    if (result.isOk) {
+      response.send(result.value);
+    } else {
+      response.status(400).send('Bad request');
+    }
+  },
 
-        if (result.isOk) {
-            response.send(result.value);
-        } else {
-            response.status(400).send("Bad request");
-        }
-    },
+  getPostsByApplicant: async (request: Request, response: Response) => {
+    const result = await postRepository.getPostsByApplicant(
+      request.session.passport.user.id
+    );
 
-    getPostsByApplicant: async (request: Request, response: Response)=> {
+    if (result.isOk) {
+      response.send(result.value);
+    } else {
+      response.status(400).send('Bad request');
+    }
+  },
 
-        const result = await postRepository.getPostsByApplicant(request.session.passport.user.id);
+  applyForPost: async (request: Request, response: Response) => {
+    const result = await postRepository.addApplicantToPost(
+      request.params.postId,
+      request.session.passport.user.id
+    );
 
-        if (result.isOk) {
-            response.send(result.value);
-        } else {
-            response.status(400).send("Bad request");
-        }
-    },
+    if (result.isOk) {
+      response.send(result.value);
+    } else {
+      response.status(400).send('Bad request');
+    }
+  },
 
-    applyForPost: async (request: Request, response: Response)=> {
-        const result = await postRepository.addApplicantToPost(request.params.postId, request.session.passport.user.id);
+  unapplyFromPost: async (request: Request, response: Response) => {
+    const result = await postRepository.removeApplicantFromPost(
+      request.params.postId,
+      request.session.passport.user.id
+    );
 
-        if (result.isOk) {
-            response.send(result.value);
-        } else {
-            response.status(400).send("Bad request");
-        }
-    },
-
-    unapplyFromPost: async (request: Request, response: Response)=> {
-        const result = await postRepository.removeApplicantFromPost(request.params.postId, request.session.passport.user.id);
-
-        if (result.isOk) {
-            response.send(result.value);
-        } else {
-            response.status(400).send("Bad request");
-        }
-    },
-}
+    if (result.isOk) {
+      response.send(result.value);
+    } else {
+      response.status(400).send('Bad request');
+    }
+  },
+};

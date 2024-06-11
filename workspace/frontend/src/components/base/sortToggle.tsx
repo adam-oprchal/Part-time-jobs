@@ -36,7 +36,10 @@ const SortToggle: React.FC<SortToggleProps> = ({ sortOrder, onSortChange }) => {
     <Box display={'flex'} flexDirection={'column'}>
       <StyledIconButton>
         <StyledIcon active={sortOrder === 'asc'}>
-          <ArrowDropUpIcon onClick={sortUp} sx={{ margin: -2, fontSize: '2rem' }} />
+          <ArrowDropUpIcon
+            onClick={sortUp}
+            sx={{ margin: -2, fontSize: '2rem' }}
+          />
         </StyledIcon>
         <StyledIcon active={sortOrder === 'desc'}>
           <ArrowDropDownIcon onClick={sortDown} sx={{ fontSize: '2rem' }} />

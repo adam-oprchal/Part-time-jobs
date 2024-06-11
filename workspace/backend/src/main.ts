@@ -1,35 +1,35 @@
 import express from 'express';
 import * as path from 'path';
-import postRouter from "./post/postRouter";
+import postRouter from './post/postRouter';
 import accountRouter from './account/accountRouter';
-import passport from "passport";
+import passport from 'passport';
 import { passportStrategy } from './account/passportStrategy';
-import session from "express-session";
-import RedisStore from "connect-redis";
-import { redisClient } from "./redisClient";
+import session from 'express-session';
+import RedisStore from 'connect-redis';
+import { redisClient } from './redisClient';
 import { User } from './types';
 import cors from 'cors';
 
 const app = express();
 const corsOptions = {
   origin: 'http://localhost:4200',
-  credentials: true
+  credentials: true,
 };
 app.use(cors(corsOptions));
 
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
 app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ limit: '10mb', extended: true  }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 passport.use(passportStrategy());
 app.use(
   session({
-    secret: "keyboard cat",
+    secret: 'keyboard cat',
     resave: false,
     saveUninitialized: false,
     cookie: { secure: false, httpOnly: true },
-    store: new RedisStore({ client: redisClient, prefix: "x-session:" }),
+    store: new RedisStore({ client: redisClient, prefix: 'x-session:' }),
   })
 );
 
@@ -45,7 +45,7 @@ passport.serializeUser((_user, cb) => {
     });
   });
 });
-  
+
 passport.deserializeUser((_user, cb) => {
   process.nextTick(() => {
     const user = _user as User;

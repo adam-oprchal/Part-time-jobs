@@ -1,10 +1,10 @@
-import { Navigate, RouteObject } from "react-router-dom"
-import { JobsPage } from "../pages/JobsPage/JobsPage";
-import { LoginPage } from "../pages/FormPages/LoginPage";
-import { RegisterPage } from "../pages/FormPages/RegisterPage";
-import { AccountPage } from "../pages/AccountPage/AccountPage";
-import { CreatePostPage } from "../pages/FormPages/CreatePostPage";
-import { MainLayout } from "../layouts/MainLayout";
+import { Navigate, RouteObject } from 'react-router-dom';
+import { JobsPage } from '../pages/JobsPage/JobsPage';
+import { LoginPage } from '../pages/FormPages/LoginPage';
+import { RegisterPage } from '../pages/FormPages/RegisterPage';
+import { AccountPage } from '../pages/AccountPage/AccountPage';
+import { CreatePostPage } from '../pages/FormPages/CreatePostPage';
+import { MainLayout } from '../layouts/MainLayout';
 
 const pageRoutes: RouteObject[] = [
   {
@@ -41,12 +41,12 @@ const routes: RouteObject[] = [
   {
     path: '/',
     Component: MainLayout,
-    children: pageRoutes
+    children: pageRoutes,
   },
   {
     path: '*',
     element: <Navigate to="/" relative="path" />,
-  }
-]
+  },
+];
 
-export default routes
+export default routes;

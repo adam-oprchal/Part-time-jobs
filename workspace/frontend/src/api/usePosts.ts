@@ -40,7 +40,7 @@ export const usePostAmount = () => {
   return useQuery<{ amount: number }>({
     queryKey: ['post', 'amount'],
     queryFn: () => PostApi.getAmountOfPosts(),
-    retry:0,
+    retry: 0,
   });
 };
 
@@ -48,7 +48,7 @@ export const usePostsByCreator = (creatorId: string) => {
   return useQuery<Post[]>({
     queryKey: ['post', 'creator', creatorId],
     queryFn: () => PostApi.getPostsByCreator(creatorId),
-    retry:0,
+    retry: 0,
   });
 };
 
@@ -56,7 +56,7 @@ export const useAppliedPosts = (userId: string) => {
   return useQuery<Post[]>({
     queryKey: ['post', 'applicant', userId],
     queryFn: () => PostApi.getAppliedPosts(),
-    retry:0,
+    retry: 0,
   });
 };
 
@@ -86,7 +86,7 @@ export const usePost = (id: string) => {
   return useQuery<Post>({
     queryKey: ['post', id],
     queryFn: () => PostApi.get(id),
-    retry:0,
+    retry: 0,
   });
 };
 

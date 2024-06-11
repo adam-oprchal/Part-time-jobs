@@ -1,7 +1,19 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Avatar, Box, Button, FormGroup, IconButton, Menu, MenuItem, Paper, TextField, Tooltip, Typography } from '@mui/material';
+import {
+  Avatar,
+  Box,
+  Button,
+  FormGroup,
+  IconButton,
+  Menu,
+  MenuItem,
+  Paper,
+  TextField,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { PasswordDialog } from './ChangePasswordDialog';
 import { AccountApi } from '../../api/accountApi';
@@ -9,17 +21,20 @@ import { AccountWithoutPassword, CvUpdate } from 'types';
 import { useNavigate } from 'react-router-dom';
 import isEmail from 'validator/lib/isEmail';
 import AssignmentIcon from '@mui/icons-material/Assignment';
-import { documentData}  from './icondoc'
-import { pdfData}  from './iconpdf'
+import { documentData } from './icondoc';
+import { pdfData } from './iconpdf';
 import { Buffer } from 'buffer';
 import { useAccount } from '../../components/base/AccountContext';
 
 const accountUpdateSchema = z.object({
-    name: z.string().trim().min(1, { message: 'Cannot be empty' }),
-    surname: z.string().trim().min(1, { message: 'Cannot be empty' }),
+  name: z.string().trim().min(1, { message: 'Cannot be empty' }),
+  surname: z.string().trim().min(1, { message: 'Cannot be empty' }),
 
-    email: z.string().min(1, 'E-mail address is required.').refine(isEmail, 'E-mail address is invalid.'),
-  });
+  email: z
+    .string()
+    .min(1, 'E-mail address is required.')
+    .refine(isEmail, 'E-mail address is invalid.'),
+});
 
 type AccountUpdateData = z.infer<typeof accountUpdateSchema>;
 
@@ -31,31 +46,34 @@ export const AccountPage = () => {
   const [, setCv] = useState<CvUpdate | null>();
   const avatarButtonRef = useRef<HTMLInputElement | null>(null);
   const cvButtonRef = useRef<HTMLInputElement | null>(null);
-  const [anchorElAvatar, setAnchorElAvatar] = useState<null | HTMLElement>(null);
+  const [anchorElAvatar, setAnchorElAvatar] = useState<null | HTMLElement>(
+    null
+  );
   const [anchorElCv, setAnchorElCv] = useState<null | HTMLElement>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const navigate = useNavigate();
-  
+  const navigate = useNavigate();
+
   useEffect(() => {
     const setResp = async () => {
       const account = await AccountApi.getUserAccount();
       setAccount(account);
       account && setPreview(account.avatar);
       AccountApi.downloadCv()
-      .then((data) => {
-        setCv(data);
-        if (data) {
-          if (data.fileType.includes('pdf')) {
-            setCvPreview(pdfData.data);
-          } else {
-            setCvPreview(documentData.data);
+        .then((data) => {
+          setCv(data);
+          if (data) {
+            if (data.fileType.includes('pdf')) {
+              setCvPreview(pdfData.data);
+            } else {
+              setCvPreview(documentData.data);
+            }
           }
-        }
-      }).catch(() => {
-        setCv(null);
-        setCvPreview('');
-      })
-    }
+        })
+        .catch(() => {
+          setCv(null);
+          setCvPreview('');
+        });
+    };
     if (!account) {
       setResp();
     }
@@ -70,7 +88,7 @@ export const AccountPage = () => {
   });
 
   if (!account) {
-    return <div>Loading...</div>
+    return <div>Loading...</div>;
   }
 
   const handleOpenDialog = () => {
@@ -126,11 +144,11 @@ export const AccountPage = () => {
     const blobUrl = URL.createObjectURL(blob);
     const width = 600;
     const height = 800;
-    const left = (window.screen.width / 2) - (width / 2);
-    const top = (window.screen.height / 2) - (height / 2);
+    const left = window.screen.width / 2 - width / 2;
+    const top = window.screen.height / 2 - height / 2;
     const newWindow = window.open(
-      blobUrl, 
-      '_blank', 
+      blobUrl,
+      '_blank',
       `width=${width},height=${height},top=${top},left=${left},resizable,scrollbars`
     );
     if (newWindow) {
@@ -138,15 +156,15 @@ export const AccountPage = () => {
     } else {
       alert('Popup blocked. Please allow popups for this website.');
     }
-  }
-  
+  };
+
   const handleCvOpenClick = async () => {
     handleMenuCvClose();
     const cv = await AccountApi.downloadCv();
     if (cv) {
       showFile(Buffer.from(cv.fileContent), cv.fileType);
     }
-  }
+  };
 
   const handleCvDeleteClick = async () => {
     handleMenuCvClose();
@@ -180,7 +198,9 @@ export const AccountPage = () => {
       onClose={handleMenuAvatarClose}
     >
       {preview && <MenuItem onClick={handleAvatarChangeClick}>Change</MenuItem>}
-      {!preview && <MenuItem onClick={handleAvatarChangeClick}>Insert</MenuItem>}
+      {!preview && (
+        <MenuItem onClick={handleAvatarChangeClick}>Insert</MenuItem>
+      )}
       {preview && <MenuItem onClick={handleAvatarDeleteClick}>Delete</MenuItem>}
       <MenuItem onClick={handleCancelAvatarClick}>Cancel</MenuItem>
     </Menu>
@@ -212,7 +232,12 @@ export const AccountPage = () => {
   );
 
   const onSubmit: SubmitHandler<AccountUpdateData> = async (values) => {
-    await AccountApi.updateAccount({ firstName: values.name, surname: values.surname, email: values.email, avatar: preview as string });
+    await AccountApi.updateAccount({
+      firstName: values.name,
+      surname: values.surname,
+      email: values.email,
+      avatar: preview as string,
+    });
     setAvatar(preview as string);
     setFirstName(values.name as string);
     setSurname(values.surname as string);
@@ -221,9 +246,11 @@ export const AccountPage = () => {
 
   const onClose = () => {
     navigate('/jobs');
-  }
+  };
 
-  const handleAvatarFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarFileChange = async (
+    event: ChangeEvent<HTMLInputElement>
+  ) => {
     event.preventDefault();
     const files = event.target.files;
     if (files && files[0]) {
@@ -235,7 +262,7 @@ export const AccountPage = () => {
         avatarButtonRef.current.value = '';
       }
     }
-  }
+  };
 
   const handleCvFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
@@ -250,7 +277,7 @@ export const AccountPage = () => {
         fileType: file.type,
         fileSize: file.size,
         fileContent: buffer.toString('base64'),
-      }).then (() => {
+      }).then(() => {
         if (file.type.includes('pdf')) {
           setCvPreview(pdfData.data);
         } else {
@@ -262,7 +289,7 @@ export const AccountPage = () => {
       });
       showFile(Buffer.from(fileContent), file.type);
     }
-  }
+  };
 
   function loadFile(file: File): Promise<ArrayBuffer> {
     return new Promise((resolve, reject) => {
@@ -271,7 +298,7 @@ export const AccountPage = () => {
         if (reader.result instanceof ArrayBuffer) {
           resolve(reader.result);
         } else {
-          reject(new Error("Unexpected result type"));
+          reject(new Error('Unexpected result type'));
         }
       };
       reader.onerror = () => {
@@ -280,7 +307,7 @@ export const AccountPage = () => {
       reader.readAsArrayBuffer(file);
     });
   }
-  
+
   const compressImage = async (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -324,90 +351,103 @@ export const AccountPage = () => {
   };
 
   return (
-    <Paper style={{minHeight: 300, minWidth: 300, maxWidth: '20vw',  overflow: 'hidden'}} sx={{backgroundColor: 'light.main', margin: 'auto' }} elevation={2} >
-      <Typography color="secondary.main" component="p" variant="h4" fontWeight='bold' mt={2} textAlign={'center'}>
+    <Paper
+      style={{
+        minHeight: 300,
+        minWidth: 300,
+        maxWidth: '20vw',
+        overflow: 'hidden',
+      }}
+      sx={{ backgroundColor: 'light.main', margin: 'auto' }}
+      elevation={2}
+    >
+      <Typography
+        color="secondary.main"
+        component="p"
+        variant="h4"
+        fontWeight="bold"
+        mt={2}
+        textAlign={'center'}
+      >
         Account Info
       </Typography>
-        <Box
-          component="form"
-          noValidate
-          autoComplete="off"
-        >
-          <Box component={FormGroup} mt={1} padding={2}>
-            <TextField
-              variant='outlined'
-              sx={{
-                '& .MuiOutlinedInput-root': {
+      <Box component="form" noValidate autoComplete="off">
+        <Box component={FormGroup} mt={1} padding={2}>
+          <TextField
+            variant="outlined"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '4px',
+                backgroundColor: 'secondary.contrastText',
+                '& fieldset': {
                   borderRadius: '4px',
-                  backgroundColor: 'secondary.contrastText',
-                  '& fieldset': {
-                    borderRadius: '4px',
-                  },
                 },
-              }}
-              label='Name'
-              defaultValue={account ? account.firstName : ''}
-              {...register('name')}
-              error={typeof errors.name !== 'undefined'}
-              helperText={errors.name?.message}
-            />
-          </Box>
-          <Box component={FormGroup} padding={2}>
-            <TextField
-              variant='outlined'
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: '4px',
-                  backgroundColor: 'secondary.contrastText',
-                  '& fieldset': {
-                    borderRadius: '4px',
-                  },
-                },
-              }}
-              label='Surname'
-              defaultValue={account ? account.surname : ''}
-              {...register('surname')}
-              error={typeof errors.surname !== 'undefined'}
-              helperText={errors.surname?.message}
-            />
-          </Box>
-          <Box component={FormGroup} padding={2}>
-            <TextField
-              variant='outlined'
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: '4px',
-                  backgroundColor: 'secondary.contrastText',
-                  '& fieldset': {
-                    borderRadius: '4px',
-                  },
-                },
-              }}
-              label='e-Mail'
-              defaultValue={account ? account.email : ''}
-              {...register('email')}
-              error={typeof errors.email !== 'undefined'}
-              helperText={errors.email?.message}
-            />
-          </Box>
-          <Box component={FormGroup} padding={2}>
-            <Button
-              variant='contained'
-              style={{width: 'auto'}}
-              onClick={handleOpenDialog}
-            >Change Password</Button>
-          </Box>
-          <PasswordDialog isOpen={isDialogOpen} onClose={handleCloseDialog} />
+              },
+            }}
+            label="Name"
+            defaultValue={account ? account.firstName : ''}
+            {...register('name')}
+            error={typeof errors.name !== 'undefined'}
+            helperText={errors.name?.message}
+          />
         </Box>
+        <Box component={FormGroup} padding={2}>
+          <TextField
+            variant="outlined"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '4px',
+                backgroundColor: 'secondary.contrastText',
+                '& fieldset': {
+                  borderRadius: '4px',
+                },
+              },
+            }}
+            label="Surname"
+            defaultValue={account ? account.surname : ''}
+            {...register('surname')}
+            error={typeof errors.surname !== 'undefined'}
+            helperText={errors.surname?.message}
+          />
+        </Box>
+        <Box component={FormGroup} padding={2}>
+          <TextField
+            variant="outlined"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '4px',
+                backgroundColor: 'secondary.contrastText',
+                '& fieldset': {
+                  borderRadius: '4px',
+                },
+              },
+            }}
+            label="e-Mail"
+            defaultValue={account ? account.email : ''}
+            {...register('email')}
+            error={typeof errors.email !== 'undefined'}
+            helperText={errors.email?.message}
+          />
+        </Box>
+        <Box component={FormGroup} padding={2}>
+          <Button
+            variant="contained"
+            style={{ width: 'auto' }}
+            onClick={handleOpenDialog}
+          >
+            Change Password
+          </Button>
+        </Box>
+        <PasswordDialog isOpen={isDialogOpen} onClose={handleCloseDialog} />
+      </Box>
       <Box display={'flex'} justifyContent={'center'}>
-      <Tooltip title='Avatar'>
-        <IconButton
-            onClick={handleFileMenuAvatarOpen}>
+        <Tooltip title="Avatar">
+          <IconButton onClick={handleFileMenuAvatarOpen}>
             <input
               ref={avatarButtonRef}
-              id='avatarButton'
+              id="avatarButton"
               type="file"
-              style={{display:'none'}}
+              style={{ display: 'none' }}
               hidden
               accept="image/*"
               onChange={handleAvatarFileChange}
@@ -416,23 +456,23 @@ export const AccountPage = () => {
               alt="Preview"
               src={preview || ''}
               style={{
-                margin: "10px",
-                width: "100px",
-                height: "100px",
-              }} 
+                margin: '10px',
+                width: '100px',
+                height: '100px',
+              }}
             >
-              {!preview && account.firstName.slice(0, 1) + account.surname.slice(0, 1)}
+              {!preview &&
+                account.firstName.slice(0, 1) + account.surname.slice(0, 1)}
             </Avatar>
           </IconButton>
         </Tooltip>
-        <Tooltip title='CV'>
-          <IconButton
-            onClick={handleFileMenuCvOpen}>
+        <Tooltip title="CV">
+          <IconButton onClick={handleFileMenuCvOpen}>
             <input
               ref={cvButtonRef}
-              id='cvButton'
+              id="cvButton"
               type="file"
-              style={{display:'none'}}
+              style={{ display: 'none' }}
               hidden
               accept="document/*"
               onChange={handleCvFileChange}
@@ -441,22 +481,34 @@ export const AccountPage = () => {
               alt="Preview"
               src={cvPreview || ''}
               style={{
-                margin: "10px",
-                width: "100px",
-                height: "100px",
-              }} 
+                margin: '10px',
+                width: '100px',
+                height: '100px',
+              }}
             >
               <AssignmentIcon />
             </Avatar>
-           </IconButton>
-         </Tooltip>
+          </IconButton>
+        </Tooltip>
       </Box>
       <Box margin={2} display={'flex'} justifyContent={'space-between'}>
-        <Button variant='contained' style={{fontWeight: 'bold', fontSize: '1rem' }} type='submit' onClick={handleSubmit(onSubmit)}>Save</Button>
-        <Button variant='contained' style={{fontWeight: 'bold', fontSize: '1rem' }} onClick={onClose}>Cancel</Button>
+        <Button
+          variant="contained"
+          style={{ fontWeight: 'bold', fontSize: '1rem' }}
+          type="submit"
+          onClick={handleSubmit(onSubmit)}
+        >
+          Save
+        </Button>
+        <Button
+          variant="contained"
+          style={{ fontWeight: 'bold', fontSize: '1rem' }}
+          onClick={onClose}
+        >
+          Cancel
+        </Button>
       </Box>
-      <Box>
-      </Box>
+      <Box></Box>
       {renderAvatarMenu}
       {renderCvMenu}
     </Paper>

@@ -38,6 +38,7 @@ export const PostsSection = () => {
       <Box borderLeft={5} borderRight={5} borderTop={10} borderBottom={10} borderRadius={'0 0 1.5rem 1.5rem'} color={'dark.main'} sx={{backgroundColor: 'dark.main'}}>
         {currentRows.map((post, index) => (
           <SinglePost key={index}
+          id={post.id}
           jobName={post.jobName}
           description={post.description}
           wage={post.wage}

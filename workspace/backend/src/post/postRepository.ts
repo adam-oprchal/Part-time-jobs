@@ -48,7 +48,7 @@ export const postRepository = {
         try {
             return Result.ok(await prisma.post.findUniqueOrThrow({
                 where: {
-                    id: id,
+                    id,
                     deletedAt: null,
                 }
             }));

@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AccountApi } from './accountApi';
-import { Account, AccountWithCvWithoutPassword } from 'types';
+import { AccountWithCvWithoutPassword, AccountWithoutPassword } from 'types';
 
 export const useLogout = () => {
   const queryClient = useQueryClient();
@@ -23,7 +23,7 @@ export const useApplicantsByPost = (postId: string) => {
 };
 
 export const useApplicantByAccount = (creatorId: string) => {
-  return useQuery<Map<string, Omit<Account, 'passwordHash'>[]>>({
+  return useQuery<Map<string, AccountWithoutPassword[]>>({
     queryKey: ['account', 'byCreator', creatorId],
     queryFn: () => AccountApi.getApplicantsByAccount(),
     retry: 0,

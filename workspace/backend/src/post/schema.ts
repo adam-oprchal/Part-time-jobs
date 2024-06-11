@@ -1,6 +1,7 @@
 import z from 'zod';
 
 export const postSchema = z.object({
+  jobName: z.string(),
   description: z.string(),
   wage: z.coerce.number(),
   location: z.string(),

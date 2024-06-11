@@ -25,7 +25,7 @@ export const postController = {
   },
 
   deletePost: async (request: Request, response: Response) => {
-    const post = await postRepository.getPost(request.params.postId);
+    const post = await postRepository.getPost(request.params.id);
     if (post.isErr) {
       response.status(400).send('Bad request');
     } else if (post.isOk) {
@@ -51,7 +51,7 @@ export const postController = {
       return;
     }
 
-    const originalPost = await postRepository.getPost(request.params.postId);
+    const originalPost = await postRepository.getPost(request.params.id);
     if (originalPost.isErr) {
       response.status(400).send('Bad request');
     } else if (originalPost.isOk) {

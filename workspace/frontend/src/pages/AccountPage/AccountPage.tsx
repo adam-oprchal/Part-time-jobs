@@ -29,7 +29,7 @@ import { Buffer } from 'buffer';
 import { useAccount } from '../../components/base/AccountContext';
 
 const accountUpdateSchema = z.object({
-    name: z.string().trim().min(1, { message: 'Cannot be empty' }),
+    firstName: z.string().trim().min(1, { message: 'Cannot be empty' }),
     surname: z.string().trim().min(1, { message: 'Cannot be empty' }),
 
   email: z
@@ -255,13 +255,13 @@ export const AccountPage = () => {
 
   const onSubmit: SubmitHandler<AccountUpdateData> = async (values) => {
     await AccountApi.updateAccount({
-      firstName: values.name,
+      firstName: values.firstName,
       surname: values.surname,
       email: values.email,
       avatar: preview as string,
     });
     setAvatar(preview as string);
-    setFirstName(values.name as string);
+    setFirstName(values.firstName as string);
     setSurname(values.surname as string);
     navigate('/jobs');
   };
@@ -362,7 +362,7 @@ export const AccountPage = () => {
           canvas.height = height;
           ctx?.drawImage(img, 0, 0, width, height);
 
-          const quality = 0.7; // Compression quality (0 to 1)
+          const quality = 0.8; // Compression quality (0 to 1)
           const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
           resolve(compressedBase64);
         };
@@ -403,18 +403,14 @@ export const AccountPage = () => {
                 backgroundColor: 'secondary.contrastText',
                 '& fieldset': {
                   borderRadius: '4px',
-                  backgroundColor: 'secondary.contrastText',
-                  '& fieldset': {
-                    borderRadius: '4px',
-                  },
                 },
               },
             }}
             label="Name"
             defaultValue={account ? account.firstName : ''}
-            {...register('name')}
-            error={typeof errors.name !== 'undefined'}
-            helperText={errors.name?.message}
+            {...register('firstName')}
+            error={typeof errors.firstName !== 'undefined'}
+            helperText={errors.firstName?.message}
           />
         </Box>
         <Box component={FormGroup} padding={2}>

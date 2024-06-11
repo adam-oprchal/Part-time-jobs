@@ -36,11 +36,11 @@ export const SinglePost = ({
   }
 
   const onDetail = () => {
-    navigate(`/edit/${id}/${creator ? 'false' : 'true'}`);
+    navigate(`/edit/${id}/${creator ? 'false' : ''}`);
   }
 
   const onApply = () => {
-    if (applicant) {
+    if (!applicant) {
       applyToPost()
         .then((_) => setButtonLabel('Unapply'))
         .catch((_) => console.log('apply failed'));

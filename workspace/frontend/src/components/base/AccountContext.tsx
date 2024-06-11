@@ -12,6 +12,8 @@ import {
   saveFirstNameToLocalStorage,
   loadSurnameFromLocalStorage,
   saveSurnameToLocalStorage,
+  loadIdFromLocalStorage,
+  saveIdToLocalStorage,
 } from '../../utils/localStorageHelpers';
 
 type AccountContextType = {
@@ -21,6 +23,8 @@ type AccountContextType = {
   setFirstName: (firstName: string) => void;
   surname: string;
   setSurname: (surname: string) => void;
+  id: string;
+  setId: (surname: string) => void;
 };
 
 const defaultContextValue: AccountContextType = {
@@ -34,6 +38,10 @@ const defaultContextValue: AccountContextType = {
   },
   surname: '',
   setSurname: () => {
+    ('');
+  },
+  id: '',
+  setId: () => {
     ('');
   },
 };
@@ -53,6 +61,10 @@ export const AccountProvider = ({ children }: { children: ReactNode }) => {
     const savedSurname = loadSurnameFromLocalStorage();
     return savedSurname || '';
   });
+  const [id, setId] = useState<string>(() => {
+    const savedId = loadIdFromLocalStorage();
+    return savedId || '';
+  });
 
   useEffect(() => {
     saveAvatarToLocalStorage(avatar);
@@ -66,6 +78,10 @@ export const AccountProvider = ({ children }: { children: ReactNode }) => {
     saveSurnameToLocalStorage(surname);
   }, [surname]);
 
+  useEffect(() => {
+    saveIdToLocalStorage(id);
+  }, [id]);
+
   return (
     <AccountContext.Provider
       value={{
@@ -75,6 +91,8 @@ export const AccountProvider = ({ children }: { children: ReactNode }) => {
         setFirstName,
         surname,
         setSurname,
+        id,
+        setId,
       }}
     >
       {children}

@@ -13,7 +13,7 @@ import {
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { usePostCreate } from '../../api/usePosts';
+import { usePostCreate, usePostDelete, usePostUpdate } from '../../api/usePosts';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { PostApi } from '../../api/postApi';
@@ -37,8 +37,14 @@ export const CreatePostPage = () => {
   const { postId } = useParams<{ postId?: string }>();
   const { readOnly } = useParams<{ readOnly?: string }>();
   const { mutateAsync: createJob } = usePostCreate();
+  const { mutateAsync: updateJob } = usePostUpdate(postId as string);
+  const { mutateAsync: deleteJob } = usePostDelete(postId as string);
   const [ postData, setPostData ] = useState<Post>();
-  const [open, setOpen] = useState(false);
+  const [ open, setOpen ] = useState(false);
+  const [ checked, setChecked ] = useState(true);
+  const [ hasParam, setHasParam ] = useState(true);
+  const [ isRead, setIsRead ] = useState(false);
+
   const navigate = useNavigate();
 
   const {
@@ -63,31 +69,57 @@ export const CreatePostPage = () => {
       const setResp = async () => {  
         const data = await PostApi.get(postId);
         setPostData(data);
+        if (data.deletedAt) {
+          setChecked(false);
+        }
       } 
       if (!postData) {
         setResp();
       }
     }
-  }, [postData, postId]);
+    if (typeof postId === 'undefined') {
+      setHasParam(false);
+    }
+    if (typeof readOnly === 'undefined') {
+      setIsRead(false);
+    }
+    }, [postData, postId, readOnly]);
 
-  if (!postData) {
+  if (postId && !postData) {
     return (
-      <div>
-        <Backdrop
-          sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-          open={open}
-          onClick={handleClose}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      </div>
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={open}
+        onClick={handleClose}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     )
   }
 
   const onSubmit: SubmitHandler<CreatePostData> = async (values) => {
-    const result = createJob({ ...values });
-    if (!result) {
-      console.error('Create job failed');
+    console.log(`checked: ${checked}`);
+    console.log(`hasParam: ${hasParam}`);
+    console.log(`isRead: ${isRead}`);
+
+    if (hasParam) {
+      if (checked) {
+        const result = await updateJob({...values});
+        if (!result) {
+          console.error('Update job failed');
+        }
+      } else {
+        const result = await deleteJob();
+        console.log(`Delete: ${JSON.stringify(result, null, 2)}`);
+        if (!result) {
+          console.error('Delete job failed');
+        }
+      }
+    } else {
+      const result = await createJob({ ...values });
+      if (!result) {
+        console.error('Create job failed');
+      }
     }
     navigate('/jobs');
   };
@@ -95,6 +127,10 @@ export const CreatePostPage = () => {
   const onCancel = async () => {
     navigate('/jobs');
   }
+
+  const toggleChecked = () => {
+    setChecked((prev) => !prev);
+  };
 
   return (
     <Paper
@@ -118,7 +154,7 @@ export const CreatePostPage = () => {
         Create a new job
       </Typography>
       <Box display={'flex'} flexDirection={'row'}>
-        <Box width='90%'
+        <Box width='85%'
           component="form"
           noValidate
           autoComplete="off"
@@ -223,15 +259,12 @@ export const CreatePostPage = () => {
         </Box>
         <Box sx={{display: 'flex', flexDirection: 'column', justifyContent: 'end'}}>
           <FormGroup>
-          {postData?.deletedAt === null && 
-            <FormControlLabel control={<Switch defaultChecked/>} label="Active" />}
-          {postData?.deletedAt !== null && 
-            <FormControlLabel control={<Switch />} label="Inactive" />}
+            <FormControlLabel control={<Switch checked={checked} onChange={toggleChecked}/> } label={`${checked ? 'Active' : 'Closed'}`} />
           </FormGroup>
         </Box>
       </Box>
       <Box margin={2} display={'flex'} justifyContent={'space-between'}>
-        {readOnly &&
+        {!(hasParam && isRead) &&
           <Button variant='contained' style={{fontWeight: 'bold', fontSize: '1.5rem', width: '78%' }} onClick={handleSubmit(onSubmit)}>Submit</Button>}
         <Button variant='contained' style={{fontWeight: 'bold', fontSize: '1.5rem', width: '20%' }} onClick={onCancel}>Cancel</Button>
       </Box>

@@ -21,3 +21,11 @@ export const saveSurnameToLocalStorage = (surname: string) => {
 export const loadSurnameFromLocalStorage = (): string | null => {
   return localStorage.getItem('surname');
 };
+
+export const saveIdToLocalStorage = (id: string) => {
+  localStorage.setItem('id', id);
+};
+
+export const loadIdFromLocalStorage = (): string | null => {
+  return localStorage.getItem('id');
+};

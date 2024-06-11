@@ -15,10 +15,11 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 import MailIcon from '@mui/icons-material/Mail';
 import MoreIcon from '@mui/icons-material/MoreVert';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AccountCircle } from '@mui/icons-material';
 import { AccountApi } from '../../api/accountApi';
 import { useAccount } from './AccountContext';
+import { usePostAmount } from '../../api/usePosts';
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -26,12 +27,19 @@ export default function Navbar() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
     useState<null | HTMLElement>(null);
-  const { avatar, setAvatar, firstName, setFirstName, surname, setSurname } =
+  const { avatar, setAvatar, firstName, setFirstName, surname, setSurname, id, setId } =
     useAccount();
-
+  const [ count, setCount ] = useState(0);
+  const { data, isSuccess } = usePostAmount();
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
+  useEffect(() => {
+    if (id && data && isSuccess) {
+      setCount(data.amount);
+    }
+  }, [count, data, id, isSuccess]);
+  
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -56,6 +64,7 @@ export default function Navbar() {
     setAvatar('');
     setFirstName('');
     setSurname('');
+    setId('');
     navigate('/login');
   };
 
@@ -118,24 +127,10 @@ export default function Navbar() {
         <MenuItem>
           <IconButton
             size="large"
-            aria-label="show 4 new mails"
+            aria-label="show new mails"
             color="inherit"
           >
-            <Badge badgeContent={4} color="error">
-              <MailIcon />
-            </Badge>
-          </IconButton>
-          <p>Messages</p>
-        </MenuItem>
-      )}
-      {!firstName && (
-        <MenuItem disabled>
-          <IconButton
-            size="large"
-            aria-label="show 4 new mails"
-            color="inherit"
-          >
-            <Badge badgeContent={4} color="error">
+            <Badge badgeContent={count} color="error">
               <MailIcon />
             </Badge>
           </IconButton>
@@ -210,7 +205,7 @@ export default function Navbar() {
                       aria-label="show 4 new mails"
                       color="inherit"
                     >
-                      <Badge badgeContent={4} color="error">
+                      <Badge badgeContent={count} color="error">
                         <MailIcon />
                       </Badge>
                     </IconButton>

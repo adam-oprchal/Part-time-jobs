@@ -18,7 +18,7 @@ import { useState } from 'react';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
-  const { setAvatar, setFirstName, setSurname } = useAccount();
+  const { setAvatar, setFirstName, setSurname, setId } = useAccount();
   const [loginError, setLoginError] = useState(false);
   const {
     register,
@@ -40,6 +40,7 @@ export const LoginPage = () => {
     setAvatar(account.avatar);
     setFirstName(account.firstName);
     setSurname(account.surname);
+    setId(account.id);
     navigate('/jobs');
   };
   return (

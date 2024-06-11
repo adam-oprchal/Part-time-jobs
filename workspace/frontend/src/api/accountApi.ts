@@ -1,6 +1,6 @@
 import axiosInstance from '.';
 import { registerData } from './types';
-import { Account, AccountRegisterWithoutPassword, AccountWithCvWithoutPassword, AccountWithoutPassword, Cv, CvDown, CvUpdate } from 'types';
+import { Account, AccountRegisterWithoutPassword, AccountWithCvWithoutPassword, AccountWithoutPassword, Cv, CvUp, CvUpdate } from 'types';
 
 async function register(data: registerData) {
   const resp = await axiosInstance.post<AccountWithoutPassword>(
@@ -57,16 +57,12 @@ async function getApplicantsByAccount() {
 }
 
 async function changePassword(oldPassword: string, newPassword: string, newPasswordConfirm: string) {
-  try{
-      const resp = await axiosInstance.put<boolean>('account/change-password', {
-        oldPassword,
-        newPassword,
-        newPasswordConfirm,
-    });
-    return resp.data;
-  } catch(error) {
-    console.error(`changePassword: ${error}`);
-  }
+  const resp = await axiosInstance.put<boolean>('account/change-password', {
+    oldPassword,
+    newPassword,
+    newPasswordConfirm,
+  });
+  return resp.data;
 }
 
 async function deleteAccount() {
@@ -74,7 +70,7 @@ async function deleteAccount() {
   return resp.data;
 }
 
-async function uploadCv(cvData: CvUpdate) {
+async function uploadCv(cvData: CvUp) {
   try {
     const resp = await axiosInstance.post<Cv>('account/cv', {...cvData} );
     return resp.data;
@@ -85,7 +81,7 @@ async function uploadCv(cvData: CvUpdate) {
 
 async function downloadCv() {
   try {
-    const resp = await axiosInstance.get<CvDown>('account/cv');
+    const resp = await axiosInstance.get<CvUpdate>('account/cv');
     return resp.data;
   } catch(error) {
     console.error(error);
@@ -93,7 +89,7 @@ async function downloadCv() {
 }
 
 async function downloadForeignCv(accountId: string) {
-  const resp = await axiosInstance.get<Cv>(`account/cv/${accountId}`);
+  const resp = await axiosInstance.get<CvUpdate>(`account/cv/${accountId}`);
   return resp.data;
 }
 

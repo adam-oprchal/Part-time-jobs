@@ -4,8 +4,29 @@ import { useAllPosts } from '../../api/usePosts';
 import { Post } from 'types'
 import { ChangeEvent, SetStateAction, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { PostSorting } from '../../api/types';
 
-export const PostsSection = () => {
+interface SortState {
+  field: string;
+  order: 'asc' | 'desc' | undefined;
+  sorting: PostSorting;
+}
+
+interface PostsSectionProps {
+  sortState: SortState;
+}
+
+export const PostsSection: React.FC<PostsSectionProps> = ({ sortState }) => {
+  const [field, setField] = useState<string | undefined>(undefined);
+  const [order, setOrder] = useState<string | undefined>(undefined);
+  const [sorting, setSorting] = useState<PostSorting>(undefined);
+
+  useEffect(() => {
+    setField(sortState.field);
+    setOrder(sortState.order);
+    setSorting(sortState.sorting)
+  }, [field, order, sortState]);
+
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const navigate = useNavigate();
@@ -19,7 +40,7 @@ export const PostsSection = () => {
     setPage(1);
   };
 
-  const { data, error } = useAllPosts();
+  const { data, error } = useAllPosts( sorting );
 
   useEffect(() => {
     if (error && error.message === 'Request failed with status code 401') {
@@ -28,13 +49,14 @@ export const PostsSection = () => {
   }, [error, navigate]);
 
   const posts: Post[] = data || [];
-
   const indexOfLastRow = page * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentRows = posts.slice(indexOfFirstRow, indexOfLastRow);
 
   return (
     <>
+      <div hidden>{sortState.field}</div>
+      <div hidden>{sortState.order}</div>
       <Box borderLeft={5} borderRight={5} borderTop={10} borderBottom={10} borderRadius={'0 0 1.5rem 1.5rem'} color={'dark.main'} sx={{backgroundColor: 'dark.main'}}>
         {currentRows.map((post, index) => (
           <SinglePost key={index}

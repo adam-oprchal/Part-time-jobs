@@ -38,18 +38,21 @@ export const accountController = {
         const validRequest = await loginRequestSchema.safeParseAsync(request);
         if (!validRequest.success) {
             response.status(400).send("invalid request")
-            return
+            return false;
         }
         const {email, password} = validRequest.data.body
         const account = await accountRepository.getUserForAuth(email);
         if (account.isErr) {
             response.status(401).send(account.error);
+            return false;
         }
         const result = await accountRepository.checkPassword(account.unwrap().passwordHash, password);
         if (!result) {
             response.status(401).send("unauthorized")
+            return false;
         }
         response.status(200).send(result);
+        return true;
     },
 
     logout: (request: Request, response:Response, next: NextFunction) => {
@@ -135,7 +138,7 @@ export const accountController = {
         const validRequest = await changePasswordRequestSchema.safeParseAsync(request);
         if (!validRequest.success) {
             response.status(400).send("invalid request")
-            return
+            return false;
         }
 
         const {oldPassword, newPassword, newPasswordConfirm} = validRequest.data.body
@@ -143,16 +146,17 @@ export const accountController = {
         const account = await accountRepository.getByIdForAuth(request.session.passport.user.id);
         if (account.isErr) {
             response.status(401).send(account.error);
+            return false
         }
         const valid = await accountRepository.checkPassword(account.unwrap().passwordHash, oldPassword);
         if (!valid) {
             response.status(401).send("unauthorized")
+            return false
         }
-        response.status(200).send(valid);
 
         if (newPassword !== newPasswordConfirm) {
             response.status(400).send("passwords differ")
-            return
+            return false;
         }
 
         const result = await accountRepository.changePassword(
@@ -161,8 +165,10 @@ export const accountController = {
 
         if (result.isOk) {
             response.status(204).send()
+            return true;
         } else if (result.isErr) {
             handleDbErrors(result.error, response);
+            return false;
         }
     },
 
@@ -185,8 +191,7 @@ export const accountController = {
 
         const {fileName, fileType, fileSize, fileContent} = validRequest.data.body;
         const accountId = request.session.passport.user.id;
-        const fileUpload = Buffer.from(fileContent);
-        const result = await accountRepository.updateCv({fileName, accountId, fileType, fileSize, fileContent: fileUpload});
+        const result = await accountRepository.updateCv({fileName, accountId, fileType, fileSize, fileContent});
 
         if (result.isOk) {
             response.status(201).send(result);
@@ -199,8 +204,7 @@ export const accountController = {
         const result = await accountRepository.getCv(request.session.passport.user.id);
 
         if (result.isOk) {
-            const originalFile = { ...result.value, fileContent: result.value.fileContent.toString() } 
-            response.send(originalFile);
+            response.send(result.value);
         } else if (result.isErr) {
             handleDbErrors(result.error, response);
         }

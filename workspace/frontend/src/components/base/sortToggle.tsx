@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import IconButton from '@mui/material/IconButton';
@@ -6,7 +6,8 @@ import { styled } from '@mui/material/styles';
 import { Box } from '@mui/material';
 
 interface SortToggleProps {
-  onSortChange?: (sortOrder: 'asc' | 'desc') => void;
+  sortOrder: 'asc' | 'desc' | undefined;
+  onSortChange: (sortOrder: 'asc' | 'desc' | undefined) => void;
 }
 
 const StyledIconButton = styled(IconButton)(({ theme }) => ({
@@ -20,33 +21,25 @@ const StyledIcon = styled('div')<{ active: boolean }>(({ theme, active }) => ({
   color: active ? theme.palette.light.main : theme.palette.dark.main,
 }));
 
-const SortToggle: React.FC<SortToggleProps> = ({ onSortChange }) => {
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc' | undefined>('asc');
-
+const SortToggle: React.FC<SortToggleProps> = ({ sortOrder, onSortChange }) => {
   const sortUp = () => {
-    if (sortOrder !== 'asc') {
-      setSortOrder('asc');
-    } else {
-      setSortOrder(undefined);
-    }
+    const newOrder = sortOrder !== 'asc' ? 'asc' : undefined;
+    onSortChange(newOrder);
   };
 
   const sortDown = () => {
-    if (sortOrder !== 'desc') {
-      setSortOrder('desc');
-    } else {
-      setSortOrder(undefined);
-    }
+    const newOrder = sortOrder !== 'desc' ? 'desc' : undefined;
+    onSortChange(newOrder);
   };
 
   return (
     <Box display={'flex'} flexDirection={'column'}>
-      <StyledIconButton >
+      <StyledIconButton>
         <StyledIcon active={sortOrder === 'asc'}>
-          <ArrowDropUpIcon onClick={sortUp} sx={{margin: -2, fontSize: '2rem'}}/>
+          <ArrowDropUpIcon onClick={sortUp} sx={{ margin: -2, fontSize: '2rem' }} />
         </StyledIcon>
         <StyledIcon active={sortOrder === 'desc'}>
-          <ArrowDropDownIcon onClick={sortDown} sx={{fontSize: '2rem'}}/>
+          <ArrowDropDownIcon onClick={sortDown} sx={{ fontSize: '2rem' }} />
         </StyledIcon>
       </StyledIconButton>
     </Box>

@@ -6,7 +6,9 @@ export const JobsPage = () => {
   return (
     <Box margin={3} sx={{backgroundColor: 'primary.main'}} borderRadius={'1.5rem'}>
       <Page title={['Name', 'Wage', 'Location']} color={['light.main', 'light.main', 'light.main']}>
-        <PostsSection />
+      {(sortState) => (
+        <PostsSection sortState={sortState} />
+      )}
       </Page>
     </Box>
   );

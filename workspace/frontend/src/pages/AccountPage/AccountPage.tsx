@@ -5,7 +5,7 @@ import { Avatar, Box, Button, FormGroup, IconButton, Menu, MenuItem, Paper, Text
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { PasswordDialog } from './ChangePasswordDialog';
 import { AccountApi } from '../../api/accountApi';
-import { AccountWithoutPassword, CvDown } from 'types';
+import { AccountWithoutPassword, CvUpdate } from 'types';
 import { useNavigate } from 'react-router-dom';
 import isEmail from 'validator/lib/isEmail';
 import AssignmentIcon from '@mui/icons-material/Assignment';
@@ -28,13 +28,13 @@ export const AccountPage = () => {
   const [preview, setPreview] = useState<string | null>();
   const [cvPreview, setCvPreview] = useState<string | null>();
   const [account, setAccount] = useState<AccountWithoutPassword | null>();
-  const [cv, setCv] = useState<CvDown | null>();
+  const [, setCv] = useState<CvUpdate | null>();
   const avatarButtonRef = useRef<HTMLInputElement | null>(null);
   const cvButtonRef = useRef<HTMLInputElement | null>(null);
   const [anchorElAvatar, setAnchorElAvatar] = useState<null | HTMLElement>(null);
   const [anchorElCv, setAnchorElCv] = useState<null | HTMLElement>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const navigate = useNavigate();
+    const navigate = useNavigate();
   
   useEffect(() => {
     const setResp = async () => {
@@ -121,17 +121,6 @@ export const AccountPage = () => {
     handleMenuCvClose();
   };
 
-  function dataURLToArrayBuffer(dataURL: string) {
-    const base64String = dataURL.split(',')[1];
-    const binaryString = atob(base64String);
-    const len = binaryString.length;
-    const bytes = new Uint8Array(len);
-    for (let i = 0; i < len; i++) {
-      bytes[i] = binaryString.charCodeAt(i);
-    }
-    return bytes.buffer;
-  }
-
   const showFile = (fileBuffer: Buffer, fileType: string) => {
     const blob = new Blob([fileBuffer], { type: fileType });
     const blobUrl = URL.createObjectURL(blob);
@@ -155,7 +144,7 @@ export const AccountPage = () => {
     handleMenuCvClose();
     const cv = await AccountApi.downloadCv();
     if (cv) {
-      showFile(Buffer.from(dataURLToArrayBuffer(cv.fileContent)), cv.fileType);
+      showFile(Buffer.from(cv.fileContent), cv.fileType);
     }
   }
 
@@ -255,11 +244,12 @@ export const AccountPage = () => {
       const file = files[0];
 
       const fileContent = await loadFile(file);
+      const buffer = Buffer.from(fileContent);
       AccountApi.uploadCv({
         fileName: file.name,
         fileType: file.type,
         fileSize: file.size,
-        fileContent: fileContent,
+        fileContent: buffer.toString('base64'),
       }).then (() => {
         if (file.type.includes('pdf')) {
           setCvPreview(pdfData.data);
@@ -270,22 +260,27 @@ export const AccountPage = () => {
           cvButtonRef.current.value = '';
         }
       });
-      showFile(Buffer.from(dataURLToArrayBuffer(fileContent)), file.type);
+      showFile(Buffer.from(fileContent), file.type);
     }
   }
 
-  const loadFile = async (file: File): Promise<string> => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-  
+  function loadFile(file: File): Promise<ArrayBuffer> {
     return new Promise((resolve, reject) => {
+      const reader = new FileReader();
       reader.onloadend = () => {
-        resolve(reader.result as string);
-      }
-      reader.onerror = (error) => reject(error);
+        if (reader.result instanceof ArrayBuffer) {
+          resolve(reader.result);
+        } else {
+          reject(new Error("Unexpected result type"));
+        }
+      };
+      reader.onerror = () => {
+        reject(reader.error);
+      };
+      reader.readAsArrayBuffer(file);
     });
-  };
-
+  }
+  
   const compressImage = async (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();

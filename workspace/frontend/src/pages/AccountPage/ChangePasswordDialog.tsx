@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Box, Button, Dialog, DialogActions, DialogContent, FormGroup, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, Dialog, DialogActions, DialogContent, FormGroup, Stack, TextField, Typography } from '@mui/material';
 import { AccountApi } from '../../api/accountApi';
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -11,9 +11,8 @@ interface PasswordDialogProps {
 }
 
 const changePasswordSchema = z.object({
-  oldPassword: z.string().min(5, { message: 'Needs at least 5 characters' }),
+  oldPassword: z.string(),
   newPassword: z.string().min(5, { message: 'Needs at least 5 characters' }),
-
   newPasswordConfirm: z.string().min(5, { message: 'Needs at least 5 characters' }),
 }).refine(
 (values) => {
@@ -21,14 +20,15 @@ const changePasswordSchema = z.object({
 },
 {
   message: 'Passwords don\'t match',
-  path: ['passwordConfirm'],
+  path: ['newPasswordConfirm'],
 }
 );
 
 type changePasswordData = z.infer<typeof changePasswordSchema>;
 
-
 export const PasswordDialog: FC<PasswordDialogProps> = ({ isOpen, onClose }) => {
+  const [ loginError, setLoginError ] = useState('');
+
   const {
     register,
     handleSubmit,
@@ -38,7 +38,16 @@ export const PasswordDialog: FC<PasswordDialogProps> = ({ isOpen, onClose }) => 
   });
 
   const onSubmit = async (values:changePasswordData) => {
-    await AccountApi.changePassword(values.oldPassword, values.newPassword, values.newPasswordConfirm);
+    console.log(`ChangePwd`);
+    try {
+      const result = await AccountApi.changePassword(values.oldPassword, values.newPassword, values.newPasswordConfirm);
+      console.log(`ChangePwd: ${result}`);
+      setLoginError('');
+    } catch (error) {
+      console.log(`ChangePwd: ${error}`);
+      setLoginError('The old password is incorrect!');
+      return;
+    }
     onClose();
   }
 
@@ -67,6 +76,7 @@ export const PasswordDialog: FC<PasswordDialogProps> = ({ isOpen, onClose }) => 
               }}
               label='Old password'
               type='password'
+              defaultValue=''
               {...register('oldPassword')}
               error={typeof errors.oldPassword !== 'undefined'}
               helperText={errors.oldPassword?.message}
@@ -86,6 +96,7 @@ export const PasswordDialog: FC<PasswordDialogProps> = ({ isOpen, onClose }) => 
               }}
               label='New Password'
               type='password'
+              defaultValue=''
               {...register('newPassword')}
               error={typeof errors.newPassword !== 'undefined'}
               helperText={errors.newPassword?.message}
@@ -105,6 +116,7 @@ export const PasswordDialog: FC<PasswordDialogProps> = ({ isOpen, onClose }) => 
               }}
               label='New password confirmation'
               type='password'
+              defaultValue=''
               {...register('newPasswordConfirm')}
               error={typeof errors.newPasswordConfirm !== 'undefined'}
               helperText={errors.newPasswordConfirm?.message}
@@ -117,6 +129,12 @@ export const PasswordDialog: FC<PasswordDialogProps> = ({ isOpen, onClose }) => 
           <Button variant="contained" style={{marginLeft: '2rem', marginRight: '2rem', width: 'auto'}} onClick={onClose}>Cancel</Button>
         </Box>
         </DialogActions>
+        {loginError!=='' &&
+      <Stack sx={{ width: '100%' }} spacing={2}>
+        <Alert severity="error">
+          {loginError}
+        </Alert>
+      </Stack>}
       </DialogContent>
     </Dialog>
   )

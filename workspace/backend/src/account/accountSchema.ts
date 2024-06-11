@@ -31,7 +31,7 @@ export const getApplicantsOfPostSchema = z.object({
         fileName: z.string(),
         fileType: z.string(),
         fileSize: z.number(),
-        fileContent: z.string(),
+        fileContent: z.any(),
     })
 })
 
@@ -40,7 +40,7 @@ export const uploadCvSchema = z.object({
         fileName: z.string(),
         fileType: z.string(),
         fileSize: z.number(),
-        fileContent: z.string(),
+        fileContent: z.any(),
     })
 })
 

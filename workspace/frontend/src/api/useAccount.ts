@@ -18,7 +18,7 @@ export const useApplicantsByPost = (postId: string) => {
   return useQuery<AccountWithCvWithoutPassword[]>({
     queryKey: ['account', 'byPost', postId],
     queryFn: () => AccountApi.getApplicantsByPost(postId),
-    retry:0,
+    retry: 0,
   });
 };
 
@@ -26,7 +26,7 @@ export const useApplicantByAccount = (creatorId: string) => {
   return useQuery<Map<string, Omit<Account, 'passwordHash'>[]>>({
     queryKey: ['account', 'byCreator', creatorId],
     queryFn: () => AccountApi.getApplicantsByAccount(),
-    retry:0,
+    retry: 0,
   });
 };
 

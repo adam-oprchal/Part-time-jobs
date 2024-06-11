@@ -1,6 +1,14 @@
 import axiosInstance from '.';
 import { registerData } from './types';
-import { Account, AccountRegisterWithoutPassword, AccountWithCvWithoutPassword, AccountWithoutPassword, Cv, CvUp, CvUpdate } from 'types';
+import {
+  Account,
+  AccountRegisterWithoutPassword,
+  AccountWithCvWithoutPassword,
+  AccountWithoutPassword,
+  Cv,
+  CvUp,
+  CvUpdate,
+} from 'types';
 
 async function register(data: registerData) {
   const resp = await axiosInstance.post<AccountWithoutPassword>(
@@ -25,7 +33,7 @@ async function login(email: string, password: string) {
       password,
     });
     return resp.data;
-  } catch(error) {
+  } catch (error) {
     return false;
   }
 }
@@ -36,10 +44,8 @@ async function logout() {
 }
 
 async function getUserAccount() {
-    const resp = await axiosInstance.get<AccountWithoutPassword>(
-      'account/'
-    );
-    return resp.data;
+  const resp = await axiosInstance.get<AccountWithoutPassword>('account/');
+  return resp.data;
 }
 
 async function getApplicantsByPost(postId: string) {
@@ -56,7 +62,11 @@ async function getApplicantsByAccount() {
   return resp.data;
 }
 
-async function changePassword(oldPassword: string, newPassword: string, newPasswordConfirm: string) {
+async function changePassword(
+  oldPassword: string,
+  newPassword: string,
+  newPasswordConfirm: string
+) {
   const resp = await axiosInstance.put<boolean>('account/change-password', {
     oldPassword,
     newPassword,
@@ -72,9 +82,9 @@ async function deleteAccount() {
 
 async function uploadCv(cvData: CvUp) {
   try {
-    const resp = await axiosInstance.post<Cv>('account/cv', {...cvData} );
+    const resp = await axiosInstance.post<Cv>('account/cv', { ...cvData });
     return resp.data;
-  } catch(error) {
+  } catch (error) {
     console.error(error);
   }
 }
@@ -83,7 +93,7 @@ async function downloadCv() {
   try {
     const resp = await axiosInstance.get<CvUpdate>('account/cv');
     return resp.data;
-  } catch(error) {
+  } catch (error) {
     console.error(error);
   }
 }

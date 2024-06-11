@@ -1,4 +1,4 @@
-import { Post } from 'types';
+import { Post, PostWithCreatorApplicantCount } from 'types';
 import axiosInstance from '.';
 import { PostSorting, createPostData } from './types';
 
@@ -59,7 +59,7 @@ async function getAllPaginated(
 }
 
 async function getPosts(sorting: PostSorting = undefined) {
-  return (await axiosInstance.get<Post[]>('post/', { params: { sorting } }))
+  return (await axiosInstance.get<PostWithCreatorApplicantCount[]>('post/', { params: { sorting } }))
     .data;
 }
 

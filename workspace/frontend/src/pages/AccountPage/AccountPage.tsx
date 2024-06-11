@@ -3,8 +3,10 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import {
   Avatar,
+  Backdrop,
   Box,
   Button,
+  CircularProgress,
   FormGroup,
   IconButton,
   Menu,
@@ -12,7 +14,7 @@ import {
   Paper,
   TextField,
   Tooltip,
-  Typography,
+  Typography
 } from '@mui/material';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { PasswordDialog } from './ChangePasswordDialog';
@@ -27,8 +29,8 @@ import { Buffer } from 'buffer';
 import { useAccount } from '../../components/base/AccountContext';
 
 const accountUpdateSchema = z.object({
-  name: z.string().trim().min(1, { message: 'Cannot be empty' }),
-  surname: z.string().trim().min(1, { message: 'Cannot be empty' }),
+    name: z.string().trim().min(1, { message: 'Cannot be empty' }),
+    surname: z.string().trim().min(1, { message: 'Cannot be empty' }),
 
   email: z
     .string()
@@ -51,9 +53,19 @@ export const AccountPage = () => {
   );
   const [anchorElCv, setAnchorElCv] = useState<null | HTMLElement>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-
+  
+  const handleClose = () => {
+    setOpen(false);
+  };
+  
+  const handleOpen = () => {
+    setOpen(true);
+  };
+  
   useEffect(() => {
+    handleOpen();
     const setResp = async () => {
       const account = await AccountApi.getUserAccount();
       setAccount(account);
@@ -88,7 +100,17 @@ export const AccountPage = () => {
   });
 
   if (!account) {
-    return <div>Loading...</div>;
+    return (
+      <div>
+        <Backdrop
+          sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={open}
+          onClick={handleClose}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
+      </div>
+    )
   }
 
   const handleOpenDialog = () => {
@@ -381,6 +403,10 @@ export const AccountPage = () => {
                 backgroundColor: 'secondary.contrastText',
                 '& fieldset': {
                   borderRadius: '4px',
+                  backgroundColor: 'secondary.contrastText',
+                  '& fieldset': {
+                    borderRadius: '4px',
+                  },
                 },
               },
             }}
@@ -508,7 +534,6 @@ export const AccountPage = () => {
           Cancel
         </Button>
       </Box>
-      <Box></Box>
       {renderAvatarMenu}
       {renderCvMenu}
     </Paper>

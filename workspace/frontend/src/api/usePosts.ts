@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { PostApi } from './postApi';
-import { Post } from 'types';
+import { Post, PostWithCreatorApplicantCount } from 'types';
 import { PostSorting, createPostData } from './types';
 
 export const usePostCreate = () => {
@@ -103,7 +103,7 @@ export const usePosts = (
 };
 
 export const useAllPosts = (sorting: PostSorting = undefined) => {
-  return useQuery<Post[]>({
+  return useQuery<PostWithCreatorApplicantCount[]>({
     queryKey: ['post', sorting],
     queryFn: () => PostApi.getPosts(sorting),
     retry: 0,

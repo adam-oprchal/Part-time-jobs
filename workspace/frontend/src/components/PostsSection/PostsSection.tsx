@@ -1,7 +1,7 @@
 import { Box, MenuItem, Pagination, Select } from '@mui/material';
 import { SinglePost } from '../Post/Post';
 import { useAllPosts } from '../../api/usePosts';
-import { Post } from 'types';
+import { PostWithCreatorApplicantCount } from 'types';
 import { ChangeEvent, SetStateAction, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PostSorting } from '../../api/types';
@@ -30,6 +30,7 @@ export const PostsSection: React.FC<PostsSectionProps> = ({ sortState }) => {
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const navigate = useNavigate();
+  
 
   const handlePageChange = (
     _event: ChangeEvent<unknown>,
@@ -51,7 +52,7 @@ export const PostsSection: React.FC<PostsSectionProps> = ({ sortState }) => {
     }
   }, [error, navigate]);
 
-  const posts: Post[] = data || [];
+  const posts: PostWithCreatorApplicantCount[] = data || [];
   const indexOfLastRow = page * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentRows = posts.slice(indexOfFirstRow, indexOfLastRow);
@@ -78,8 +79,11 @@ export const PostsSection: React.FC<PostsSectionProps> = ({ sortState }) => {
             wage={post.wage}
             expectedHours={post.expectedHours}
             location={post.location}
+            creator={post.iAmCreator}
+            applicant={post.iAmApplicant}
+            applicantsCount={post.applicantsCount}
           />
-        )) || []}
+      )) || []}
       </Box>
       <Box
         style={{

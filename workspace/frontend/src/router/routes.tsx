@@ -24,6 +24,10 @@ const pageRoutes: RouteObject[] = [
     Component: AccountPage,
   },
   {
+    path: '/edit/:postId/:readOnly',
+    Component: CreatePostPage,
+  },
+  {
     path: '/create',
     Component: CreatePostPage,
   },

@@ -123,8 +123,7 @@ export const postController = {
     }
 
     const { sorting } = validRequest.data.query;
-
-    const result = await postRepository.getPosts(sorting);
+    const result = await postRepository.getPosts(request.session.passport.user.id, sorting);
 
     if (result.isOk) {
       response.send(result.value);
